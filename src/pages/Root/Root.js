@@ -42,6 +42,9 @@ function Root({ classes }) {
           <Route exact path="/search/">
             <Search />
           </Route>
+          <Route exact path="/search/*">
+            <Search />
+          </Route>
           <Redirect exact from="/" push to="/search/" />
           <Route path="*">
             <NotFound />
