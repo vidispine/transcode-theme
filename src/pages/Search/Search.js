@@ -1,5 +1,13 @@
 import React, { useEffect } from 'react';
-import { withStyles, Card, CardHeader, CardContent, Button } from '@material-ui/core';
+import {
+  withStyles,
+  Card,
+  CardHeader,
+  CardContent,
+  Button,
+  List,
+  ListItem,
+} from '@material-ui/core';
 import { SearchInput, MediaCardFullWidth } from '@vidispine/vdt-materialui';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -120,17 +128,21 @@ function Search({ classes }) {
                 >
                   Next
                 </Button>
-                {fileList.map((file) => (
-                  <MediaCardFullWidth
-                    className="search-result"
-                    key={file.id}
-                    title={file.path}
-                    subheader={parseFileSize(file.size)}
-                    expandComponent={null}
-                    content={renderShapeInfo(file)}
-                    ContentProps={{ component: 'div' }}
-                  />
-                ))}
+                <List>
+                  {fileList.map((file) => (
+                    <ListItem key={file.id}>
+                      <MediaCardFullWidth
+                        className="search-result"
+                        key={file.id}
+                        title={file.path}
+                        subheader={parseFileSize(file.size)}
+                        ExpandComponent={false}
+                        content={renderShapeInfo(file)}
+                        ContentProps={{ component: 'div' }}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
               </CardContent>
             </Card>
           ),
