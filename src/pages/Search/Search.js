@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { SearchInput, MediaCardFullWidth } from '@vidispine/vdt-materialui';
 import {
   withStyles,
   Card,
@@ -7,12 +8,11 @@ import {
   Button,
   List,
   ListItem,
+  Tab,
+  Tabs,
 } from '@material-ui/core';
-import { SearchInput, MediaCardFullWidth } from '@vidispine/vdt-materialui';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import parseFileSize from 'filesize';
-import prettyMilliseconds from 'pretty-ms';
+import ShapeInfo from './ShapeInfo';
 
 import useSearchItem from './hooks/useSearchItem';
 import useFileShapes from './hooks/useFileShapes';
@@ -31,12 +31,14 @@ const styles = (theme) => ({
 
 function Search({ classes }) {
   const [tab, setTab] = React.useState('source');
-  const [first, setFirst] = React.useState(1);
+  const [sourceFirst, setSourceFirst] = React.useState(0);
+  const [outputFirst, setOutputFirst] = React.useState(0);
+  const [sourceSearchString, setSourceSearchString] = React.useState('');
+  const [outputSearchString, setOutputSearchString] = React.useState('');
   const onChangeTab = (e, newTab) => newTab && setTab(newTab);
   const { onSearch, fileListType, hasLoaded, isLoading } = useSearchItem();
   const { onListShapes, hasShapesLoaded, fileShapes } = useFileShapes();
   const { file: fileList = [] } = hasLoaded ? fileListType : {};
-  const [sourceSearchString, setSourceSearchString] = React.useState('');
   useEffect(() => {
     if (hasLoaded) {
       onListShapes(fileList.map((file) => file.id));
@@ -45,58 +47,19 @@ function Search({ classes }) {
   }, [fileList]);
   const outputList = [];
   useEffect(() => {
-    console.log('Source search string', sourceSearchString);
-    onSearch(sourceSearchString, first);
+    onSearch(sourceSearchString, sourceFirst);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [first]);
+  }, [sourceFirst]);
+  useEffect(() => {
+    onSearch(outputSearchString, outputFirst);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [outputFirst]);
 
   const renderShapeInfo = (file) => {
     if (!hasShapesLoaded || !fileShapes[file.id] || Object.keys(fileShapes[file.id]).length === 0) {
       return <p>Technical metadata extraction not completed.</p>;
     }
-    const container = fileShapes[file.id].containerComponent;
-    const video = fileShapes[file.id].videoComponent;
-    const audio = fileShapes[file.id].audioComponent;
-    const duration = (
-      (container && container.mediaInfo.property.find((property) => property.key === 'Duration')) ||
-      {}
-    ).value;
-    const audioTracks = audio ? audio.length : 0;
-    const audioChannels = audio ? audio.reduce((acc, a) => acc + Number(a.channelCount), 0) : 0;
-    return (
-      <>
-        <ul>
-          {container && container.format && (
-            <li>
-              <b>Container format:</b> {container && container.format}{' '}
-            </li>
-          )}
-          {video && video[0].codec && (
-            <li>
-              <b>Video codec: </b> {video && video[0].codec}
-            </li>
-          )}
-          {audio && audio[0].codec && (
-            <li>
-              <b>Audio codec: </b> {audio && audio[0].codec}
-            </li>
-          )}
-          {audio && (
-            <li>
-              <b>Audio configuration:</b> {audioTracks} tracks and {audioChannels} channels
-            </li>
-          )}
-          {duration && (
-            <li>
-              <b>Duration: </b> {prettyMilliseconds(Number(duration || 0))}
-            </li>
-          )}
-          <li>
-            <b>Timestamp: </b> {file.timestamp}
-          </li>
-        </ul>
-      </>
-    );
+    return <ShapeInfo file={file} shape={fileShapes[file.id]} />;
   };
 
   return (
@@ -119,14 +82,14 @@ function Search({ classes }) {
                 />
                 <Button
                   onClick={() => {
-                    setFirst(Math.max(1, first - 10));
+                    setSourceFirst(Math.max(0, sourceFirst - 10));
                   }}
                 >
                   Previous
                 </Button>
                 <Button
                   onClick={() => {
-                    setFirst(first + 10);
+                    setSourceFirst(sourceFirst + 10);
                   }}
                 >
                   Next
@@ -157,9 +120,32 @@ function Search({ classes }) {
                   className={classes.SearchInput}
                   onSubmit={onSearch}
                   submitting={hasLoaded && isLoading}
+                  onChange={setOutputSearchString}
                 />
+                <Button
+                  onClick={() => {
+                    setOutputFirst(Math.max(0, outputFirst - 10));
+                  }}
+                >
+                  Previous
+                </Button>
+                <Button
+                  onClick={() => {
+                    setOutputFirst(outputFirst + 10);
+                  }}
+                >
+                  Next
+                </Button>
                 {outputList.map((file) => (
-                  <MediaCardFullWidth key={file.id} title={file.path} subheader="Aug 5th, 2021" />
+                  <MediaCardFullWidth
+                    className="search-result"
+                    key={file.id}
+                    title={file.path}
+                    subheader={parseFileSize(file.size)}
+                    expandComponent={null}
+                    content={renderShapeInfo(file)}
+                    ContentProps={{ component: 'div' }}
+                  />
                 ))}
               </CardContent>
             </Card>
