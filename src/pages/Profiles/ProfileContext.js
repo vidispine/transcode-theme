@@ -74,7 +74,7 @@ export const ProfileProvider = ({ children }) => {
   const [search, setSearch] = React.useState('');
   const onSearch = (v) => setSearch(v);
   const profiles = React.useMemo(
-    () => data.filter((s) => s.toLowerCase().includes(search)).slice(0, 20),
+    () => data.filter((s) => s.toLowerCase().includes(search)),
     [search, data],
   );
   return (

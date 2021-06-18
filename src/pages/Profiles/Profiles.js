@@ -1,5 +1,14 @@
-import React from 'react';
-import { Box, Table, TableRow, TableBody, TableHead, TableCell, Checkbox } from '@material-ui/core';
+import React, { useState } from 'react';
+import {
+  Box,
+  Table,
+  TableRow,
+  TableBody,
+  TableHead,
+  TableCell,
+  Checkbox,
+  Button,
+} from '@material-ui/core';
 import { SearchInput } from '@vidispine/vdt-materialui';
 import { useProfiles, useGetProfile } from './ProfileContext';
 
@@ -24,10 +33,25 @@ export const Profile = ({ profile: tagName }) => {
 };
 
 export default () => {
+  const [first, setFirst] = useState(0);
   const { profiles = [], onSearch } = useProfiles();
+
+  const nextPage = () => {
+    setFirst(first + 20);
+  };
+  const prevPage = () => {
+    setFirst(Math.max(0, first - 20));
+  };
+  console.log('First: ', first, 'Length:', profiles.length);
   return (
     <Box height={500}>
       <SearchInput onSubmit={onSearch} />
+      <Button type="button" onClick={prevPage} disabled={first === 0}>
+        Prev
+      </Button>
+      <Button type="button" onClick={nextPage} disabled={first + 20 > profiles.length}>
+        Next
+      </Button>
       <Table>
         <TableHead>
           <TableRow>
@@ -42,7 +66,7 @@ export default () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {profiles.map((profile) => (
+          {profiles.slice(first, first + 20).map((profile) => (
             <Profile profile={profile} key={profile} />
           ))}
         </TableBody>
