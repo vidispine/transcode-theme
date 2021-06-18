@@ -42,7 +42,6 @@ export default () => {
   const prevPage = () => {
     setFirst(Math.max(0, first - 20));
   };
-  console.log('First: ', first, 'Length:', profiles.length);
   return (
     <Box height={500}>
       <SearchInput onSubmit={onSearch} />
