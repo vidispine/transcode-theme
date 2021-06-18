@@ -36,6 +36,7 @@ function Search({ classes }) {
   const { onSearch, fileListType, hasLoaded, isLoading } = useSearchItem();
   const { onListShapes, hasShapesLoaded, fileShapes } = useFileShapes();
   const { file: fileList = [] } = hasLoaded ? fileListType : {};
+  const [sourceSearchString, setSourceSearchString] = React.useState('');
   useEffect(() => {
     if (hasLoaded) {
       onListShapes(fileList.map((file) => file.id));
@@ -44,7 +45,8 @@ function Search({ classes }) {
   }, [fileList]);
   const outputList = [];
   useEffect(() => {
-    onSearch(first);
+    console.log('Source search string', sourceSearchString);
+    onSearch(sourceSearchString, first);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [first]);
 
@@ -113,6 +115,7 @@ function Search({ classes }) {
                   className={classes.SearchInput}
                   onSubmit={onSearch}
                   submitting={hasLoaded && isLoading}
+                  onChange={setSourceSearchString}
                 />
                 <Button
                   onClick={() => {
