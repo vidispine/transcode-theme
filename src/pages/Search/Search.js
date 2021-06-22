@@ -1,6 +1,7 @@
 import React from 'react';
 import { withStyles, Card, CardContent, Tab, Tabs } from '@material-ui/core';
 import FileSearch from './components/FileSearch';
+import { useConfiguration } from '../Root/ConfigurationContext';
 
 import './styles/search.css';
 
@@ -18,8 +19,7 @@ const styles = (theme) => ({
 function Search({ classes }) {
   const [tab, setTab] = React.useState('source');
   const onChangeTab = (e, newTab) => newTab && setTab(newTab);
-  const sourceStorage = 'VX-31';
-  const outputStorage = 'VX-29';
+  const { sourceStorage, outputStorage, isLoading } = useConfiguration();
 
   return (
     <div className={classes.root}>
@@ -31,20 +31,29 @@ function Search({ classes }) {
         {
           source: (
             <Card variant="outlined" key="source">
-              <CardContent>
-                <FileSearch classes={classes} storageId={sourceStorage} transcodeAvailable />
-              </CardContent>
+              {!isLoading && (
+                <CardContent>
+                  <FileSearch
+                    classes={classes}
+                    storageId={sourceStorage}
+                    openTranscodeModal={openTranscodeModal}
+                    transcodeAvailable
+                  />
+                </CardContent>
+              )}
             </Card>
           ),
           output: (
             <Card variant="outlined" key="output">
-              <CardContent>
-                <FileSearch
-                  classes={classes}
-                  storageId={outputStorage}
-                  transcodeAvailable={false}
-                />
-              </CardContent>
+              {!isLoading && (
+                <CardContent>
+                  <FileSearch
+                    classes={classes}
+                    storageId={outputStorage}
+                    transcodeAvailable={false}
+                  />
+                </CardContent>
+              )}
             </Card>
           ),
         }[tab]

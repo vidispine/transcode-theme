@@ -3,7 +3,7 @@ import { Route, Redirect, Switch } from 'react-router-dom';
 import { withStyles } from '@material-ui/core';
 import { AuthProvider } from '@vidispine/vdt-react';
 import { QueryClientProvider } from 'react-query';
-
+import { ConfigurationProvider } from './ConfigurationContext';
 import { LOGIN_EXPIRES_SECONDS, APP_BASENAME, VIDISPINE_URL } from '../../const';
 import Search from '../Search';
 import { ProfileProvider, Profiles } from '../Profiles';
@@ -40,26 +40,28 @@ function Root({ classes }) {
       serverUrl="/"
     >
       <QueryClientProvider client={queryClient}>
-        <ProfileProvider>
-          <Header />
-          <div className={classes.container}>
-            <Switch>
-              <Route exact path="/search/">
-                <Search />
-              </Route>
-              <Route exact path="/search/*">
-                <Search />
-              </Route>
-              <Route exact path="/profile/">
-                <Profiles />
-              </Route>
-              <Redirect exact from="/" push to="/search/" />
-              <Route path="*">
-                <NotFound />
-              </Route>
-            </Switch>
-          </div>
-        </ProfileProvider>
+        <ConfigurationProvider>
+          <ProfileProvider>
+            <Header />
+            <div className={classes.container}>
+              <Switch>
+                <Route exact path="/search/">
+                  <Search />
+                </Route>
+                <Route exact path="/search/*">
+                  <Search />
+                </Route>
+                <Route exact path="/profile/">
+                  <Profiles />
+                </Route>
+                <Redirect exact from="/" push to="/search/" />
+                <Route path="*">
+                  <NotFound />
+                </Route>
+              </Switch>
+            </div>
+          </ProfileProvider>
+        </ConfigurationProvider>
       </QueryClientProvider>
     </AuthProvider>
   );
