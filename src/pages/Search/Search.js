@@ -1,5 +1,5 @@
 import React from 'react';
-import { withStyles, Card, CardHeader, CardContent, Tab, Tabs } from '@material-ui/core';
+import { withStyles, Card, CardContent, Tab, Tabs } from '@material-ui/core';
 import FileSearch from './FileSearch';
 
 import './styles/search.css';
@@ -31,17 +31,19 @@ function Search({ classes }) {
         {
           source: (
             <Card variant="outlined" key="source">
-              <CardHeader title="" />
               <CardContent>
-                <FileSearch classes={classes} storageId={sourceStorage} />
+                <FileSearch classes={classes} storageId={sourceStorage} transcodeAvailable />
               </CardContent>
             </Card>
           ),
           output: (
             <Card variant="outlined" key="output">
-              <CardHeader title="" />
               <CardContent>
-                <FileSearch classes={classes} storageId={outputStorage} />
+                <FileSearch
+                  classes={classes}
+                  storageId={outputStorage}
+                  transcodeAvailable={false}
+                />
               </CardContent>
             </Card>
           ),

@@ -1,12 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { SearchInput, MediaCardFullWidth } from '@vidispine/vdt-materialui';
-import { Button, List, ListItem } from '@material-ui/core';
+import { Button, List, CardActions, IconButton, Checkbox, ListItem } from '@material-ui/core';
+import { SwitchVideo, CloudDownload } from '@material-ui/icons';
 import parseFileSize from 'filesize';
 import ShapeInfo from './ShapeInfo';
 import useSearchFiles from './hooks/useSearchFiles';
 import useFileShapes from './hooks/useFileShapes';
 
-const FileSearch = ({ classes, storageId }) => {
+const ActionsComponent = ({ selected, onSelect, transcodeAvailable }) => {
+  return (
+    <CardActions disableSpacing style={{ padding: 0 }}>
+      {transcodeAvailable && (
+        <IconButton>
+          <SwitchVideo />
+        </IconButton>
+      )}
+      <IconButton>
+        <CloudDownload />
+      </IconButton>
+      <Checkbox checked={selected} onChange={onSelect} />
+    </CardActions>
+  );
+};
+
+const FileSearch = ({ classes, storageId, transcodeAvailable }) => {
   const { onSearch, fileListType, hasLoaded, isLoading } = useSearchFiles(storageId);
   const { onListShapes, hasShapesLoaded, fileShapes } = useFileShapes();
   const [first, setFirst] = useState(0);
@@ -63,6 +80,8 @@ const FileSearch = ({ classes, storageId }) => {
               ExpandComponent={false}
               content={renderShapeInfo(file)}
               ContentProps={{ component: 'div' }}
+              ActionsComponent={ActionsComponent}
+              ActionsProps={{ transcodeAvailable }}
             />
           </ListItem>
         ))}
