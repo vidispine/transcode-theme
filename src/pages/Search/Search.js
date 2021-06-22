@@ -1,6 +1,7 @@
 import React from 'react';
 import { withStyles, Card, CardContent, Tab, Tabs } from '@material-ui/core';
 import FileSearch from './components/FileSearch';
+import TranscodeModal from './components/TranscodeModal';
 import { useConfiguration } from '../Root/ConfigurationContext';
 
 import './styles/search.css';
@@ -18,8 +19,19 @@ const styles = (theme) => ({
 
 function Search({ classes }) {
   const [tab, setTab] = React.useState('source');
+  const [selectedFile, setSelectedFile] = React.useState();
+  const [transcodeModalOpen, setTranscodeModalOpen] = React.useState(false);
   const onChangeTab = (e, newTab) => newTab && setTab(newTab);
   const { sourceStorage, outputStorage, isLoading } = useConfiguration();
+
+  const openTranscodeModal = (fileId) => {
+    setSelectedFile(fileId);
+    setTranscodeModalOpen(true);
+  };
+
+  const closeTranscodeModal = () => {
+    setTranscodeModalOpen(false);
+  };
 
   return (
     <div className={classes.root}>
@@ -58,6 +70,11 @@ function Search({ classes }) {
           ),
         }[tab]
       }
+      <TranscodeModal
+        fileInfo={selectedFile}
+        open={transcodeModalOpen}
+        handleClose={closeTranscodeModal}
+      />
     </div>
   );
 }
