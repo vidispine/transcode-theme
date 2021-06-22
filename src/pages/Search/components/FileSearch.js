@@ -4,14 +4,14 @@ import { Button, List, CardActions, IconButton, Checkbox, ListItem } from '@mate
 import { SwitchVideo, CloudDownload } from '@material-ui/icons';
 import parseFileSize from 'filesize';
 import ShapeInfo from './ShapeInfo';
-import useSearchFiles from './hooks/useSearchFiles';
-import useFileShapes from './hooks/useFileShapes';
+import useSearchFiles from '../hooks/useSearchFiles';
+import useFileShapes from '../hooks/useFileShapes';
 
-const ActionsComponent = ({ selected, onSelect, transcodeAvailable }) => {
+const ActionsComponent = ({ selected, onSelect, file, transcodeAvailable, openTranscodeModal }) => {
   return (
     <CardActions disableSpacing style={{ padding: 0 }}>
       {transcodeAvailable && (
-        <IconButton>
+        <IconButton onClick={() => openTranscodeModal(file)}>
           <SwitchVideo />
         </IconButton>
       )}
@@ -23,7 +23,7 @@ const ActionsComponent = ({ selected, onSelect, transcodeAvailable }) => {
   );
 };
 
-const FileSearch = ({ classes, storageId, transcodeAvailable }) => {
+const FileSearch = ({ classes, storageId, transcodeAvailable, openTranscodeModal }) => {
   const { onSearch, fileListType, hasLoaded, isLoading } = useSearchFiles(storageId);
   const { onListShapes, hasShapesLoaded, fileShapes } = useFileShapes();
   const [first, setFirst] = useState(0);
@@ -81,7 +81,14 @@ const FileSearch = ({ classes, storageId, transcodeAvailable }) => {
               content={renderShapeInfo(file)}
               ContentProps={{ component: 'div' }}
               ActionsComponent={ActionsComponent}
-              ActionsProps={{ transcodeAvailable }}
+              ActionsProps={{
+                transcodeAvailable,
+                openTranscodeModal,
+                file: {
+                  file,
+                  fileShape: hasShapesLoaded ? fileShapes[file.id] : {},
+                },
+              }}
             />
           </ListItem>
         ))}

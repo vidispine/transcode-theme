@@ -1,6 +1,6 @@
 import React from 'react';
 import { withStyles, Card, CardContent, Tab, Tabs } from '@material-ui/core';
-import FileSearch from './FileSearch';
+import FileSearch from './components/FileSearch';
 
 import './styles/search.css';
 
