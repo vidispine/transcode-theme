@@ -42,8 +42,6 @@ function Login({ classes, onLogin, userName, serverUrl, error }) {
           FormProps={{
             initialValues: { userName, serverUrl },
           }}
-          UrlFieldComponent={null}
-          RememberMeFieldComponent={null}
         />
       </Grid>
       <Hidden smDown>

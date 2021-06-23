@@ -37,7 +37,6 @@ function Root({ classes }) {
       onError={handleLoginError}
       LoginComponent={Login}
       LoginProps={{ error: loginError }}
-      serverUrl="/"
     >
       <QueryClientProvider client={queryClient}>
         <ConfigurationProvider>
