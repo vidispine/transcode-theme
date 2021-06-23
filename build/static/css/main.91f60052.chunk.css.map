@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack://src/pages/Search/styles/search.css"],"names":[],"mappings":"AAAA,kBACE,cAAU,CACV,iBAAkB,CAClB,cACF","file":"main.91f60052.chunk.css","sourcesContent":[".search-result ul {\n  columns: 2;\n  -webkit-columns: 2;\n  -moz-columns: 2;\n}\n"]}
