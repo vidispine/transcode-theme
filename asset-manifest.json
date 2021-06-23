@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "https://github.com/vidispine/transcode_theme/static/css/main.59c233fe.chunk.css",
+    "main.js": "https://github.com/vidispine/transcode_theme/static/js/main.499d34fb.chunk.js",
+    "runtime-main.js": "https://github.com/vidispine/transcode_theme/static/js/runtime-main.4f001855.js",
+    "static/css/2.d5a0fdd9.chunk.css": "https://github.com/vidispine/transcode_theme/static/css/2.d5a0fdd9.chunk.css",
+    "static/js/2.1c578156.chunk.js": "https://github.com/vidispine/transcode_theme/static/js/2.1c578156.chunk.js",
+    "index.html": "https://github.com/vidispine/transcode_theme/index.html",
+    "static/js/2.1c578156.chunk.js.LICENSE.txt": "https://github.com/vidispine/transcode_theme/static/js/2.1c578156.chunk.js.LICENSE.txt",
+    "static/media/header-logo.f0892ea4.svg": "https://github.com/vidispine/transcode_theme/static/media/header-logo.f0892ea4.svg",
+    "static/media/logo.db253c2c.svg": "https://github.com/vidispine/transcode_theme/static/media/logo.db253c2c.svg",
+    "static/media/index.css": "https://github.com/vidispine/transcode_theme/static/media/roboto-latin-900italic.cb5ad999.woff2"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.4f001855.js",
+    "static/css/2.d5a0fdd9.chunk.css",
+    "static/js/2.1c578156.chunk.js",
+    "static/css/main.59c233fe.chunk.css",
+    "static/js/main.499d34fb.chunk.js"
+  ]
+}
