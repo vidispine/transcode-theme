@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core';
 import { AuthProvider } from '@vidispine/vdt-react';
 import { QueryClientProvider } from 'react-query';
 import { ConfigurationProvider } from './ConfigurationContext';
-import { LOGIN_EXPIRES_SECONDS, APP_BASENAME, VIDISPINE_URL } from '../../const';
+import { LOGIN_EXPIRES_SECONDS, APP_BASENAME } from '../../const';
 import Search from '../Search';
 import { ProfileProvider, Profiles } from '../Profiles';
 import Login from '../Login';
@@ -23,7 +23,7 @@ const styles = (theme) => ({
 });
 
 function Root({ classes }) {
-  const [loginError, setLoginError] = React.useState(!VIDISPINE_URL && 'VIDISPINE_URL is unset');
+  const [loginError, setLoginError] = React.useState();
   const handleLoginError = ({ message }) => {
     setLoginError(message);
     setTimeout(() => setLoginError(), 5000);
@@ -37,7 +37,6 @@ function Root({ classes }) {
       onError={handleLoginError}
       LoginComponent={Login}
       LoginProps={{ error: loginError }}
-      serverUrl="/"
     >
       <QueryClientProvider client={queryClient}>
         <ConfigurationProvider>

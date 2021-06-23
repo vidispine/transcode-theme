@@ -26,6 +26,14 @@ const styles = (theme) => ({
   },
 });
 
+const validate = (value = '') => {
+  const helperText = 'Not a URL';
+  const expression = /https?:\/\/[-a-zA-Z0-9@:%._+~#=]{2,256}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/gi;
+  const regex = new RegExp(expression);
+  const matches = value.match(regex);
+  return matches ? null : helperText;
+};
+
 function Login({ classes, onLogin, userName, serverUrl, error }) {
   return (
     <Grid className={classes.root} container direction="row" alignItems="center">
@@ -42,8 +50,9 @@ function Login({ classes, onLogin, userName, serverUrl, error }) {
           FormProps={{
             initialValues: { userName, serverUrl },
           }}
-          UrlFieldComponent={null}
-          RememberMeFieldComponent={null}
+          FormFieldsProps={{
+            UrlFieldProps: { validate },
+          }}
         />
       </Grid>
       <Hidden smDown>
