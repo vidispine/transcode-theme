@@ -11,6 +11,7 @@ import Login from '../Login';
 import NotFound from '../NotFound';
 import Header from './components/Header';
 import queryClient from '../../queryClient';
+import { DialogProvider } from '../../components';
 
 const styles = (theme) => ({
   container: {
@@ -39,28 +40,30 @@ function Root({ classes }) {
       LoginProps={{ error: loginError }}
     >
       <QueryClientProvider client={queryClient}>
-        <ConfigurationProvider>
-          <ProfileProvider>
-            <Header />
-            <div className={classes.container}>
-              <Switch>
-                <Route exact path="/search/">
-                  <Search />
-                </Route>
-                <Route exact path="/search/*">
-                  <Search />
-                </Route>
-                <Route exact path="/profile/">
-                  <Profiles />
-                </Route>
-                <Redirect exact from="/" push to="/search/" />
-                <Route path="*">
-                  <NotFound />
-                </Route>
-              </Switch>
-            </div>
-          </ProfileProvider>
-        </ConfigurationProvider>
+        <DialogProvider>
+          <ConfigurationProvider>
+            <ProfileProvider>
+              <Header />
+              <div className={classes.container}>
+                <Switch>
+                  <Route exact path="/search/">
+                    <Search />
+                  </Route>
+                  <Route exact path="/search/*">
+                    <Search />
+                  </Route>
+                  <Route exact path="/profile/">
+                    <Profiles />
+                  </Route>
+                  <Redirect exact from="/" push to="/search/" />
+                  <Route path="*">
+                    <NotFound />
+                  </Route>
+                </Switch>
+              </div>
+            </ProfileProvider>
+          </ConfigurationProvider>
+        </DialogProvider>
       </QueryClientProvider>
     </AuthProvider>
   );
