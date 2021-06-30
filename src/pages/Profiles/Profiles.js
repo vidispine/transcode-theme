@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { shapetag as ShapetagApi } from '@vidispine/vdt-api';
 import {
   Box,
   Table,
@@ -11,10 +12,12 @@ import {
 } from '@material-ui/core';
 import { SearchInput } from '@vidispine/vdt-materialui';
 import { useProfiles, useGetProfile } from './ProfileContext';
+import { useDialog } from '../../components';
+import { useSnackbar } from '../../SnackbarContext';
+import ProfileManager from './ProfileManager';
 
 export const Profile = ({ profile: tagName }) => {
   const { data = {} } = useGetProfile({ tagName });
-  console.log(data);
   const { name, format, resolution, videoCodec, bitrate, audioCodec, framerate } = data;
   return (
     <TableRow>
@@ -33,6 +36,15 @@ export const Profile = ({ profile: tagName }) => {
 };
 
 export default () => {
+  const { showDialog } = useDialog();
+  const { setNotification } = useSnackbar();
+  const onClick = () =>
+    showDialog({ Dialog: ProfileManager })
+      .then(({ name: tagName, ...transcodePresetDocument }) =>
+        ShapetagApi.updateShapeTag({ tagName, transcodePresetDocument }),
+      )
+      .then(() => setNotification({ open: true, message: 'Success!' }))
+      .catch(() => null);
   const [first, setFirst] = useState(0);
   const { profiles = [], onSearch } = useProfiles();
 
@@ -43,8 +55,13 @@ export default () => {
     setFirst(Math.max(0, first - 20));
   };
   return (
-    <Box height={500}>
-      <SearchInput onSubmit={onSearch} />
+    <Box>
+      <Box display="grid" gridTemplateColumns="1fr auto" gridGap={8}>
+        <SearchInput onSubmit={onSearch} />
+        <Button variant="contained" color="primary" style={{ flexShrink: 0 }} onClick={onClick}>
+          Add new profile
+        </Button>
+      </Box>
       <Button type="button" onClick={prevPage} disabled={first === 0}>
         Prev
       </Button>

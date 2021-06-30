@@ -5,9 +5,9 @@ import { shapetag as ShapetagApi } from '@vidispine/vdt-api';
 const ProfileContext = React.createContext();
 
 const formatBitrate = (bits = 0) => {
-  const units = ['Kb/s', 'Mb/s'];
-  const i = parseInt(Math.floor(Math.log(bits) / Math.log(10240000)), 10);
-  return `${(bits / 1000 ** (i + 1)).toFixed(0)} ${units[i]}`;
+  const units = ['B/s', 'Kb/s', 'Mb/s'];
+  const i = Math.floor(Math.log(bits) / Math.log(1000));
+  return `${(bits / 1000 ** i).toFixed(0)} ${units[i]}`;
 };
 
 export function useListProfiles() {
@@ -43,7 +43,7 @@ const parseProfile = (data) => {
       if (height) profile.height = height;
     }
     if (framerate) {
-      const { denominator = 1, numerator = 1 } = video;
+      const { denominator = 1, numerator = 1 } = framerate;
       profile.framerate = denominator / numerator;
     }
   }
