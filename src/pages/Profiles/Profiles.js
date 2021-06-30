@@ -40,9 +40,10 @@ export default () => {
   const { setNotification } = useSnackbar();
   const onClick = () =>
     showDialog({ Dialog: ProfileManager })
-      .then(({ name: tagName, ...transcodePresetDocument }) =>
-        ShapetagApi.updateShapeTag({ tagName, transcodePresetDocument }),
-      )
+      .then((transcodePresetDocument) => {
+        const { name: tagName } = transcodePresetDocument;
+        return ShapetagApi.updateShapeTag({ tagName, transcodePresetDocument });
+      })
       .then(() => setNotification({ open: true, message: 'Success!' }))
       .catch(() => null);
   const [first, setFirst] = useState(0);
