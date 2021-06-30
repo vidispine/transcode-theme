@@ -1,29 +1,47 @@
-import { file as FileApi } from '@vidispine/vdt-api';
+import { item as ItemApi } from '@vidispine/vdt-api';
 import { useApi } from '@vidispine/vdt-react';
 
-const useSearchFiles = (storageId) => {
+const useSearchFiles = () => {
   const {
-    data: fileListType,
-    request: listFileStorage,
+    data: itemListType,
+    request: searchItems,
     isLoading,
     hasLoaded,
-  } = useApi(FileApi.listFileStorage);
-  const onSearch = (text = '', first = 0) =>
-    listFileStorage({
-      storageId,
+  } = useApi(ItemApi.searchItem);
+  const onSearch = (text = '', first = 1) => {
+    const itemSearchDocument = {
+      field: [
+        {
+          name: 'originalFilename',
+          value: [
+            {
+              value: `*${text}*`,
+            },
+          ],
+        },
+        {
+          name: '__shape_size',
+          value: [
+            {
+              value: '1',
+            },
+          ],
+        },
+      ],
+    };
+    return searchItems({
+      itemSearchDocument,
       queryParams: {
         number: 10,
-        sort: 'fileId desc',
-        path: `*${text}*`,
-        prefix: true,
-        wildcard: true,
+        content: 'shape,metadata',
         first,
       },
     });
+  };
 
   return {
     onSearch,
-    fileListType,
+    itemListType,
     isLoading,
     hasLoaded,
   };

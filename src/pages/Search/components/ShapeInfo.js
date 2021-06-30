@@ -5,6 +5,7 @@ function ShapeInfo({ shape, file }) {
   if (!shape) {
     return <p>Technical metadata extraction not completed.</p>;
   }
+  console.log('SHAPE', shape);
   const container = shape.containerComponent;
   const video = shape.videoComponent;
   const audio = shape.audioComponent;

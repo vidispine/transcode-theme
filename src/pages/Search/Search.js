@@ -5,6 +5,7 @@ import TranscodeModal from './components/TranscodeModal';
 import { useConfiguration } from '../Root/ConfigurationContext';
 
 import './styles/search.css';
+import JobList from './JobList';
 
 const styles = (theme) => ({
   root: {
@@ -24,8 +25,8 @@ function Search({ classes }) {
   const onChangeTab = (e, newTab) => newTab && setTab(newTab);
   const { sourceStorage, outputStorage, isLoading } = useConfiguration();
 
-  const openTranscodeModal = (fileId) => {
-    setSelectedFile(fileId);
+  const openTranscodeModal = (item) => {
+    setSelectedFile(item);
     setTranscodeModalOpen(true);
   };
 
@@ -71,10 +72,11 @@ function Search({ classes }) {
         }[tab]
       }
       <TranscodeModal
-        fileInfo={selectedFile}
+        item={selectedFile}
         open={transcodeModalOpen}
         handleClose={closeTranscodeModal}
       />
+      <JobList />
     </div>
   );
 }

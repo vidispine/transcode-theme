@@ -3,15 +3,15 @@ import { SearchInput, MediaCardFullWidth } from '@vidispine/vdt-materialui';
 import { Button, List, CardActions, IconButton, Checkbox, ListItem } from '@material-ui/core';
 import { SwitchVideo, CloudDownload } from '@material-ui/icons';
 import parseFileSize from 'filesize';
-import ShapeInfo from './ShapeInfo';
 import useSearchFiles from '../hooks/useSearchFiles';
-import useFileShapes from '../hooks/useFileShapes';
+import ShapeInfo from './ShapeInfo';
+import { getMetadataFieldValue } from '../../../utils/utils';
 
-const ActionsComponent = ({ selected, onSelect, file, transcodeAvailable, openTranscodeModal }) => {
+const ActionsComponent = ({ selected, onSelect, item, transcodeAvailable, openTranscodeModal }) => {
   return (
     <CardActions disableSpacing style={{ padding: 0 }}>
       {transcodeAvailable && (
-        <IconButton onClick={() => openTranscodeModal(file)}>
+        <IconButton onClick={() => openTranscodeModal(item)}>
           <SwitchVideo />
         </IconButton>
       )}
@@ -24,27 +24,20 @@ const ActionsComponent = ({ selected, onSelect, file, transcodeAvailable, openTr
 };
 
 const FileSearch = ({ classes, storageId, transcodeAvailable, openTranscodeModal }) => {
-  const { onSearch, fileListType, hasLoaded, isLoading } = useSearchFiles(storageId);
-  const { onListShapes, hasShapesLoaded, fileShapes } = useFileShapes();
-  const [first, setFirst] = useState(0);
+  const { onSearch, itemListType, hasLoaded, isLoading } = useSearchFiles(storageId);
+  const [first, setFirst] = useState(1);
   const [searchString, setSearchString] = useState('');
-  const { file: fileList = [] } = hasLoaded ? fileListType : {};
-  useEffect(() => {
-    if (hasLoaded) {
-      onListShapes(fileList.map((file) => file.id));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fileList]);
+  const { item: itemList = [] } = hasLoaded ? itemListType : {};
   useEffect(() => {
     onSearch(searchString, first);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [first]);
 
-  const renderShapeInfo = (file) => {
-    if (!hasShapesLoaded || !fileShapes[file.id] || Object.keys(fileShapes[file.id]).length === 0) {
+  const renderShapeInfo = (shape) => {
+    if (!hasLoaded) {
       return <p>Technical metadata extraction not completed.</p>;
     }
-    return <ShapeInfo file={file} shape={fileShapes[file.id]} />;
+    return <ShapeInfo file={{}} shape={shape} />;
   };
 
   return (
@@ -57,7 +50,7 @@ const FileSearch = ({ classes, storageId, transcodeAvailable, openTranscodeModal
       />
       <Button
         onClick={() => {
-          setFirst(Math.max(0, first - 10));
+          setFirst(Math.max(1, first - 10));
         }}
       >
         Previous
@@ -70,24 +63,21 @@ const FileSearch = ({ classes, storageId, transcodeAvailable, openTranscodeModal
         Next
       </Button>
       <List>
-        {fileList.map((file) => (
-          <ListItem key={file.id}>
+        {itemList.map((item) => (
+          <ListItem key={item.id}>
             <MediaCardFullWidth
               className="search-result"
-              key={file.id}
-              title={file.path}
-              subheader={parseFileSize(file.size)}
+              key={item.id}
+              title={getMetadataFieldValue(item.metadata, 'originalFilename')}
+              subheader={parseFileSize(1000000)}
               ExpandComponent={false}
-              content={renderShapeInfo(file)}
+              content={renderShapeInfo(item.shape[0])}
               ContentProps={{ component: 'div' }}
               ActionsComponent={ActionsComponent}
               ActionsProps={{
                 transcodeAvailable,
                 openTranscodeModal,
-                file: {
-                  file,
-                  fileShape: hasShapesLoaded ? fileShapes[file.id] : {},
-                },
+                item,
               }}
             />
           </ListItem>
