@@ -27,6 +27,7 @@ const theme = createMuiTheme({
     background: {
       login: 'linear-gradient(-45deg,#b0c800,#0068a9 0,#0068a9 33%,#002749 100%,#b0c800 0)',
       default: '#f2f2f2',
+      paper: '#fff',
     },
   },
   overrides: {

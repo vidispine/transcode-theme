@@ -1,19 +1,22 @@
 export default [
   {
-    title: 'General',
+    name: 'general',
+    label: '',
     fields: [
       {
         name: 'name',
         label: 'Name',
-        type: 'text',
-        placeholder: 'Name of tag...',
+        type: 'string',
+        placeholder: 'Name',
         fullWidth: true,
+        required: true,
+        autoFocus: true,
       },
       {
         name: 'description',
         label: 'Description',
-        type: 'text',
-        placeholder: 'Description of tag...',
+        type: 'string',
+        placeholder: 'Description',
         fullWidth: true,
       },
       {
@@ -21,6 +24,7 @@ export default [
         label: 'Format',
         type: 'select',
         fullWidth: true,
+        required: true,
         options: [
           {
             value: 'mp4',
@@ -46,40 +50,27 @@ export default [
       },
     ],
   },
-  // {
-  //   title: 'Container',
-  //   expandable: false,
-  //   fields: [
-  //     {
-  //       name: 'format',
-  //       label: 'Format',
-  //       type: 'select',
-  //       required: true,
-  //       fullWidth: true,
-  //       options: [
-  //         {
-  //           value: 'mp4',
-  //           label: 'MP4',
-  //         },
-  //         {
-  //           value: 'mpv',
-  //           label: 'MOV',
-  //         },
-  //       ],
-  //     },
-  //   ],
-  // },
   {
-    title: 'Video',
+    name: 'video',
+    label: 'Video',
     fields: [
       {
         name: 'video.codec',
         label: 'Codec',
         type: 'select',
+        dependency: {
+          key: 'format',
+        },
         options: [
           {
             value: 'h264',
             label: 'H264',
+            dependency: ['mp4'],
+          },
+          {
+            value: 'prores',
+            label: 'ProRes',
+            dependency: ['mov'],
           },
         ],
       },
@@ -87,22 +78,59 @@ export default [
         name: 'video.preset',
         label: 'Preset',
         type: 'select',
+        dependency: {
+          key: 'video.codec',
+        },
         options: [
           {
             value: 'baseline',
             label: 'Baseline',
+            dependency: ['h264'],
           },
           {
             value: 'ipod',
             label: 'Ipod',
+            dependency: ['h264'],
           },
           {
             value: 'main',
             label: 'Main',
+            dependency: ['h264'],
           },
           {
             value: 'high',
             label: 'High',
+            dependency: ['h264'],
+          },
+          {
+            value: 'proreshq',
+            label: 'ProRes HQ',
+            dependency: ['prores'],
+          },
+          {
+            value: 'prores422',
+            label: 'ProRes 422',
+            dependency: ['prores'],
+          },
+          {
+            value: 'proreslt',
+            label: 'ProRes LT',
+            dependency: ['prores'],
+          },
+          {
+            value: 'proresproxy',
+            label: 'ProRes Proxy',
+            dependency: ['prores'],
+          },
+          {
+            value: 'prores4444',
+            label: 'ProRes 4444',
+            dependency: ['prores'],
+          },
+          {
+            value: 'prores4444xq',
+            label: 'ProRes 4444 XQ',
+            dependency: ['prores'],
           },
         ],
       },
@@ -218,35 +246,58 @@ export default [
         fullWidth: true,
         options: [
           {
-            value: '640x360',
-            label: '640 x 360',
-          },
-          {
-            value: '960x540',
-            label: '960 x 540',
-          },
-          {
-            value: '1280x720',
-            label: '1280 x 720',
-          },
-          {
-            value: '1920x1080',
-            label: '1920 x 1080',
+            value: '4096x2160',
+            label: '4096 x 2160',
           },
           {
             value: '2048x1080',
             label: '2048 x 1080',
           },
           {
-            value: '4096x2160',
-            label: '4096 x 2160',
+            value: '1920x1080',
+            label: '1920 x 1080',
+          },
+          {
+            value: '1280x720',
+            label: '1280 x 720',
+          },
+          {
+            value: '960x540',
+            label: '960 x 540',
+          },
+          {
+            value: '640x360',
+            label: '640 x 360',
+          },
+          {
+            value: 0,
+            label: 'Custom resolution',
           },
         ],
+      },
+      {
+        name: 'video.width',
+        label: 'Width',
+        type: 'number',
+        dependency: {
+          key: 'video.resolution',
+          value: 0,
+        },
+      },
+      {
+        name: 'video.height',
+        label: 'Height',
+        type: 'number',
+        dependency: {
+          key: 'video.resolution',
+          value: 0,
+        },
       },
     ],
   },
   {
-    title: 'Audio',
+    name: 'audio',
+    label: 'Audio',
     fields: [
       {
         name: 'audio.codec',
@@ -267,10 +318,14 @@ export default [
         name: 'audio.preset',
         label: 'Preset',
         type: 'select',
+        dependency: {
+          key: 'audio.codec',
+        },
         options: [
           {
             value: 'AAC_LC',
             label: 'Low complexity',
+            dependency: ['nablet_aac'],
           },
         ],
       },

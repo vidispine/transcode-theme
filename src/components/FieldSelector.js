@@ -1,14 +1,24 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { withStyles } from '@material-ui/core';
 import { ArrowDropDown, Lock } from '@material-ui/icons';
-import { TextField, SelectField, CheckboxField } from '@vidispine/vdt-materialui';
+import {
+  TextField as VdtTextField,
+  SelectField as VdtSelectField,
+  CheckboxField as VdtCheckboxField,
+} from '@vidispine/vdt-materialui';
 import { Field } from 'react-final-form';
 
-const MatchSource = ({ onChange, match: checked }) => (
-  <CheckboxField input={{ onChange, checked }} color="primary" size="small" label="Match source" />
+export const MatchSource = ({ onChange, match: checked }) => (
+  <VdtCheckboxField
+    input={{ onChange, checked }}
+    color="primary"
+    size="small"
+    label="Match source"
+  />
 );
 
-const styles = ({ spacing, typography }) => ({
+const styles = ({ spacing, typography, palette }) => ({
   text: {
     marginTop: 0,
     '& > div': {
@@ -28,6 +38,7 @@ const styles = ({ spacing, typography }) => ({
         },
       },
       '& input': {
+        backgroundColor: palette.background.paper,
         padding: spacing(2),
       },
     },
@@ -51,6 +62,7 @@ const styles = ({ spacing, typography }) => ({
       marginBottom: spacing(1),
     },
     '& .MuiSelect-root': {
+      backgroundColor: palette.background.paper,
       padding: spacing(2, 4, 2, 2),
       '&.Mui-disabled > span::after': {
         content: '"Auto"',
@@ -69,71 +81,123 @@ const styles = ({ spacing, typography }) => ({
   },
 });
 
-const FieldSelector = ({ type, name, label, options, classes, match, placeholder }) => {
+const SelectField = ({ name, label, match, options, required, dependency, classes }) => {
+  const ref = React.createRef();
   const [checked, setChecked] = React.useState(match);
+  // eslint-disable-next-line
+  React.useEffect(() => ref.current(), [dependency]);
+  const opts = React.useMemo(() => {
+    if (!dependency) return options;
+    const filter = options.filter(({ dependency: key }) => !key || key.includes(dependency));
+    if (!filter.length) return [{ label: 'No options', value: null, disabled: true }];
+    return filter;
+  }, [options, dependency]);
+  return (
+    <>
+      <Field
+        id={name}
+        name={name}
+        type="select"
+        render={({ input, meta }) => {
+          if (!ref.current) ref.current = input.onChange;
+          return (
+            <VdtSelectField
+              meta={meta}
+              type="select"
+              input={input}
+              label={label}
+              onBlur={input.onBlur}
+              onFocus={input.onFocus}
+              options={opts}
+              variant="outlined"
+              classes={{ root: classes.select }}
+              required={required}
+              disabled={!!checked}
+              IconComponent={checked ? Lock : ArrowDropDown}
+              InputLabelProps={{ required }}
+              FormHelperTextProps={
+                match !== undefined && {
+                  checked,
+                  onChange: ({ target }) => {
+                    if (target.checked) input.onChange();
+                    setChecked(target.checked);
+                  },
+                  component: MatchSource,
+                }
+              }
+            />
+          );
+        }}
+      />
+    </>
+  );
+};
+
+const CheckboxField = ({ name, label, required, classes }) => {
   return (
     <Field
       id={name}
       name={name}
-      type={type}
-      render={({ input, meta }) => {
-        const { onBlur, onFocus } = input;
-        switch (type) {
-          case 'select':
-            return (
-              <SelectField
-                input={input}
-                meta={meta}
-                onBlur={onBlur}
-                onFocus={onFocus}
-                type={type}
-                label={label}
-                options={options}
-                variant="outlined"
-                disabled={!!checked}
-                classes={{ root: classes.select }}
-                IconComponent={checked ? Lock : ArrowDropDown}
-                FormHelperTextProps={
-                  match !== undefined && {
-                    checked,
-                    onChange: ({ target }) => {
-                      if (target.checked) input.onChange();
-                      setChecked(target.checked);
-                    },
-                    component: MatchSource,
-                  }
-                }
-              />
-            );
-          case 'checkbox':
-            return (
-              <CheckboxField
-                input={input}
-                type={type}
-                meta={meta}
-                color="primary"
-                label={label}
-                classes={{ root: classes.checkbox }}
-              />
-            );
-          case 'text':
-          default:
-            return (
-              <TextField
-                input={input}
-                meta={meta}
-                type={type}
-                label={label}
-                classes={{ root: classes.text }}
-                variant="outlined"
-                InputLabelProps={{ shrink: false, 'data-shrink': true }}
-                helperText={null}
-                placeholder={placeholder}
-              />
-            );
-        }
-      }}
+      label={label}
+      type="checkbox"
+      color="primary"
+      classes={{ root: classes.checkbox }}
+      required={required}
+      component={VdtCheckboxField}
     />
+  );
+};
+
+const TextField = ({ name, label, required, placeholder, classes }) => {
+  return (
+    <Field
+      id={name}
+      name={name}
+      type="text"
+      label={label}
+      variant="outlined"
+      classes={{ root: classes.text }}
+      required={required}
+      component={VdtTextField}
+      helperText={null}
+      placeholder={placeholder}
+      InputLabelProps={{ shrink: false, 'data-shrink': true }}
+    />
+  );
+};
+
+const NumberField = ({ name, label, required, placeholder, classes }) => {
+  return (
+    <Field
+      id={name}
+      name={name}
+      type="number"
+      label={label}
+      variant="outlined"
+      classes={{ root: classes.text }}
+      required={required}
+      component={VdtTextField}
+      helperText={null}
+      placeholder={placeholder}
+      InputLabelProps={{ shrink: false, 'data-shrink': true }}
+    />
+  );
+};
+
+const FieldSelector = ({ type, dependency, ...params }) => {
+  let FieldType = TextField;
+  if (type === 'number') FieldType = NumberField;
+  if (type === 'select') FieldType = SelectField;
+  if (type === 'checkbox') FieldType = CheckboxField;
+  if (!dependency) return <FieldType {...params} />;
+  const { key, value } = dependency;
+  return (
+    <Field name={key} subscription={{ value: true }}>
+      {({ input: { value: val } }) => {
+        if (value !== undefined && val !== value) return null;
+        return <FieldType {...params} dependency={val} />;
+      }}
+    </Field>
   );
 };
 
