@@ -85,6 +85,7 @@ export default [
           {
             value: 'baseline',
             label: 'Baseline',
+            default: true,
             dependency: ['h264'],
           },
           {
@@ -139,6 +140,9 @@ export default [
         label: 'Framerate',
         type: 'select',
         match: false,
+        dependency: {
+          key: 'video.preset',
+        },
         options: [
           {
             value: 24,
@@ -167,74 +171,94 @@ export default [
         label: 'Bitrate',
         type: 'select',
         match: false,
+        dependency: {
+          key: 'video.preset',
+        },
         options: [
           {
             value: 1000000,
             label: '1 Mbit/s',
+            dependency: ['baseline', 'ipod', 'main', 'high'],
           },
           {
             value: 2000000,
             label: '2 Mbit/s',
+            dependency: ['baseline', 'ipod', 'main', 'high'],
           },
           {
             value: 3000000,
             label: '3 Mbit/s',
+            dependency: ['baseline', 'ipod', 'main', 'high'],
           },
           {
             value: 4000000,
             label: '4 Mbit/s',
+            dependency: ['baseline', 'ipod', 'main', 'high'],
           },
           {
             value: 5000000,
             label: '5 Mbit/s',
+            dependency: ['baseline', 'ipod', 'main', 'high'],
           },
           {
             value: 6000000,
             label: '6 Mbit/s',
+            dependency: ['baseline', 'ipod', 'main', 'high'],
           },
           {
             value: 7000000,
             label: '7 Mbit/s',
+            dependency: ['baseline', 'ipod', 'main', 'high'],
           },
           {
             value: 8000000,
             label: '8 Mbit/s',
+            dependency: ['baseline', 'ipod', 'main', 'high'],
           },
           {
             value: 9000000,
             label: '9 Mbit/s',
+            dependency: ['baseline', 'ipod', 'main', 'high'],
           },
           {
             value: 10000000,
             label: '10 Mbit/s',
+            dependency: ['baseline', 'ipod', 'main', 'high'],
           },
           {
             value: 11000000,
             label: '11 Mbit/s',
+            dependency: ['baseline', 'ipod', 'main', 'high'],
           },
           {
             value: 12000000,
             label: '12 Mbit/s',
+            dependency: ['baseline', 'ipod', 'main', 'high'],
           },
           {
             value: 15000000,
             label: '15 Mbit/s',
+            dependency: ['baseline', 'ipod', 'main', 'high'],
           },
           {
             value: 20000000,
             label: '20 Mbit/s',
+            dependency: ['baseline', 'ipod', 'main', 'high'],
           },
           {
             value: 25000000,
             label: '25 Mbit/s',
+            dependency: ['baseline', 'ipod', 'main', 'high'],
           },
           {
             value: 30000000,
             label: '30 Mbit/s',
+            dependency: ['baseline', 'ipod', 'main', 'high'],
           },
           {
             value: 50000000,
             label: '50 Mbit/s',
+            dependency: ['baseline', 'ipod', 'main', 'high'],
           },
         ],
       },
@@ -244,30 +268,83 @@ export default [
         type: 'select',
         match: false,
         fullWidth: true,
+        dependency: {
+          key: 'video.preset',
+        },
         options: [
           {
             value: '4096x2160',
             label: '4096 x 2160',
+            dependency: [
+              'baseline',
+              'ipod',
+              'main',
+              'high',
+              'proreshq',
+              'prores422',
+              'proreslt',
+              'proresproxy',
+              'prores4444',
+              'prores4444xq',
+            ],
           },
           {
             value: '2048x1080',
             label: '2048 x 1080',
+            dependency: [
+              'baseline',
+              'ipod',
+              'main',
+              'high',
+              'proreshq',
+              'prores422',
+              'proreslt',
+              'proresproxy',
+              'prores4444',
+              'prores4444xq',
+            ],
           },
           {
             value: '1920x1080',
             label: '1920 x 1080',
+            dependency: [
+              'baseline',
+              'ipod',
+              'main',
+              'high',
+              'proreshq',
+              'prores422',
+              'proreslt',
+              'proresproxy',
+              'prores4444',
+              'prores4444xq',
+            ],
           },
           {
             value: '1280x720',
             label: '1280 x 720',
+            dependency: [
+              'baseline',
+              'ipod',
+              'main',
+              'high',
+              'proreshq',
+              'prores422',
+              'proreslt',
+              'proresproxy',
+              'prores4444',
+              'prores4444xq',
+            ],
           },
           {
             value: '960x540',
             label: '960 x 540',
+            dependency: ['baseline', 'ipod', 'main', 'high'],
           },
           {
             value: '640x360',
             label: '640 x 360',
+            dependency: ['baseline', 'ipod', 'main', 'high'],
           },
           {
             value: 0,

@@ -64,9 +64,6 @@ const styles = ({ spacing, typography, palette }) => ({
     '& .MuiSelect-root': {
       backgroundColor: palette.background.paper,
       padding: spacing(2, 4, 2, 2),
-      '&.Mui-disabled > span::after': {
-        content: '"Auto"',
-      },
     },
     '& .VdtCheckboxField-root': {
       marginTop: 0,
@@ -82,16 +79,28 @@ const styles = ({ spacing, typography, palette }) => ({
 });
 
 const SelectField = ({ name, label, match, options, required, dependency, classes }) => {
+  const autoValue = { label: 'Auto', value: 'AUTO', style: { display: 'none' } };
+  const emptyValue = { label: 'No options', disabled: true, value: 0 };
   const ref = React.createRef();
+  const [opts, setOptions] = React.useState([...options, autoValue]);
   const [checked, setChecked] = React.useState(match);
-  // eslint-disable-next-line
-  React.useEffect(() => ref.current(), [dependency]);
-  const opts = React.useMemo(() => {
-    if (!dependency) return options;
-    const filter = options.filter(({ dependency: key }) => !key || key.includes(dependency));
-    if (!filter.length) return [{ label: 'No options', value: null, disabled: true }];
-    return filter;
-  }, [options, dependency]);
+  React.useEffect(() => {
+    if (dependency === undefined) return;
+    const { value, onChange } = ref.current;
+    const filter = options.filter(({ dependency: key }) => {
+      if (!dependency || !key) return true;
+      return key.includes(dependency);
+    });
+    if (filter.length) {
+      const active = filter.find(({ value: val }) => val === value);
+      if (!active && !checked && dependency) onChange(filter[0].value);
+    } else {
+      if (!checked && dependency) onChange();
+      filter.push(emptyValue);
+    }
+    setOptions(filter.concat([autoValue]));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dependency, options]);
   return (
     <>
       <Field
@@ -99,7 +108,7 @@ const SelectField = ({ name, label, match, options, required, dependency, classe
         name={name}
         type="select"
         render={({ input, meta }) => {
-          if (!ref.current) ref.current = input.onChange;
+          if (!ref.current) ref.current = input;
           return (
             <VdtSelectField
               meta={meta}
@@ -119,7 +128,9 @@ const SelectField = ({ name, label, match, options, required, dependency, classe
                 match !== undefined && {
                   checked,
                   onChange: ({ target }) => {
-                    if (target.checked) input.onChange();
+                    if (target.checked) input.onChange('AUTO');
+                    else if (opts.length > 2) input.onChange(opts[0].value);
+                    else input.onChange();
                     setChecked(target.checked);
                   },
                   component: MatchSource,

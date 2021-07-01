@@ -33,11 +33,11 @@ const parseProfile = (data) => {
   if (format) profile.format = format;
 
   if (video) {
-    const { codec, bitrate, scaling, framerate } = video;
+    const { codec, bitrate, scaling, resolution, framerate } = video;
     if (codec) profile.videoCodec = codec;
     if (bitrate) profile.bitrate = formatBitrate(bitrate);
-    if (scaling) {
-      const { width, height } = scaling;
+    if (scaling || resolution) {
+      const { width, height } = scaling || resolution;
       if (width && height) profile.resolution = `${width} x ${height}`;
       if (width) profile.width = width;
       if (height) profile.height = height;
