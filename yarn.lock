@@ -2133,29 +2133,29 @@
   resolved "https://registry.npmjs.org/@vidispine/prettier-config/-/prettier-config-0.14.0-pre.3.tgz"
   integrity sha512-soRW34xT6fMgZYpeeeZWzqoHZkOlRdLjazqbCpNs6aZapRwd3auveas2lfVZrx/D4OtSM7wc0nQjZsdCJ70OiQ==
 
-"@vidispine/vdt-api@^0.14.0-pre.1", "@vidispine/vdt-api@^0.14.0-pre.3":
-  version "0.14.0-pre.3"
-  resolved "https://registry.npmjs.org/@vidispine/vdt-api/-/vdt-api-0.14.0-pre.3.tgz"
-  integrity sha512-RgnJLQC0y8NezgrpTflUzkUmz9OFvx1uboDRD5fxMSKIArDpSatVAXgthi6qVM9rZJBCsXxRHViet5HqGUHVFg==
+"@vidispine/vdt-api@^0.14.0":
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/@vidispine/vdt-api/-/vdt-api-0.14.0.tgz#432fa68fc38ef2343f84cb5b754c1f2e68c79b50"
+  integrity sha512-k/HvjcEaMWVaV6RimXcNZ2+IAl8Q7Dz/kwtTHmQXrpHnQwYdY6MPcdnaIc17ptW9rc4YBXqnBYCxgIjZ0hPvsw==
   dependencies:
     axios "~0.21.x"
 
-"@vidispine/vdt-js@^0.14.0-pre.3":
-  version "0.14.0-pre.3"
-  resolved "https://registry.npmjs.org/@vidispine/vdt-js/-/vdt-js-0.14.0-pre.3.tgz"
-  integrity sha512-HDvbQUTESR6z+8OQdpOIB2FVd+S5uxmAPaelEyD5vSFK6msF0XmJjrEAoBSQKocEfARFmmUtwv99jf46YEragg==
+"@vidispine/vdt-js@^0.14.0":
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/@vidispine/vdt-js/-/vdt-js-0.14.0.tgz#99f295bf6c685f6a4388d58159536fd348a40880"
+  integrity sha512-alg4NS4zH+bsS1seHhTFq2A2YbZszwmzdRedVQbMoYiFrN0vibtq0za0lX2yaGXZcFKg4JqB4evp/LaYbWaWkA==
   dependencies:
     filesize "^6.1.0"
 
-"@vidispine/vdt-materialui@^0.14.0-pre.1":
-  version "0.14.0-pre.3"
-  resolved "https://registry.npmjs.org/@vidispine/vdt-materialui/-/vdt-materialui-0.14.0-pre.3.tgz"
-  integrity sha512-92Rh68xWayPTn9o3Ef70ipXgSIkE2IZsn5JE5urF2X2WyVaNUf2qBlq+bR3gUbSllRLX9U5W3jLAlFMY4rjDuA==
+"@vidispine/vdt-materialui@^0.14.0":
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/@vidispine/vdt-materialui/-/vdt-materialui-0.14.0.tgz#1042b9cc3e0848ee4b4660860c50c486d8e1983e"
+  integrity sha512-nVw7NCSm2U/L/cj7d2zv0V9S2/rrSF7EIvxG1D04IEIJizb8ocMna1anici8HlmI66mwuWw8cpgcsJ5ybAF1GA==
   dependencies:
-    "@vidispine/vdt-api" "^0.14.0-pre.3"
-    "@vidispine/vdt-js" "^0.14.0-pre.3"
-    "@vidispine/vdt-react" "^0.14.0-pre.3"
-    "@vidispine/vdt-videojs-react" "^0.14.0-pre.3"
+    "@vidispine/vdt-api" "^0.14.0"
+    "@vidispine/vdt-js" "^0.14.0"
+    "@vidispine/vdt-react" "^0.14.0"
+    "@vidispine/vdt-videojs-react" "^0.14.0"
     clsx "^1.1.1"
     core-js "^3.8.3"
     filesize "^6.1.0"
@@ -2175,28 +2175,28 @@
     react-final-form "^6.5.2"
     typeface-roboto "^0.0.75"
 
-"@vidispine/vdt-react@^0.14.0-pre.1", "@vidispine/vdt-react@^0.14.0-pre.3":
-  version "0.14.0-pre.3"
-  resolved "https://registry.npmjs.org/@vidispine/vdt-react/-/vdt-react-0.14.0-pre.3.tgz"
-  integrity sha512-14yN+u44pQ7GerJtYgapTPAuG99ua9aHPnZanhWrpxCqt2HueHzsZC04QTTE5f5J8RvsxyvTZ4JB+CXU+PHz0w==
+"@vidispine/vdt-react@^0.14.0":
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/@vidispine/vdt-react/-/vdt-react-0.14.0.tgz#61edfe2a8f6d5c462d63d20a201ed92edaa07982"
+  integrity sha512-iY+9jYVm/RLn6cqLZEIzB6CDhzeYc0tAIeESDsqAGv+AnlMG1gnIfOWvu8QrlmYhrFph63XRHVgYzffNmehaTg==
   dependencies:
-    "@vidispine/vdt-api" "^0.14.0-pre.3"
-    "@vidispine/vdt-js" "^0.14.0-pre.3"
+    "@vidispine/vdt-api" "^0.14.0"
+    "@vidispine/vdt-js" "^0.14.0"
     lodash.debounce "^4.0.8"
     react-cookie "^4.0.3"
     use-deep-compare-effect "^1.3.1"
 
-"@vidispine/vdt-videojs-react@^0.14.0-pre.3":
-  version "0.14.0-pre.3"
-  resolved "https://registry.npmjs.org/@vidispine/vdt-videojs-react/-/vdt-videojs-react-0.14.0-pre.3.tgz"
-  integrity sha512-r+2IaiaO66xaCJGLrLVpIhz6ZWiS7c0lm6SP2uU39cJmP0uMIX+PE/bAIBSiJjnUb/6GT7zUqHaLIiRdB6aSHg==
+"@vidispine/vdt-videojs-react@^0.14.0":
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/@vidispine/vdt-videojs-react/-/vdt-videojs-react-0.14.0.tgz#4037060bbcb67e0e7cfdb10686ff62d7d036456a"
+  integrity sha512-4+gpGj35pwFYtuFChGqWPK+c8QFWqW2RaeG7BSD2VdMd0gaDgpGZPiG0cpyME+90nE7sxLQUvNHtACVN/D/Yxg==
   dependencies:
-    "@vidispine/vdt-videojs" "^0.14.0-pre.3"
+    "@vidispine/vdt-videojs" "^0.14.0"
 
-"@vidispine/vdt-videojs@^0.14.0-pre.3":
-  version "0.14.0-pre.3"
-  resolved "https://registry.npmjs.org/@vidispine/vdt-videojs/-/vdt-videojs-0.14.0-pre.3.tgz"
-  integrity sha512-s7SdwZv42vg0qINZHZhXN5pwlMbspLZDORafMCC0BXQYCC1FvIUF2+Oh3jY8RbFUZ0e4veHBnjKKTNIrAnF0Fw==
+"@vidispine/vdt-videojs@^0.14.0":
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/@vidispine/vdt-videojs/-/vdt-videojs-0.14.0.tgz#af3e19c72db81bab89a651f2163662bd05ddcb70"
+  integrity sha512-4JCSx+S7fqW2Vx4BDJXUupjnYZatdzcsi2zqvGrkEXqWo5g+7KKHGVvUo6dpZC/rCMa/pvO6liLe3CeEPIi+ow==
   dependencies:
     mousetrap "^1.6.3"
     video.js "^7.6.6"
@@ -7552,7 +7552,7 @@ lodash.debounce@^4.0.8:
 
 lodash.get@^4.4.2:
   version "4.4.2"
-  resolved "https://registry.npmjs.org/lodash.get/-/lodash.get-4.4.2.tgz"
+  resolved "https://registry.yarnpkg.com/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
   integrity sha1-LRd/ZS+jHpObRDjVNBSZ36OCXpk=
 
 lodash.memoize@^4.1.2:
@@ -7956,6 +7956,11 @@ moment@2.28.0:
   version "2.28.0"
   resolved "https://registry.npmjs.org/moment/-/moment-2.28.0.tgz"
   integrity sha512-Z5KOjYmnHyd/ukynmFd/WwyXHd7L4J9vTI/nn5Ap9AVUgaAE15VvQ9MOGmJJygEUklupqIrFnor/tjTwRU+tQw==
+
+moment@^2.29.1:
+  version "2.29.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
+  integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
 
 mousetrap@^1.6.3:
   version "1.6.5"
@@ -9575,7 +9580,7 @@ prompts@2.4.0, prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.5.7, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.7.2.tgz"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -9990,6 +9995,14 @@ react-scripts@4.0.3:
     workbox-webpack-plugin "5.1.4"
   optionalDependencies:
     fsevents "^2.1.3"
+
+react-split@^2.0.11:
+  version "2.0.11"
+  resolved "https://registry.yarnpkg.com/react-split/-/react-split-2.0.11.tgz#bb032c9884313df2f579ce847bb9eaad11b312ab"
+  integrity sha512-FejTq/gIzEixWPwGSL+iAPpNCrIcr2NHb90zPsczrwiTYCOhqa15ARW/YGO5/dxmZCsrVvBExPNFVLo9PJITpg==
+  dependencies:
+    prop-types "^15.5.7"
+    split.js "^1.6.0"
 
 react-transition-group@^4.4.0:
   version "4.4.2"
@@ -10950,6 +10963,11 @@ split-string@^3.0.1, split-string@^3.0.2:
   integrity sha512-NzNVhJDYpwceVVii8/Hu6DKfD2G+NrQHlS/V/qgv763EYudVwEcMQNxd2lh+0VrUByXN/oJkl5grOhYWvQUYiw==
   dependencies:
     extend-shallow "^3.0.0"
+
+split.js@^1.6.0:
+  version "1.6.4"
+  resolved "https://registry.yarnpkg.com/split.js/-/split.js-1.6.4.tgz#13d47cba53382adef230a53294ce5dacb2a2f2e1"
+  integrity sha512-kYmQZprRJrF1IOjg/E+gdBEsKFv5kbgUE6RJVJZvrIzTOK/IHzKSqIeiJnWs7IP5D9TnpTQ2CbanuDuIWcyDUQ==
 
 sprintf-js@~1.0.2:
   version "1.0.3"

@@ -1,11 +1,14 @@
 import React from 'react';
-import { withStyles, Card, CardContent, Tab, Tabs } from '@material-ui/core';
-import FileSearch from './components/FileSearch';
+import { withStyles, Tab, Tabs } from '@material-ui/core';
+// import FileSearch from './components/FileSearch';
 import TranscodeModal from './components/TranscodeModal';
-import { useConfiguration } from '../Root/ConfigurationContext';
 
 import './styles/search.css';
 import JobList from './JobList';
+import SourceList from './SourceList';
+import OutputList from './OutputList';
+import { useSplitters } from '../../context';
+import { Split } from '../../components';
 
 const styles = (theme) => ({
   root: {
@@ -19,65 +22,49 @@ const styles = (theme) => ({
 });
 
 function Search({ classes }) {
+  const { splitters, setSplitter } = useSplitters();
   const [tab, setTab] = React.useState('source');
-  const [selectedFile, setSelectedFile] = React.useState();
+  const [selectedFile] = React.useState();
   const [transcodeModalOpen, setTranscodeModalOpen] = React.useState(false);
   const onChangeTab = (e, newTab) => newTab && setTab(newTab);
-  const { sourceStorage, outputStorage, isLoading } = useConfiguration();
 
-  const openTranscodeModal = (item) => {
-    setSelectedFile(item);
-    setTranscodeModalOpen(true);
-  };
+  // const openTranscodeModal = (item) => {
+  //   setSelectedFile(item);
+  //   setTranscodeModalOpen(true);
+  // };
 
   const closeTranscodeModal = () => {
     setTranscodeModalOpen(false);
   };
 
   return (
-    <div className={classes.root}>
-      <Tabs value={tab} onChange={onChangeTab}>
-        <Tab value="source" label="Source" />
-        <Tab value="output" label="Output" />
-      </Tabs>
-      {
-        {
-          source: (
-            <Card variant="outlined" key="source">
-              {!isLoading && (
-                <CardContent>
-                  <FileSearch
-                    classes={classes}
-                    storageId={sourceStorage}
-                    openTranscodeModal={openTranscodeModal}
-                    transcodeAvailable
-                  />
-                </CardContent>
-              )}
-            </Card>
-          ),
-          output: (
-            <Card variant="outlined" key="output">
-              {!isLoading && (
-                <CardContent>
-                  <FileSearch
-                    classes={classes}
-                    storageId={outputStorage}
-                    transcodeAvailable={false}
-                  />
-                </CardContent>
-              )}
-            </Card>
-          ),
-        }[tab]
-      }
+    <>
+      <Split
+        style={{ flexDirection: 'row' }}
+        direction="horizontal"
+        minSize={375}
+        sizes={splitters.vertical}
+        gutterSize={20}
+        onDragEnd={(sizes) => setSplitter('horizontal', sizes)}
+      >
+        <div className={classes.tabs}>
+          <Tabs value={tab} onChange={onChangeTab}>
+            <Tab value="source" label="Source" />
+            <Tab value="output" label="Output" />
+          </Tabs>
+          {tab === 'source' && <SourceList hidden={tab !== 'source'} />}
+          {tab === 'output' && <OutputList hidden={tab !== 'source'} />}
+        </div>
+        <div>
+          <JobList />
+        </div>
+      </Split>
       <TranscodeModal
         item={selectedFile}
         open={transcodeModalOpen}
         handleClose={closeTranscodeModal}
       />
-      <JobList />
-    </div>
+    </>
   );
 }
 
