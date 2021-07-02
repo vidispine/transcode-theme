@@ -13,13 +13,17 @@ import Header from './components/Header';
 import queryClient from '../../queryClient';
 import { DialogProvider } from '../../components';
 
-const styles = (theme) => ({
+const styles = ({ mixins, spacing }) => ({
   container: {
     height: '100vh',
     overflow: 'auto',
-    paddingTop: theme.mixins.toolbar.minHeight,
-    marginRight: theme.spacing(1),
-    marginLeft: theme.spacing(1),
+    // paddingTop: () => {
+    //   console.log(mixins);
+    //   return mixins.toolbar.minHeight;
+    // },
+    paddingTop: mixins.toolbar.minHeight + spacing(2),
+    marginRight: spacing(4),
+    marginLeft: spacing(4),
   },
 });
 
@@ -40,9 +44,9 @@ function Root({ classes }) {
       LoginProps={{ error: loginError }}
     >
       <QueryClientProvider client={queryClient}>
-        <DialogProvider>
-          <ConfigurationProvider>
-            <ProfileProvider>
+        <ProfileProvider>
+          <DialogProvider>
+            <ConfigurationProvider>
               <Header />
               <div className={classes.container}>
                 <Switch>
@@ -61,9 +65,9 @@ function Root({ classes }) {
                   </Route>
                 </Switch>
               </div>
-            </ProfileProvider>
-          </ConfigurationProvider>
-        </DialogProvider>
+            </ConfigurationProvider>
+          </DialogProvider>
+        </ProfileProvider>
       </QueryClientProvider>
     </AuthProvider>
   );

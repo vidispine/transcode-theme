@@ -6,16 +6,20 @@ import { useAuthContext } from '@vidispine/vdt-react';
 
 import { APP_TITLE, HEADER_LOGO } from '../../../const';
 
-const styles = ({ spacing }) => ({
+const styles = ({ spacing, palette }) => ({
+  root: {
+    backgroundColor: palette.background.paper,
+  },
   logo: {
     height: spacing(3),
     width: spacing(3),
   },
 });
 
-const Link = withStyles(({ typography, palette, spacing }) => ({
+const Link = withStyles(({ typography, palette, spacing, mixins }) => ({
   root: {
     ...typography.subtitle1,
+    ...mixins.toolbar,
     textTransform: 'none',
     opacity: 0.8,
     '&::after': {
@@ -44,8 +48,8 @@ const Link = withStyles(({ typography, palette, spacing }) => ({
 function Header({ classes }) {
   const { userName, onLogout } = useAuthContext();
   return (
-    <AppBar elevation={0} color="default">
-      <Box display="flex" px={2} height={52} alignItems="center" justifyContent="space-between">
+    <AppBar className={classes.root} elevation={0} color="default">
+      <Box display="flex" px={2} height={1} alignItems="center" justifyContent="space-between">
         <Avatar className={classes.logo} variant="square" src={HEADER_LOGO} alt={APP_TITLE} />
         <Box>
           <Link variant="text" component={NavLink} to="/search" color="inherit" disableRipple>
@@ -61,7 +65,7 @@ function Header({ classes }) {
             About
           </Link>
         </Box>
-        <UserAvatarButton className={classes.avatar} userName={userName} onLogout={onLogout} />
+        <UserAvatarButton userName={userName} onLogout={onLogout} />
       </Box>
     </AppBar>
   );

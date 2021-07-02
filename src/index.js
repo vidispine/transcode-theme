@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { MuiThemeProvider, CssBaseline } from '@material-ui/core';
 
-import { SnackbarProvider } from './SnackbarContext';
+import { SnackbarProvider } from 'notistack';
 import LightTheme from './themes/LightTheme';
 import Root from './pages/Root';
 import { ErrorBoundary } from './components';

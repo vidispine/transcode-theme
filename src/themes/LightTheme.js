@@ -39,6 +39,34 @@ const theme = createMuiTheme({
         width: 32,
       },
     },
+    MuiTabs: {
+      root: {
+        marginBottom: 16,
+      },
+      indicator: {
+        backgroundColor: '#7B61FF',
+        height: '100%',
+        borderRadius: 4,
+        zIndex: -1,
+      },
+      flexContainer: {
+        alignItems: 'center',
+      },
+    },
+    MuiTab: {
+      root: {
+        color: 'inherit',
+        transition: 'all 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+        '&$selected': {
+          color: '#fff',
+        },
+      },
+    },
+  },
+  mixins: {
+    toolbar: {
+      minHeight: 56,
+    },
   },
   props: {
     VdtUserAvatarButton: {

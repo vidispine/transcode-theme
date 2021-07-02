@@ -9,7 +9,7 @@ const styles = (theme) => ({
     },
     display: 'flex',
     width: '100%',
-    height: '100%',
+    // height: '100%',
     '& .gutter': {
       backgroundColor: theme.palette.background.secondary,
       backgroundRepeat: 'no-repeat',

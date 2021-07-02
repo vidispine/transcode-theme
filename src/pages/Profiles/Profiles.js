@@ -1,20 +1,12 @@
 import React, { useState } from 'react';
+import { useSnackbar } from 'notistack';
 import { shapetag as ShapetagApi } from '@vidispine/vdt-api';
-import {
-  Box,
-  Table,
-  TableRow,
-  TableBody,
-  TableHead,
-  TableCell,
-  Checkbox,
-  Button,
-} from '@material-ui/core';
+import { Box, TableRow, TableCell, Checkbox, Button } from '@material-ui/core';
 import { SearchInput } from '@vidispine/vdt-materialui';
 import { useProfiles, useGetProfile } from './ProfileContext';
 import { useDialog } from '../../components';
-import { useSnackbar } from '../../SnackbarContext';
 import ProfileManager from './ProfileManager';
+import ProfileCard from '../Search/ProfileCard';
 
 export const Profile = ({ profile: tagName }) => {
   const { data = {} } = useGetProfile({ tagName });
@@ -37,15 +29,15 @@ export const Profile = ({ profile: tagName }) => {
 
 export default () => {
   const { showDialog } = useDialog();
-  const { setNotification } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
   const onClick = () =>
     showDialog({ Dialog: ProfileManager })
       .then((transcodePresetDocument) => {
         const { name: tagName } = transcodePresetDocument;
         return ShapetagApi.updateShapeTag({ tagName, transcodePresetDocument });
       })
-      .then(() => setNotification({ open: true, message: 'Success!' }))
-      .catch(() => null);
+      .then(() => enqueueSnackbar('Success!', { variant: 'success' }))
+      .catch(({ message }) => message && enqueueSnackbar(message, { variant: 'error' }));
   const [first, setFirst] = useState(0);
   const { profiles = [], onSearch } = useProfiles();
 
@@ -69,7 +61,10 @@ export default () => {
       <Button type="button" onClick={nextPage} disabled={first + 20 > profiles.length}>
         Next
       </Button>
-      <Table>
+      {profiles.slice(first, first + 20).map((tagName) => (
+        <ProfileCard tagName={tagName} />
+      ))}
+      {/* <Table>
         <TableHead>
           <TableRow>
             <TableCell />
@@ -87,7 +82,7 @@ export default () => {
             <Profile profile={profile} key={profile} />
           ))}
         </TableBody>
-      </Table>
+      </Table> */}
     </Box>
   );
 };

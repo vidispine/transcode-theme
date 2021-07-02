@@ -1,44 +1,54 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import { withStyles, Tab, Tabs } from '@material-ui/core';
-// import FileSearch from './components/FileSearch';
-import TranscodeModal from './components/TranscodeModal';
+import { SearchItem, useSearch } from '@vidispine/vdt-react';
+import { Box, Tab, Tabs } from '@material-ui/core';
 
-import './styles/search.css';
 import JobList from './JobList';
-import SourceList from './SourceList';
-import OutputList from './OutputList';
+import FileList from './FileList';
 import { useSplitters } from '../../context';
-import { Split } from '../../components';
+import { Split, Search } from '../../components';
 
-const styles = (theme) => ({
-  root: {
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-    paddingLeft: theme.spacing(4),
-    paddingRight: theme.spacing(4),
+const initialState = {
+  itemSearchDocument: { field: [{ name: '__shape_size', value: [{ value: 1 }] }] },
+  queryParams: {
+    number: 10,
+    content: 'shape,metadata',
+    field: ['originalFilename:title'],
+    first: 1,
   },
-  ItemList: {},
-  SearchInput: {},
-});
+};
 
-function Search({ classes }) {
-  const { splitters, setSplitter } = useSplitters();
+const ItemSearch = ({ itemSearchDocument, setItemSearchDocument, queryParams }) => {
   const [tab, setTab] = React.useState('source');
-  const [selectedFile] = React.useState();
-  const [transcodeModalOpen, setTranscodeModalOpen] = React.useState(false);
-  const onChangeTab = (e, newTab) => newTab && setTab(newTab);
+  const onChange = (_, newTab) => setTab(newTab);
+  React.useEffect(() => {
+    const doc = itemSearchDocument.field.filter(({ name }) => name !== '__shape_size');
+    setItemSearchDocument({
+      ...itemSearchDocument,
+      field: [...doc, { name: '__shape_size', value: [{ value: tab === 'output' ? 2 : 1 }] }],
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab]);
+  return (
+    <Box>
+      <Tabs value={tab} onChange={onChange}>
+        <Tab disableRipple value="source" label="Source" />
+        <Tab disableRipple value="output" label="Output" />
+      </Tabs>
+      <SearchItem itemSearchDocument={itemSearchDocument} queryParams={queryParams}>
+        <FileList output={tab === 'output'} />
+      </SearchItem>
+    </Box>
+  );
+};
 
-  // const openTranscodeModal = (item) => {
-  //   setSelectedFile(item);
-  //   setTranscodeModalOpen(true);
-  // };
-
-  const closeTranscodeModal = () => {
-    setTranscodeModalOpen(false);
-  };
-
+function Wrapper() {
+  const { splitters, setSplitter } = useSplitters();
+  const { state = {}, setSearchText, setItemSearchDocument } = useSearch(initialState);
+  const onSearch = (val) => setSearchText(`*${val}*`);
   return (
     <>
+      <Search onSubmit={onSearch} />
       <Split
         style={{ flexDirection: 'row' }}
         direction="horizontal"
@@ -47,25 +57,11 @@ function Search({ classes }) {
         gutterSize={20}
         onDragEnd={(sizes) => setSplitter('horizontal', sizes)}
       >
-        <div className={classes.tabs}>
-          <Tabs value={tab} onChange={onChangeTab}>
-            <Tab value="source" label="Source" />
-            <Tab value="output" label="Output" />
-          </Tabs>
-          {tab === 'source' && <SourceList hidden={tab !== 'source'} />}
-          {tab === 'output' && <OutputList hidden={tab !== 'source'} />}
-        </div>
-        <div>
-          <JobList />
-        </div>
+        <ItemSearch {...state} setItemSearchDocument={setItemSearchDocument} />
+        <JobList />
       </Split>
-      <TranscodeModal
-        item={selectedFile}
-        open={transcodeModalOpen}
-        handleClose={closeTranscodeModal}
-      />
     </>
   );
 }
 
-export default withStyles(styles)(Search);
+export default Wrapper;

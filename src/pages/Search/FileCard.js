@@ -20,7 +20,10 @@ import { Menu } from '../../components';
 const parseItem = ({ metadata = {}, shape: [shape] = [{}] }) => ({
   ...parseMetadataType(metadata, { flat: true, arrayOnSingle: false }),
   ...parseShapeType(shape),
-  timestamp: moment(shape.containerComponent.file[0].timestamp).format('L'),
+  timestamp:
+    shape &&
+    shape.containerComponent &&
+    moment(shape.containerComponent.file[0].timestamp).format('L'),
 });
 
 const Column = ({ fields, data }) =>
@@ -106,42 +109,56 @@ const styles = ({ palette, spacing }) => ({
     '&:not(:last-child)': {
       marginBottom: spacing(2),
     },
+    '& > .MuiBox-root:last-child': {
+      gridColumn: '5 / 2 span',
+    },
+    '& > .MuiAvatar-root:first-child': {
+      gridColumn: '1 / 2 span',
+    },
   },
 });
 
-const FileCard = ({ itemType = {}, classes, allowTranscode = false }) => {
+const FileCard = ({
+  itemType = {},
+  classes,
+  allowTranscode = false,
+  onTranscode,
+  interactive = true,
+}) => {
   const item = React.useMemo(() => parseItem(itemType), [itemType]);
   return (
     <ListItem classes={classes} alignItems="flex-start">
-      <Checkbox />
+      {interactive && <Checkbox />}
       <Avatar variant="square">T</Avatar>
       {cols.map((fields) => (
         <Box key={fields.reduce((a, { key }) => a + key, '')}>
           <Column data={item} fields={fields} />
         </Box>
       ))}
-      <Menu>
-        {allowTranscode && (
-          <MenuItem onClick={() => console.log('transcode')}>
+      {interactive && (
+        <Menu>
+          {allowTranscode && (
+            <MenuItem onClick={() => onTranscode(itemType)}>
+              <ListItemIcon>
+                <SwitchVideo />
+              </ListItemIcon>
+              <ListItemText>Transcode</ListItemText>
+            </MenuItem>
+          )}
+          <MenuItem onClick={() => console.log('download')}>
             <ListItemIcon>
-              <SwitchVideo />
+              <CloudDownload />
             </ListItemIcon>
-            <ListItemText>Transcode</ListItemText>
+            <ListItemText>Download</ListItemText>
           </MenuItem>
-        )}
-        <MenuItem onClick={() => console.log('download')}>
-          <ListItemIcon>
-            <CloudDownload />
-          </ListItemIcon>
-          <ListItemText>Download</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={() => console.log('delete')}>
-          <ListItemIcon>
-            <Delete />
-          </ListItemIcon>
-          <ListItemText>Delete</ListItemText>
-        </MenuItem>
-      </Menu>
+          <MenuItem onClick={() => console.log('delete')}>
+            <ListItemIcon>
+              <Delete />
+            </ListItemIcon>
+            <ListItemText>Delete</ListItemText>
+          </MenuItem>
+        </Menu>
+      )}
     </ListItem>
   );
 };
