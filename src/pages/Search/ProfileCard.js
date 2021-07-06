@@ -1,6 +1,6 @@
 import React from 'react';
 import get from 'lodash.get';
-import { withStyles, Box, Checkbox, ListItem, Typography } from '@material-ui/core';
+import { withStyles, Box, Checkbox, ListItem, ListItemIcon, Typography } from '@material-ui/core';
 
 import { useGetProfile } from '../Profiles/ProfileContext';
 
@@ -74,11 +74,19 @@ const styles = ({ palette, spacing }) => ({
   },
 });
 
-const FileCard = ({ tagName, checked, onChange, classes }) => {
+const FileCard = ({ tagName, selected, onChange = () => null, classes }) => {
   const { data = {} } = useGetProfile({ tagName });
   return (
-    <ListItem classes={classes} alignItems="flex-start" button onClick={() => onChange(tagName)}>
-      <Checkbox checked={checked} />
+    <ListItem
+      selected={selected}
+      classes={classes}
+      alignItems="flex-start"
+      button
+      onClick={() => onChange(data)}
+    >
+      <ListItemIcon>
+        <Checkbox checked={selected} color="primary" />
+      </ListItemIcon>
       <Typography variant="body1">{tagName}</Typography>
       {cols.map((fields) => (
         <Box key={fields.reduce((a, { key }) => a + key, '')}>

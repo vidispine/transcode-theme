@@ -53,7 +53,13 @@ const parseProfile = (data) => {
     if (codec) profile.audioCodec = codec;
   }
 
-  if (metadata) profile.metadata = metadata;
+  if (metadata) {
+    const { field = [] } = metadata;
+    for (let i = 0; i < field.length; i += 1) {
+      const { key, value } = field[i];
+      profile[key] = value;
+    }
+  }
 
   return profile;
 };

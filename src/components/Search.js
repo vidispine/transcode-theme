@@ -5,7 +5,10 @@ import { withStyles } from '@material-ui/core';
 
 const styles = ({ spacing, palette }) => ({
   root: {
-    marginBottom: spacing(2),
+    position: ({ fixed }) => (fixed ? 'sticky' : 'relative'),
+    zIndex: 10,
+    top: 0,
+    // marginBottom: spacing(2),
   },
   input: {
     borderWidth: 2,
@@ -22,8 +25,15 @@ const styles = ({ spacing, palette }) => ({
   },
 });
 
-const Search = ({ onSubmit, onChange, classes, placeholder = 'Search files...' }) => (
+const Search = ({
+  fixed = false,
+  onSubmit,
+  onChange,
+  classes,
+  placeholder = 'Search files...',
+}) => (
   <SearchInput
+    fixed={fixed}
     classes={classes}
     onChange={onChange}
     onSubmit={onSubmit}

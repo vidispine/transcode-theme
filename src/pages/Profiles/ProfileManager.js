@@ -25,8 +25,16 @@ const styles = ({ spacing, palette }) => ({
   actions: {},
 });
 
-const extractValues = ({ video, audio, format, name, description }) => {
-  const output = { name, description, format };
+const extractValues = ({
+  video,
+  audio,
+  format,
+  name,
+  description,
+  createThumbnails,
+  createPreview,
+}) => {
+  const output = { name, description, format, metadata: {} };
   if (video) {
     let { resolution, framerate, preset, width, height } = video;
     if (framerate) framerate = { denominator: framerate, numerator: 1 };
@@ -45,6 +53,16 @@ const extractValues = ({ video, audio, format, name, description }) => {
     if (sampleSize && sampleRate) bitrate = sampleSize * sampleRate * 1000;
     if (preset) preset = [preset];
     output.audio = { ...audioParams, bitrate, preset };
+  }
+  if (createThumbnails) {
+    output.metadata.field = (output.metadata.field || []).concat([
+      { key: 'createThumbnails', value: createThumbnails || false },
+    ]);
+  }
+  if (createPreview) {
+    output.metadata.field = (output.metadata.field || []).concat([
+      { key: 'createPreview', value: createPreview || false },
+    ]);
   }
   return output;
 };

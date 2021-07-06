@@ -13,7 +13,7 @@ import Header from './components/Header';
 import queryClient from '../../queryClient';
 import { DialogProvider } from '../../components';
 
-const styles = ({ mixins, spacing }) => ({
+const styles = ({ mixins }) => ({
   container: {
     height: '100vh',
     overflow: 'auto',
@@ -21,9 +21,9 @@ const styles = ({ mixins, spacing }) => ({
     //   console.log(mixins);
     //   return mixins.toolbar.minHeight;
     // },
-    paddingTop: mixins.toolbar.minHeight + spacing(2),
-    marginRight: spacing(4),
-    marginLeft: spacing(4),
+    paddingTop: mixins.toolbar.minHeight,
+    // marginRight: spacing(4),
+    // marginLeft: spacing(4),
   },
 });
 

@@ -1,10 +1,16 @@
 import React from 'react';
-import { item as ItemApi, vidinet as VidinetApi, vsimport as ImportApi } from '@vidispine/vdt-api';
+import {
+  item as ItemApi,
+  vidinet as VidinetApi,
+  vsimport as ImportApi,
+  shape as ShapeApi,
+} from '@vidispine/vdt-api';
+import { createMetadataType, parseMetadataType } from '@vidispine/vdt-js';
+import { Form, Field } from 'react-final-form';
 import {
   withStyles,
   Box,
   List,
-  TextField,
   Collapse,
   Button,
   Dialog,
@@ -18,7 +24,7 @@ import {
 import { useProfiles } from '../Profiles/ProfileContext';
 import ProfileCard from './ProfileCard';
 import FileCard from './FileCard';
-import { Search } from '../../components';
+import { Search, TextField } from '../../components';
 
 const styles = ({ palette, spacing }) => ({
   root: {
@@ -33,161 +39,242 @@ const styles = ({ palette, spacing }) => ({
     },
     '& .MuiCollapse-container': {
       overflow: 'auto',
+      position: 'relative',
     },
   },
 });
 
 const useCostEstimate = (endpoint) => {
   const ref = React.useRef({});
+  const cancel = React.useRef(null);
   const [cost, setCost] = React.useState({});
   const [isLoading, setIsLoading] = React.useState(false);
-  const request = ({ tag: tags = [], ...params }) => {
-    setIsLoading(true);
-    if (!tags.length) return;
-    const promises = tags.map(
-      (tag) =>
-        new Promise((resolve, reject) => {
-          if (cost[tag]) resolve({ tag, ...cost[tag] });
-          else {
-            endpoint({ ...params, queryParams: { tag }, costEstimate: true })
-              .then(({ data: { id: costEstimateId } = {} }) => {
-                const poll = () => {
-                  VidinetApi.getCostEstimate({ costEstimateId }).then(({ data }) => {
-                    const { state, service: [service] = [{}] } = data;
-                    if (state === 'FINISHED') resolve({ ...service, tag });
-                    else ref.current[tag] = setTimeout(() => poll(), 1000);
-                  });
-                };
-                poll();
-              })
-              .catch(reject);
+  const request = React.useCallback(
+    ({ tag: tags = [], ...params }) => {
+      if (!tags.length) return;
+      if (cancel.current) {
+        cancel.current({ canceled: true });
+        cancel.current = null;
+      } else {
+        setIsLoading(true);
+      }
+      const promise = new Promise((resolve, reject) => {
+        const promises = tags.map(
+          ({ name: tag }) =>
+            new Promise((res, rej) => {
+              if (cost[tag]) {
+                res({ tag, ...cost[tag] });
+              } else {
+                endpoint({ ...params, queryParams: { tag }, costEstimate: true })
+                  .then(({ data: { id: costEstimateId } = {} }) => {
+                    const poll = () => {
+                      VidinetApi.getCostEstimate({ costEstimateId }).then(({ data }) => {
+                        const { state, service: [service] = [{}] } = data;
+                        if (state === 'FINISHED') res({ ...service, tag });
+                        else ref.current[tag] = setTimeout(() => poll(), 1000);
+                      });
+                    };
+                    poll();
+                  })
+                  .catch(rej);
+              }
+            }),
+        );
+        Promise.all(promises).then(resolve).catch(reject);
+      });
+      const cancelPromise = new Promise((_, reject) => {
+        cancel.current = reject;
+      });
+      Promise.race([promise, cancelPromise])
+        .then((res) => {
+          const estimates = res.reduce((a, { tag, ...c }) => ({ ...a, [tag]: { ...c } }), {});
+          setIsLoading(false);
+          setCost(estimates);
+          cancel.current = null;
+        })
+        .catch(({ canceled }) => {
+          if (!canceled) {
+            setIsLoading(false);
+            cancel.current = null;
           }
-        }),
-    );
-
-    Promise.all(promises).then((response) => {
-      const estimates = response.reduce(
-        (acc, { tag, ...rest }) => ({ ...acc, [tag]: { ...rest } }),
-        {},
-      );
-      setIsLoading(false);
-      setCost(estimates);
-    });
-  };
-  return { request, data: cost, isLoading };
+        });
+    },
+    [endpoint, cost],
+  );
+  return { request, isLoading, data: cost };
 };
 
-const CostEstimate = ({ tag, itemId }) => {
-  const { data = {}, request, isLoading } = useCostEstimate(ItemApi.createTranscode);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  React.useEffect(() => request({ itemId, tag }), [tag]);
-  if (isLoading) return <CircularProgress />;
-  return Object.entries(data).map(([key, { cost = {} }]) => (
-    <Box p={2} borderRadius={4} bgcolor="background.paper" display="flex" flexDirection="column">
-      <Box display="flex" justifyContent="space-between">
-        <Typography color="textPrimary" variant="body1">
-          {key}
+const CostEstimate = ({ selected, cost: data, title, isLoading }) => {
+  const [[initialValue]] = React.useState(title.split('.'));
+  return (
+    <Box width={1}>
+      {selected.map(({ name, createPreview, createThumbnails }) => (
+        <Box
+          key={name}
+          p={2}
+          borderRadius={4}
+          bgcolor="background.paper"
+          display="flex"
+          flexDirection="column"
+        >
+          <Box mb={1} px={2} display="flex" justifyContent="space-between">
+            <Typography color="textPrimary" variant="body1">
+              {name}
+            </Typography>
+            {isLoading ? (
+              <CircularProgress size={16} />
+            ) : (
+              <Typography color="textSecondary" variant="body1">
+                ${data[name] && data[name].cost.value}
+              </Typography>
+            )}
+          </Box>
+          <TextField
+            fullWidth
+            name={`${name}.name`}
+            placeholder={title}
+            initialValue={initialValue}
+          />
+          <Field
+            name={`${name}.createPreview`}
+            initialValue={!!createPreview}
+            render={() => null}
+          />
+          <Field
+            name={`${name}.createThumbnails`}
+            initialValue={!!createThumbnails}
+            render={() => null}
+          />
+        </Box>
+      ))}
+      <Box mt={2} px={2} display="flex" justifyContent="space-between">
+        <Typography color="textPrimary" variant="h5">
+          Total:
         </Typography>
-        <Typography color="textSecondary" variant="body1">
-          ${cost.value}
+        <Typography color="textSecondary" variant="h5">
+          {isLoading ? (
+            <CircularProgress />
+          ) : (
+            `$${Object.values(data).reduce((a, { cost = {} }) => a + cost.value, 0)}`
+          )}
         </Typography>
       </Box>
-      <TextField fullWidth disabled placeholder="Output filename..." />
     </Box>
-  ));
+  );
 };
 
-const TranscodeDialog = ({ open, onSuccess, onClose, item, classes }) => {
-  const { id: itemId } = item;
-  const { profiles: allProfiles = [] } = useProfiles();
+const Content = ({ onClose, profiles: allProfiles, item, classes, handleSubmit }) => {
+  const { metadata = {} } = item;
+  const { itemId, title } = parseMetadataType(metadata, { flat: true, arrayOnSingle: false });
   const [step, setStep] = React.useState(1);
-  const [checked, setChecked] = React.useState([]);
-  const onChange = (tagName) => {
-    if (checked.includes(tagName)) {
-      setChecked([]);
-      // setChecked((old) => old.filter((name) => name !== tagName));
-    } else {
-      setChecked([tagName]);
-      // setChecked((old) => [...old, tagName]);
-    }
-  };
   const [search, setSearch] = React.useState('');
   const profiles = React.useMemo(
-    () =>
-      allProfiles
-        .filter((name) => name.toLowerCase().includes(search))
-        .sort((a, b) => {
-          if (checked.includes(a)) return -1;
-          if (checked.includes(b)) return 1;
-          return 0;
-        }),
-    // eslint-disable-next-line
+    () => allProfiles.filter((name) => name.toLowerCase().includes(search) && name !== 'original'),
     [search, allProfiles],
   );
+  const [selected, setSelected] = React.useState([]);
+  const toggleSelected = (payload) => {
+    const { name: tagName } = payload;
+    const filter = selected.filter(({ name }) => name !== tagName);
+    if (filter.length === selected.length) return setSelected([...filter, payload]);
+    return setSelected(filter);
+  };
 
-  const handleTranscode = () => {
-    const transcodes = checked.map((tag) => {
-      return ImportApi.createImportPlaceholder({
-        metadataDocument: {},
-        queryParams: { container: 1 },
-      })
-        .then(({ data: { id: destinationItem } = {} }) =>
-          ItemApi.createTranscode({ itemId, queryParams: { tag, destinationItem } }),
-        )
-        .catch(() => null);
+  const toggleStep = () =>
+    setStep((oldStep) => {
+      setStep(0);
+      setTimeout(() => setStep(oldStep === 1 ? 2 : 1), 500);
     });
-    Promise.all(transcodes).then(onSuccess).catch(onClose);
+
+  const { data: cost = {}, request, isLoading } = useCostEstimate(ItemApi.createTranscode);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  React.useEffect(() => request({ itemId, tag: selected }), [selected, itemId]);
+
+  return (
+    <>
+      <DialogContent classes={classes}>
+        <FileCard itemType={item} interactive={false} />
+        <Box overflow="hidden" flexGrow={1} display="flex" flexDirection="column">
+          <Collapse in={step === 1} timeout={500}>
+            <Search fixed onChange={setSearch} placeholder="Search profiles..." />
+            <Box mt={2}>
+              <List disablePadding>
+                {profiles.map((tagName) => (
+                  <ProfileCard
+                    key={tagName}
+                    tagName={tagName}
+                    selected={selected.some(({ name }) => name === tagName)}
+                    onChange={toggleSelected}
+                  />
+                ))}
+              </List>
+            </Box>
+          </Collapse>
+          <Collapse in={step === 2} timeout={500}>
+            <form onSubmit={handleSubmit}>
+              <CostEstimate selected={selected} cost={cost} title={title} isLoading={isLoading} />
+            </form>
+          </Collapse>
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        {step === 1 && <Button onClick={onClose}>Cancel</Button>}
+        <Button
+          disabled={!selected.length}
+          variant={step === 1 ? 'contained' : 'text'}
+          color={step === 1 ? 'primary' : 'default'}
+          onClick={toggleStep}
+        >
+          {step === 1 ? 'Next' : 'Back'}
+        </Button>
+        {step === 2 && (
+          <Button disabled={isLoading} variant="contained" color="primary" onClick={handleSubmit}>
+            Start transcode
+          </Button>
+        )}
+      </DialogActions>
+    </>
+  );
+};
+
+const TranscodeDialog = ({ open, onSuccess, onClose, item = {}, classes }) => {
+  const { shape: [shapeDocument = {}] = [{}], id: itemId } = item;
+  const { profiles: allProfiles = [] } = useProfiles();
+  const handleSubmit = (values) => {
+    const queryParams = { container: 1 };
+    const promises = Object.entries(values).map(([tag, params]) => {
+      const { createThumbnails = false, name: title } = params;
+      const metadataDocument = createMetadataType({ title });
+      return ImportApi.createImportPlaceholder({ metadataDocument, queryParams }).then(
+        ({ data: { id: destinationItem } = {} }) =>
+          ShapeApi.removeShapeAll({ itemId: destinationItem }).then(() =>
+            ShapeApi.createShape({ itemId: destinationItem, shapeDocument })
+              .then(() =>
+                ItemApi.createTranscode({
+                  itemId,
+                  queryParams: { tag, destinationItem, createThumbnails },
+                }).catch(() => ItemApi.removeItem({ itemId: destinationItem })),
+              )
+              .catch(() => ItemApi.removeItem({ itemId: destinationItem })),
+          ),
+      );
+    });
+    Promise.all(promises)
+      .then(onSuccess)
+      .catch(() => onClose({ message: 'Failed to start transcode' }));
   };
 
   return (
     <Dialog fullWidth maxWidth="md" open={open} onClose={onClose}>
       <DialogTitle>Transcode file</DialogTitle>
-      <DialogContent classes={classes}>
-        <FileCard itemType={item} interactive={false} />
-        <Collapse in={step === 1}>
-          <div>
-            <Search onChange={setSearch} />
-            <List disablePadding>
-              {profiles.map((tagName) => (
-                <ProfileCard
-                  key={tagName}
-                  checked={checked.includes(tagName)}
-                  tagName={tagName}
-                  onChange={onChange}
-                />
-              ))}
-            </List>
-          </div>
-        </Collapse>
-        <Collapse in={step === 2}>
-          <div>
-            <CostEstimate tag={checked} itemId={itemId} />
-          </div>
-        </Collapse>
-      </DialogContent>
-      <DialogActions>
-        {step === 1 && (
-          <>
-            {checked.length > 0 && (
-              <Typography style={{ marginRight: 'auto' }}>
-                {checked.length} profiles selected
-              </Typography>
-            )}
-            <Button onClick={onClose}>Cancel</Button>
-            <Button variant="contained" color="primary" onClick={() => setStep(2)}>
-              Next
-            </Button>
-          </>
-        )}
-        {step === 2 && (
-          <>
-            <Button onClick={() => setStep(1)}>Back</Button>
-            <Button variant="contained" color="primary" onClick={handleTranscode}>
-              Start transcoding
-            </Button>
-          </>
-        )}
-      </DialogActions>
+      <Form
+        item={item}
+        render={Content}
+        onClose={onClose}
+        classes={classes}
+        profiles={allProfiles}
+        onSubmit={handleSubmit}
+      />
     </Dialog>
   );
 };

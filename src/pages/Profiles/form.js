@@ -40,12 +40,14 @@ export default [
         name: 'createPreview',
         label: 'Create preview',
         type: 'checkbox',
+        defaultValue: false,
         fullWidth: true,
       },
       {
         name: 'createThumbnails',
         label: 'Create thumbnails',
         type: 'checkbox',
+        defaultValue: false,
         fullWidth: true,
       },
     ],
@@ -380,6 +382,9 @@ export default [
         name: 'audio.codec',
         label: 'Codec',
         type: 'select',
+        dependency: {
+          key: 'format',
+        },
         options: [
           {
             value: 'nablet_aac',

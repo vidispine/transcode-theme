@@ -40,9 +40,7 @@ const theme = createMuiTheme({
       },
     },
     MuiTabs: {
-      root: {
-        marginBottom: 16,
-      },
+      root: {},
       indicator: {
         backgroundColor: '#7B61FF',
         height: '100%',

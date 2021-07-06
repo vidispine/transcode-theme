@@ -1,24 +1,24 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import { SearchItem, useSearch } from '@vidispine/vdt-react';
+import { SearchItem } from '@vidispine/vdt-react';
 import { Box, Tab, Tabs } from '@material-ui/core';
 
 import JobList from './JobList';
 import FileList from './FileList';
 import { useSplitters } from '../../context';
 import { Split, Search } from '../../components';
+import { useSearch } from '../../hooks';
 
 const initialState = {
   itemSearchDocument: { field: [{ name: '__shape_size', value: [{ value: 1 }] }] },
   queryParams: {
-    number: 10,
     content: 'shape,metadata',
-    field: ['originalFilename:title'],
-    first: 1,
+    field: ['originalFilename:title', 'itemId', 'title'],
   },
+  rowsPerPage: 5,
 };
 
-const ItemSearch = ({ itemSearchDocument, setItemSearchDocument, queryParams }) => {
+export const ItemSearch = ({ itemSearchDocument, setItemSearchDocument, queryParams }) => {
   const [tab, setTab] = React.useState('source');
   const onChange = (_, newTab) => setTab(newTab);
   React.useEffect(() => {
@@ -44,23 +44,32 @@ const ItemSearch = ({ itemSearchDocument, setItemSearchDocument, queryParams }) 
 
 function Wrapper() {
   const { splitters, setSplitter } = useSplitters();
-  const { state = {}, setSearchText, setItemSearchDocument } = useSearch(initialState);
+  const { state, onChangePage, setSearchText, setItemSearchDocument } = useSearch(initialState);
+  const { page, queryParams, itemSearchDocument } = state;
   const onSearch = (val) => setSearchText(`*${val}*`);
   return (
-    <>
+    <Box px={2} pt={2} height={1} display="flex" flexDirection="column">
       <Search onSubmit={onSearch} />
-      <Split
-        style={{ flexDirection: 'row' }}
-        direction="horizontal"
-        minSize={375}
-        sizes={splitters.vertical}
-        gutterSize={20}
-        onDragEnd={(sizes) => setSplitter('horizontal', sizes)}
-      >
-        <ItemSearch {...state} setItemSearchDocument={setItemSearchDocument} />
-        <JobList />
-      </Split>
-    </>
+      <Box mt={2} flexGrow={1} overflow="hidden">
+        <Split
+          style={{ flexDirection: 'row' }}
+          direction="horizontal"
+          minSize={375}
+          sizes={splitters.vertical}
+          gutterSize={20}
+          onDragEnd={(sizes) => setSplitter('horizontal', sizes)}
+        >
+          <SearchItem queryParams={queryParams} itemSearchDocument={itemSearchDocument}>
+            <FileList
+              page={page}
+              onChangePage={onChangePage}
+              setItemSearchDocument={setItemSearchDocument}
+            />
+          </SearchItem>
+          <JobList />
+        </Split>
+      </Box>
+    </Box>
   );
 }
 

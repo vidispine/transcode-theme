@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from 'react-query';
-import { storage as StorageApi } from '@vidispine/vdt-api';
+import { storage as StorageApi, resource as ResourceApi } from '@vidispine/vdt-api';
 
 const ConfigurationContext = React.createContext();
 
@@ -23,10 +23,27 @@ const parseStorages = (storageList) => {
   return { sourceStorage, outputStorage };
 };
 
+const parseResources = ({ resource: resourceList }) =>
+  resourceList.map(({ id, vidinet }) => ({ id, ...vidinet }));
+
 export function useGetStorages() {
   return useQuery(
     ['storages'],
     () => StorageApi.listStorage({}).then(({ data = {} }) => parseStorages(data)),
+    {
+      refetchOnWindowFocus: false,
+      staleTime: Infinity,
+    },
+  );
+}
+
+export function useGetResources() {
+  return useQuery(
+    ['resources'],
+    () =>
+      ResourceApi.listResourceType({ resourceType: 'vidinet' }).then(({ data = {} }) =>
+        parseResources(data),
+      ),
     {
       refetchOnWindowFocus: false,
       staleTime: Infinity,
@@ -40,10 +57,22 @@ export function useConfiguration() {
 }
 
 export const ConfigurationProvider = ({ children }) => {
-  const { data, isLoading, isError } = useGetStorages();
+  const {
+    data: storages,
+    isLoading: isLoadingStorages,
+    isError: isErrorStorages,
+  } = useGetStorages();
+  const {
+    data: resources,
+    isLoading: isLoadingResources,
+    isError: isErrorResources,
+  } = useGetResources();
+
+  const isLoading = isLoadingStorages || isLoadingResources;
+  const isError = isErrorStorages || isErrorResources;
 
   return (
-    <ConfigurationContext.Provider value={{ ...data, isLoading, isError }}>
+    <ConfigurationContext.Provider value={{ storages, resources, isLoading, isError }}>
       {children}
     </ConfigurationContext.Provider>
   );

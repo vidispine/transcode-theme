@@ -1,8 +1,8 @@
 import React from 'react';
 import { MoreVert as MenuIcon } from '@material-ui/icons';
-import { Menu, ButtonBase, IconButton } from '@material-ui/core';
+import { Menu, IconButton } from '@material-ui/core';
 
-export default ({ icon: IconComponent = MenuIcon, children, ...props }) => {
+export default ({ icon: IconComponent = MenuIcon, children, size }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleMenuClick = (event) => {
@@ -15,10 +15,8 @@ export default ({ icon: IconComponent = MenuIcon, children, ...props }) => {
 
   return (
     <>
-      <IconButton component={ButtonBase} onClick={handleMenuClick} disableRipple>
-        <IconComponent
-          {...props} // eslint-disable-line react/jsx-props-no-spreading
-        />
+      <IconButton onClick={handleMenuClick} disableRipple size={size}>
+        <IconComponent />
       </IconButton>
       <Menu
         onClick={handleMenuClose}

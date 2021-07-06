@@ -1,6 +1,7 @@
 import React from 'react';
 import get from 'lodash.get';
 import moment from 'moment';
+import { job as JobApi } from '@vidispine/vdt-api';
 import { Pause, Info } from '@material-ui/icons';
 import {
   withStyles,
@@ -14,13 +15,6 @@ import {
 } from '@material-ui/core';
 
 import { RUNNING_STATES, INACTIVE_STATES } from './const';
-
-const getJobPercentage = ({ task = [] }, type) => {
-  let TRANSCODING_STEP = 100;
-  if (type === 'TRANSCODE') TRANSCODING_STEP = 200;
-  const { progress = {} } = task.find(({ step }) => step === TRANSCODING_STEP) || {};
-  return progress.value || 0;
-};
 
 const Column = ({ fields, data }) =>
   fields.map(({ key, label }) => (
@@ -71,10 +65,30 @@ const cols = [
   },
 ];
 
+const usePoll = ({ jobId, type, status: initialStatus }) => {
+  const [value, setValue] = React.useState(0);
+  const request = React.useCallback(() => {
+    const poll = () =>
+      JobApi.getJob({ jobId }).then(({ data: { status, log = {} } = {} }) => {
+        let TRANSCODING_STEP = 100;
+        if (type === 'TRANSCODE') TRANSCODING_STEP = 200;
+        const { task } = log;
+        const { progress = {} } = task.find(({ step }) => step === TRANSCODING_STEP) || {};
+        setValue(progress.value || 0);
+        if (RUNNING_STATES.includes(status)) setTimeout(() => poll(), 2500);
+      });
+    if (INACTIVE_STATES.includes(initialStatus)) setValue(100);
+    else poll();
+  }, [jobId, type, initialStatus]);
+  return { request, value };
+};
+
 const JobCard = ({ jobType = {}, classes, onAbort }) => {
-  const { status, log = {}, started, jobId, type } = jobType;
-  const onClick = () => INACTIVE_STATES.includes(status) && onAbort(jobId);
-  // const onClick = () => RUNNING_STATES.includes(status) && onAbort(jobId);
+  const [{ status, started, jobId }] = React.useState({ ...jobType });
+  const onClick = () => RUNNING_STATES.includes(status) && onAbort(jobId);
+
+  const { request, value = 100 } = usePoll(jobType);
+  React.useEffect(request, [request]);
   return (
     <ListItem className={classes.root} alignItems="flex-start">
       <Box className={classes.top}>
@@ -97,7 +111,7 @@ const JobCard = ({ jobType = {}, classes, onAbort }) => {
             {moment(started).fromNow()}
           </Typography>
         </Box>
-        <LinearProgress variant="determinate" value={getJobPercentage(log, type)} />
+        <LinearProgress variant="determinate" value={value} />
       </Box>
     </ListItem>
   );
