@@ -3,15 +3,15 @@ import { Route, Redirect, Switch } from 'react-router-dom';
 import { withStyles } from '@material-ui/core';
 import { AuthProvider } from '@vidispine/vdt-react';
 import { QueryClientProvider } from 'react-query';
-import { ConfigurationProvider } from './ConfigurationContext';
+import { ConfigurationProvider, DialogProvider, ProfileProvider } from '../../context';
 import { LOGIN_EXPIRES_SECONDS, APP_BASENAME } from '../../const';
 import Search from '../Search';
-import { ProfileProvider, Profiles } from '../Profiles';
+import { Profiles } from '../Profile';
 import Login from '../Login';
 import NotFound from '../NotFound';
-import Header from './components/Header';
+import Header from './Header';
 import queryClient from '../../queryClient';
-import { DialogProvider } from '../../components';
+import Test from './Test';
 
 const styles = ({ mixins }) => ({
   container: {
@@ -45,8 +45,8 @@ function Root({ classes }) {
     >
       <QueryClientProvider client={queryClient}>
         <ProfileProvider>
-          <DialogProvider>
-            <ConfigurationProvider>
+          <ConfigurationProvider>
+            <DialogProvider>
               <Header />
               <div className={classes.container}>
                 <Switch>
@@ -59,14 +59,17 @@ function Root({ classes }) {
                   <Route exact path="/profile/">
                     <Profiles />
                   </Route>
+                  <Route path="/:id">
+                    <Test />
+                  </Route>
                   <Redirect exact from="/" push to="/search/" />
                   <Route path="*">
                     <NotFound />
                   </Route>
                 </Switch>
               </div>
-            </ConfigurationProvider>
-          </DialogProvider>
+            </DialogProvider>
+          </ConfigurationProvider>
         </ProfileProvider>
       </QueryClientProvider>
     </AuthProvider>

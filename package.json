@@ -15,6 +15,7 @@
     "@vidispine/vdt-materialui": "^0.14.0",
     "@vidispine/vdt-react": "^0.14.0",
     "filesize": "^6.1.0",
+    "lodash.debounce": "^4.0.8",
     "lodash.get": "^4.4.2",
     "moment": "^2.29.1",
     "notistack": "^1.0.9",

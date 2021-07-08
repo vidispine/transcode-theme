@@ -1,16 +1,11 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
-import {
-  item as ItemApi,
-  vidinet as VidinetApi,
-  vsimport as ImportApi,
-  shape as ShapeApi,
-} from '@vidispine/vdt-api';
+import { item as ItemApi, vsimport as ImportApi, shape as ShapeApi } from '@vidispine/vdt-api';
 import { createMetadataType, parseMetadataType } from '@vidispine/vdt-js';
 import { Form, Field } from 'react-final-form';
 import {
   withStyles,
   Box,
-  List,
   Collapse,
   Button,
   Dialog,
@@ -21,10 +16,11 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 
-import { useProfiles } from '../Profiles/ProfileContext';
-import ProfileCard from './ProfileCard';
+import ProfileCard from '../Profile/ProfileCard';
 import FileCard from './FileCard';
 import { Search, TextField } from '../../components';
+import { useCostEstimate } from '../../hooks';
+import { useProfiles, useConfiguration } from '../../context';
 
 const styles = ({ palette, spacing }) => ({
   root: {
@@ -44,71 +40,11 @@ const styles = ({ palette, spacing }) => ({
   },
 });
 
-const useCostEstimate = (endpoint) => {
-  const ref = React.useRef({});
-  const cancel = React.useRef(null);
-  const [cost, setCost] = React.useState({});
-  const [isLoading, setIsLoading] = React.useState(false);
-  const request = React.useCallback(
-    ({ tag: tags = [], ...params }) => {
-      if (!tags.length) return;
-      if (cancel.current) {
-        cancel.current({ canceled: true });
-        cancel.current = null;
-      } else {
-        setIsLoading(true);
-      }
-      const promise = new Promise((resolve, reject) => {
-        const promises = tags.map(
-          ({ name: tag }) =>
-            new Promise((res, rej) => {
-              if (cost[tag]) {
-                res({ tag, ...cost[tag] });
-              } else {
-                endpoint({ ...params, queryParams: { tag }, costEstimate: true })
-                  .then(({ data: { id: costEstimateId } = {} }) => {
-                    const poll = () => {
-                      VidinetApi.getCostEstimate({ costEstimateId }).then(({ data }) => {
-                        const { state, service: [service] = [{}] } = data;
-                        if (state === 'FINISHED') res({ ...service, tag });
-                        else ref.current[tag] = setTimeout(() => poll(), 1000);
-                      });
-                    };
-                    poll();
-                  })
-                  .catch(rej);
-              }
-            }),
-        );
-        Promise.all(promises).then(resolve).catch(reject);
-      });
-      const cancelPromise = new Promise((_, reject) => {
-        cancel.current = reject;
-      });
-      Promise.race([promise, cancelPromise])
-        .then((res) => {
-          const estimates = res.reduce((a, { tag, ...c }) => ({ ...a, [tag]: { ...c } }), {});
-          setIsLoading(false);
-          setCost(estimates);
-          cancel.current = null;
-        })
-        .catch(({ canceled }) => {
-          if (!canceled) {
-            setIsLoading(false);
-            cancel.current = null;
-          }
-        });
-    },
-    [endpoint, cost],
-  );
-  return { request, isLoading, data: cost };
-};
-
 const CostEstimate = ({ selected, cost: data, title, isLoading }) => {
   const [[initialValue]] = React.useState(title.split('.'));
   return (
     <Box width={1}>
-      {selected.map(({ name, createPreview, createThumbnails }) => (
+      {selected.map(({ name, format, createPreview, createThumbnails }) => (
         <Box
           key={name}
           p={2}
@@ -145,6 +81,7 @@ const CostEstimate = ({ selected, cost: data, title, isLoading }) => {
             initialValue={!!createThumbnails}
             render={() => null}
           />
+          <Field name={`${name}.format`} initialValue={format} render={() => null} />
         </Box>
       ))}
       <Box mt={2} px={2} display="flex" justifyContent="space-between">
@@ -163,7 +100,7 @@ const CostEstimate = ({ selected, cost: data, title, isLoading }) => {
   );
 };
 
-const Content = ({ onClose, profiles: allProfiles, item, classes, handleSubmit }) => {
+const Content = ({ onClose, profiles: allProfiles, item, classes, handleSubmit, submitting }) => {
   const { metadata = {} } = item;
   const { itemId, title } = parseMetadataType(metadata, { flat: true, arrayOnSingle: false });
   const [step, setStep] = React.useState(1);
@@ -198,16 +135,14 @@ const Content = ({ onClose, profiles: allProfiles, item, classes, handleSubmit }
           <Collapse in={step === 1} timeout={500}>
             <Search fixed onChange={setSearch} placeholder="Search profiles..." />
             <Box mt={2}>
-              <List disablePadding>
-                {profiles.map((tagName) => (
-                  <ProfileCard
-                    key={tagName}
-                    tagName={tagName}
-                    selected={selected.some(({ name }) => name === tagName)}
-                    onChange={toggleSelected}
-                  />
-                ))}
-              </List>
+              {profiles.map((tagName) => (
+                <ProfileCard
+                  key={tagName}
+                  tagName={tagName}
+                  selected={selected.some(({ name }) => name === tagName)}
+                  onChange={toggleSelected}
+                />
+              ))}
             </Box>
           </Collapse>
           <Collapse in={step === 2} timeout={500}>
@@ -228,7 +163,12 @@ const Content = ({ onClose, profiles: allProfiles, item, classes, handleSubmit }
           {step === 1 ? 'Next' : 'Back'}
         </Button>
         {step === 2 && (
-          <Button disabled={isLoading} variant="contained" color="primary" onClick={handleSubmit}>
+          <Button
+            disabled={isLoading || submitting}
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit}
+          >
             Start transcode
           </Button>
         )}
@@ -239,29 +179,52 @@ const Content = ({ onClose, profiles: allProfiles, item, classes, handleSubmit }
 
 const TranscodeDialog = ({ open, onSuccess, onClose, item = {}, classes }) => {
   const { shape: [shapeDocument = {}] = [{}], id: itemId } = item;
+  const { outputStorage: storageId } = useConfiguration();
   const { profiles: allProfiles = [] } = useProfiles();
+
   const handleSubmit = (values) => {
     const queryParams = { container: 1 };
-    const promises = Object.entries(values).map(([tag, params]) => {
-      const { createThumbnails = false, name: title } = params;
-      const metadataDocument = createMetadataType({ title });
-      return ImportApi.createImportPlaceholder({ metadataDocument, queryParams }).then(
-        ({ data: { id: destinationItem } = {} }) =>
-          ShapeApi.removeShapeAll({ itemId: destinationItem }).then(() =>
-            ShapeApi.createShape({ itemId: destinationItem, shapeDocument })
-              .then(() =>
-                ItemApi.createTranscode({
-                  itemId,
-                  queryParams: { tag, destinationItem, createThumbnails },
-                }).catch(() => ItemApi.removeItem({ itemId: destinationItem })),
-              )
-              .catch(() => ItemApi.removeItem({ itemId: destinationItem })),
-          ),
-      );
-    });
-    Promise.all(promises)
-      .then(onSuccess)
-      .catch(() => onClose({ message: 'Failed to start transcode' }));
+    const tags = Object.entries(values);
+    const promises = tags.map(
+      ([tag, params]) =>
+        new Promise((res) => {
+          const resolve = () => res({ tag });
+          const reject = ({ message: error }) => res({ tag, error });
+          const { createThumbnails = false, name: title, format } = params;
+          const metadataDocument = createMetadataType({ title });
+          ImportApi.createImportPlaceholder({ metadataDocument, queryParams })
+            .then(({ data: { id: destinationItem } = {} }) =>
+              ShapeApi.removeShapeAll({ itemId: destinationItem })
+                .then(() =>
+                  ShapeApi.createShape({ itemId: destinationItem, shapeDocument })
+                    .then(() =>
+                      ItemApi.createTranscode({
+                        itemId,
+                        queryParams: {
+                          tag,
+                          destinationItem,
+                          createThumbnails,
+                          storageId,
+                          jobmetadata: [{ key: 'filename', value: `${title}.${format}` }],
+                        },
+                      })
+                        .then(resolve)
+                        .catch((err) =>
+                          ItemApi.removeItem({ itemId: destinationItem }).then(() => reject(err)),
+                        ),
+                    )
+                    .catch((err) =>
+                      ItemApi.removeItem({ itemId: destinationItem }).then(() => reject(err)),
+                    ),
+                )
+                .catch((err) =>
+                  ItemApi.removeItem({ itemId: destinationItem }).then(() => reject(err)),
+                ),
+            )
+            .catch(reject);
+        }),
+    );
+    return Promise.all(promises).then(onSuccess);
   };
 
   return (
@@ -274,6 +237,7 @@ const TranscodeDialog = ({ open, onSuccess, onClose, item = {}, classes }) => {
         classes={classes}
         profiles={allProfiles}
         onSubmit={handleSubmit}
+        subscription={{ submitting: true, pristine: true }}
       />
     </Dialog>
   );

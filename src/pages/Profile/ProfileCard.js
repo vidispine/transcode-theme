@@ -1,8 +1,16 @@
 import React from 'react';
 import get from 'lodash.get';
-import { withStyles, Box, Checkbox, ListItem, ListItemIcon, Typography } from '@material-ui/core';
+import {
+  withStyles,
+  Box,
+  Paper,
+  Checkbox,
+  ListItem,
+  ListItemIcon,
+  Typography,
+} from '@material-ui/core';
 
-import { useGetProfile } from '../Profiles/ProfileContext';
+import { useGetProfile } from '../../context';
 
 const Column = ({ fields, data }) =>
   fields.map(({ key, label }) => (
@@ -49,10 +57,8 @@ const cols = [
   ],
 ];
 
-const styles = ({ palette, spacing }) => ({
+const styles = ({ spacing }) => ({
   root: {
-    backgroundColor: palette.background.paper,
-    borderRadius: spacing(0.5),
     padding: spacing(2),
     display: 'grid',
     gridTemplateColumns: 'auto 1fr 1fr 1fr 1fr',
@@ -68,6 +74,8 @@ const styles = ({ palette, spacing }) => ({
       gridTemplateColumns: 'auto 1fr',
       gap: spacing(1, 2),
     },
+  },
+  paper: {
     '&:not(:last-child)': {
       marginBottom: spacing(2),
     },
@@ -77,23 +85,25 @@ const styles = ({ palette, spacing }) => ({
 const FileCard = ({ tagName, selected, onChange = () => null, classes }) => {
   const { data = {} } = useGetProfile({ tagName });
   return (
-    <ListItem
-      selected={selected}
-      classes={classes}
-      alignItems="flex-start"
-      button
-      onClick={() => onChange(data)}
-    >
-      <ListItemIcon>
-        <Checkbox checked={selected} color="primary" />
-      </ListItemIcon>
-      <Typography variant="body1">{tagName}</Typography>
-      {cols.map((fields) => (
-        <Box key={fields.reduce((a, { key }) => a + key, '')}>
-          <Column data={data} fields={fields} />
-        </Box>
-      ))}
-    </ListItem>
+    <Paper className={classes.paper}>
+      <ListItem
+        disableRipple
+        className={classes.root}
+        selected={selected}
+        button
+        onClick={() => onChange(data)}
+      >
+        <ListItemIcon>
+          <Checkbox checked={selected} color="primary" />
+        </ListItemIcon>
+        <Typography variant="body1">{tagName}</Typography>
+        {cols.map((fields) => (
+          <Box key={fields.reduce((a, { key }) => a + key, '')}>
+            <Column data={data} fields={fields} />
+          </Box>
+        ))}
+      </ListItem>
+    </Paper>
   );
 };
 

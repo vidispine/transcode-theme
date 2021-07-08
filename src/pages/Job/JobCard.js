@@ -8,8 +8,9 @@ import {
   LinearProgress,
   Box,
   IconButton,
-  Avatar,
   ListItem,
+  Avatar,
+  Paper,
   Typography,
   Divider,
 } from '@material-ui/core';
@@ -28,9 +29,8 @@ const Column = ({ fields, data }) =>
     </Box>
   ));
 
-const styles = ({ palette, spacing }) => ({
+const styles = ({ spacing }) => ({
   root: {
-    backgroundColor: palette.background.paper,
     borderRadius: spacing(0.5),
     padding: spacing(1, 0),
     display: 'flex',
@@ -50,6 +50,11 @@ const styles = ({ palette, spacing }) => ({
       display: 'grid',
       gridTemplateColumns: 'auto 1fr',
       gap: spacing(0, 2),
+    },
+  },
+  paper: {
+    '&:not(:last-child)': {
+      marginBottom: spacing(2),
     },
   },
 });
@@ -84,36 +89,37 @@ const usePoll = ({ jobId, type, status: initialStatus }) => {
 };
 
 const JobCard = ({ jobType = {}, classes, onAbort }) => {
-  const [{ status, started, jobId }] = React.useState({ ...jobType });
+  const [{ status, started, jobId }] = React.useState(jobType);
   const onClick = () => RUNNING_STATES.includes(status) && onAbort(jobId);
-
   const { request, value = 100 } = usePoll(jobType);
   React.useEffect(request, [request]);
   return (
-    <ListItem className={classes.root} alignItems="flex-start">
-      <Box className={classes.top}>
-        <Avatar variant="square">J</Avatar>
+    <Paper className={classes.paper}>
+      <ListItem className={classes.root}>
+        <Box className={classes.top}>
+          <Avatar variant="square">J</Avatar>
+          <Box>
+            <Column data={jobType} fields={cols} />
+          </Box>
+          <IconButton size="small" onClick={onClick}>
+            {RUNNING_STATES.includes(status) && <Pause />}
+            {INACTIVE_STATES.includes(status) && <Info />}
+          </IconButton>
+        </Box>
+        <Divider />
         <Box>
-          <Column data={jobType} fields={cols} />
+          <Box py={1} px={2} display="flex" justifyContent="space-between">
+            <Typography color="textPrimary" variant="button">
+              {status}
+            </Typography>
+            <Typography color="textSecondary" variant="caption">
+              {moment(started).fromNow()}
+            </Typography>
+          </Box>
+          <LinearProgress variant="determinate" value={value} />
         </Box>
-        <IconButton size="small" onClick={onClick}>
-          {RUNNING_STATES.includes(status) && <Pause />}
-          {INACTIVE_STATES.includes(status) && <Info />}
-        </IconButton>
-      </Box>
-      <Divider />
-      <Box>
-        <Box py={1} px={2} display="flex" justifyContent="space-between">
-          <Typography color="textPrimary" variant="button">
-            {status}
-          </Typography>
-          <Typography color="textSecondary" variant="caption">
-            {moment(started).fromNow()}
-          </Typography>
-        </Box>
-        <LinearProgress variant="determinate" value={value} />
-      </Box>
-    </ListItem>
+      </ListItem>
+    </Paper>
   );
 };
 

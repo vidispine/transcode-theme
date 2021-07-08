@@ -1,83 +1,93 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
+import debounce from 'lodash.debounce';
 import { useSnackbar } from 'notistack';
-import { Box, Tab, Tabs, List, Button, CircularProgress } from '@material-ui/core';
+import { useSearchItem } from '@vidispine/vdt-react';
+import { Box, Tab, Tabs, Paper, CircularProgress } from '@material-ui/core';
 
-import FileCard from './FileCard';
-import { useDialog } from '../../components';
+import { useSearch } from '../../hooks';
+import { useDialog } from '../../context';
+import { Snackbar } from '../../components';
+import InputList from './InputList';
+import OutputList from './OutputList';
 import TranscodeDialog from './TranscodeDialog';
 
-const FileList = ({
-  page,
-  isLoading,
-  onChangePage,
-  itemListType = {},
-  itemSearchDocument,
-  setItemSearchDocument,
-}) => {
-  const { enqueueSnackbar } = useSnackbar();
+const defaultInputState = {
+  itemSearchDocument: { field: [{ name: '__shape_size', value: [{ value: 1 }] }] },
+  queryParams: {
+    content: 'shape,metadata',
+    field: ['originalFilename:title', 'itemId', 'title'],
+    'noauth-url': true,
+    methodType: 'AUTO',
+  },
+  rowsPerPage: 10,
+};
+
+const defaultOutputState = {
+  itemSearchDocument: { field: [{ name: '__shape_size', value: [{ value: 2 }] }] },
+  queryParams: {
+    content: 'shape,metadata',
+    field: ['originalFilename:title', 'itemId', 'title'],
+    'noauth-url': true,
+    methodType: 'AUTO',
+  },
+  rowsPerPage: 10,
+};
+
+const FileList = ({ query, setQuery }) => {
+  const { state: inputState, ...inputActions } = useSearch(defaultInputState);
+  const { state: outputState, ...outputActions } = useSearch(defaultOutputState);
+  const { itemListType: outputItems = {}, isLoading: isLoadingOutput } = useSearchItem(outputState);
+  const { itemListType: inputItems = {}, isLoading: isLoadingInput } = useSearchItem(inputState);
+  const [{ page: inputPage }, { page: outputPage }] = [inputState, outputState];
+  const isLoading = isLoadingInput || isLoadingOutput;
+
   const { showDialog } = useDialog();
-  const { item: items = [], hits } = itemListType;
+  const { enqueueSnackbar } = useSnackbar();
 
-  const [tab, setTab] = React.useState('source');
-  const onChange = (_, newTab) => setTab(newTab);
+  const [tab, setTab] = React.useState('input');
+  const onChange = (_, newTab) => {
+    if (query) setQuery('');
+    setTab(newTab);
+  };
+
+  const debouncedInputQuery = React.useRef(debounce(inputActions.setSearchText, 500)).current;
+  const debouncedOutputQuery = React.useRef(debounce(inputActions.setSearchText, 500)).current;
   React.useEffect(() => {
-    const doc = itemSearchDocument.field.filter(({ name }) => name !== '__shape_size');
-    setItemSearchDocument({
-      ...itemSearchDocument,
-      field: [...doc, { name: '__shape_size', value: [{ value: tab === 'output' ? 2 : 1 }] }],
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab]);
+    if (tab === 'input') debouncedInputQuery(`*${query.toLowerCase()}*`);
+    if (tab === 'output') debouncedOutputQuery(`*${query.toLowerCase()}*`);
+    // eslint-disable-next-line
+  }, [query])
 
-  const sortedItems = React.useMemo(
-    () =>
-      items.map((item) => {
-        if (tab === 'output') return item;
-        const { shape: unsorted = [], ...rest } = item;
-        const shape = unsorted.sort(({ tag: aTag = [] }, { b: bTag = [] }) => {
-          if (aTag.includes('original')) return 1;
-          if (bTag.includes('original')) return -1;
-          return 0;
-        });
-        return { ...rest, shape };
-      }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [items],
-  );
 
   const onTranscode = (item) =>
     showDialog({ Dialog: TranscodeDialog, item })
-      .then(() => enqueueSnackbar('Transcoding started', { variant: 'success' }))
-      .catch(({ message }) => message && enqueueSnackbar(message, { variant: 'error' }));
+      .then((response) =>
+        enqueueSnackbar('', { persist: true, content: <Snackbar response={response} /> }),
+      )
+      .catch(() => null);
 
   return (
-    <Box display="grid" gridTemplateRows="auto 1fr auto" gridGap={16}>
-      <Tabs value={tab} onChange={onChange}>
-        <Tab disableRipple value="source" label="Source" />
-        <Tab disableRipple value="output" label="Output" />
-        {isLoading && (
-          <Tab disabled style={{ minWidth: 'unset' }} icon={<CircularProgress size={20} />} />
-        )}
-      </Tabs>
-      <Box overflow="auto">
-        <List disablePadding>
-          {sortedItems.map((itemType) => (
-            <FileCard
-              key={itemType.id}
-              itemType={itemType}
-              allowTranscode={tab !== 'output'}
-              onTranscode={onTranscode}
-            />
-          ))}
-        </List>
+    <Box display="grid" gridTemplateRows="auto 1fr" gridGap={16}>
+      <Paper>
+        <Tabs value={tab} onChange={onChange}>
+          <Tab disableRipple value="input" label={`Input (${inputItems.hits || 0})`} />
+          <Tab disableRipple value="output" label={`Output (${outputItems.hits || 0})`} />
+          {isLoading && (
+            <Tab disabled style={{ minWidth: 'unset' }} icon={<CircularProgress size={20} />} />
+          )}
+        </Tabs>
+      </Paper>
+      <Box overflow="hidden" className="input" hidden={tab !== 'input'}>
+        <InputList
+          page={inputPage}
+          onTranscode={onTranscode}
+          itemListType={inputItems}
+          {...inputActions}
+        />
       </Box>
-      <Box display="flex" justifyContent="flex-end">
-        <Button disabled={page < 1} onClick={() => onChangePage({ page: page - 1 })}>
-          Prev
-        </Button>
-        <Button disabled={(page + 1) * 5 > hits} onClick={() => onChangePage({ page: page + 1 })}>
-          Next
-        </Button>
+      <Box overflow="hidden" className="output" hidden={tab !== 'output'}>
+        <OutputList itemListType={outputItems} page={outputPage} {...outputActions} />
       </Box>
     </Box>
   );

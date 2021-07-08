@@ -4,7 +4,7 @@ import { UserAvatarButton } from '@vidispine/vdt-materialui';
 import { withStyles, AppBar, Button, Box, Avatar } from '@material-ui/core';
 import { useAuthContext } from '@vidispine/vdt-react';
 
-import { APP_TITLE, HEADER_LOGO } from '../../../const';
+import { APP_TITLE, HEADER_LOGO } from '../../const';
 
 const styles = ({ spacing, palette }) => ({
   root: {

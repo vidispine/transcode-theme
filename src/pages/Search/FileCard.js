@@ -10,6 +10,7 @@ import {
   MenuItem,
   Checkbox,
   ListItem,
+  Paper,
   Typography,
   ListItemIcon,
   ListItemText,
@@ -18,13 +19,17 @@ import {
 
 import { Menu } from '../../components';
 
+const getFileData = (shape = {}) => {
+  const { containerComponent = {} } = shape;
+  const { file = [{}] } = containerComponent;
+  const [{ timestamp, id: fileId, storage: storageId }] = file;
+  return { timestamp: moment(timestamp).format('L'), fileId, storageId };
+};
+
 const parseItem = ({ metadata = {}, shape: [shape] = [{}] }) => ({
   ...parseMetadataType(metadata, { flat: true, arrayOnSingle: false }),
   ...parseShapeType(shape),
-  timestamp:
-    shape &&
-    shape.containerComponent &&
-    moment(shape.containerComponent.file[0].timestamp).format('L'),
+  ...getFileData(shape),
 });
 
 const columnStyles = ({ spacing }) => ({
@@ -42,7 +47,7 @@ export const Column = withStyles(columnStyles)(({ fields, data, classes }) => (
         <Typography variant="body2" color="textSecondary">
           {label}:
         </Typography>
-        <Typography variant="body2" color="textPrimary">
+        <Typography noWrap variant="body2" color="textPrimary">
           {get(data, key, '-')}
         </Typography>
       </Box>
@@ -99,15 +104,18 @@ const cols = [
   ],
 ];
 
-const styles = ({ palette, spacing }) => ({
+const styles = ({ spacing, typography }) => ({
   root: {
-    backgroundColor: palette.background.paper,
-    borderRadius: spacing(0.5),
     padding: spacing(2),
     display: 'grid',
     gridTemplateColumns: 'auto auto 1fr 1fr 1fr auto',
     gap: spacing(2),
     alignItems: 'start',
+    '& > .MuiAvatar-root': {
+      display: 'flex',
+      flexDirection: 'column',
+      fontSize: typography.fontSize,
+    },
     '& > .MuiCheckbox-root': {
       padding: spacing(1),
       marginLeft: spacing(-1),
@@ -123,6 +131,11 @@ const styles = ({ palette, spacing }) => ({
       gridColumn: '5 / 2 span',
     },
   },
+  paper: {
+    '&:not(:last-child)': {
+      marginBottom: spacing(2),
+    },
+  },
 });
 
 const FileCard = ({
@@ -130,65 +143,77 @@ const FileCard = ({
   classes,
   allowTranscode = false,
   onTranscode,
+  onDelete = () => null,
+  // onDownload = () => null,
   interactive = true,
 }) => {
   const item = React.useMemo(() => parseItem(itemType), [itemType]);
+  // console.log(item);
   return (
-    <ListItem classes={classes} alignItems="flex-start">
-      {interactive && <Checkbox />}
-      <Avatar variant="square">I</Avatar>
-      {cols.map((fields) => (
-        <Column key={fields.reduce((a, { key }) => a + key, '')} data={item} fields={fields} />
-      ))}
-      {interactive && (
-        <Box display="flex" flexDirection="column">
-          {allowTranscode && (
-            <>
-              <IconButton onClick={() => onTranscode(itemType)}>
-                <SwitchVideo />
-              </IconButton>
-              <Menu>
-                <MenuItem onClick={() => console.log('download')}>
-                  <ListItemIcon>
+    <Paper className={classes.paper}>
+      <ListItem button disableRipple className={classes.root}>
+        {interactive && <Checkbox />}
+        <Avatar variant="square">
+          {itemType.id.split('-').map((value) => (
+            <span key={value}>{value}</span>
+          ))}
+        </Avatar>
+        {cols.map((fields) => (
+          <Column key={fields.reduce((a, { key }) => a + key, '')} data={item} fields={fields} />
+        ))}
+        {interactive && (
+          <Box display="flex" flexDirection="column">
+            {allowTranscode && (
+              <>
+                <IconButton onClick={() => onTranscode(itemType)}>
+                  <SwitchVideo />
+                </IconButton>
+                <Menu>
+                  <MenuItem onClick={() => window.open(item.uri)}>
+                    <ListItemIcon>
+                      <CloudDownload />
+                    </ListItemIcon>
+                    <ListItemText primary="Download" secondary="Download the file locally" />
+                  </MenuItem>
+                  <MenuItem onClick={() => onDelete(item.itemId)}>
+                    <ListItemIcon>
+                      <Delete />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary="Delete"
+                      primaryTypographyProps={{ color: 'error' }}
+                      secondary="Files on storage will be deleted"
+                    />
+                  </MenuItem>
+                </Menu>
+              </>
+            )}
+            {!allowTranscode && (
+              <>
+                <a target="_blank" rel="noreferrer" href={item.uri} download="test.mp4">
+                  <IconButton>
+                    {/* <IconButton onClick={() => onDownload(item.uri, item.fileName)}> */}
                     <CloudDownload />
-                  </ListItemIcon>
-                  <ListItemText primary="Download" secondary="Download the file locally" />
-                </MenuItem>
-                <MenuItem onClick={() => console.log('delete')}>
-                  <ListItemIcon>
-                    <Delete />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Delete"
-                    primaryTypographyProps={{ color: 'error' }}
-                    secondary="Files on storage will be deleted"
-                  />
-                </MenuItem>
-              </Menu>
-            </>
-          )}
-          {!allowTranscode && (
-            <>
-              <IconButton onClick={() => console.log('download')}>
-                <CloudDownload />
-              </IconButton>
-              <Menu>
-                <MenuItem onClick={() => console.log('delete')}>
-                  <ListItemIcon>
-                    <Delete />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Delete"
-                    primaryTypographyProps={{ color: 'error' }}
-                    secondary="Files on storage will be deleted"
-                  />
-                </MenuItem>
-              </Menu>
-            </>
-          )}
-        </Box>
-      )}
-    </ListItem>
+                  </IconButton>
+                </a>
+                <Menu>
+                  <MenuItem onClick={() => onDelete(item.itemId)}>
+                    <ListItemIcon>
+                      <Delete />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary="Delete"
+                      primaryTypographyProps={{ color: 'error' }}
+                      secondary="Files on storage will be deleted"
+                    />
+                  </MenuItem>
+                </Menu>
+              </>
+            )}
+          </Box>
+        )}
+      </ListItem>
+    </Paper>
   );
 };
 

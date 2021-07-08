@@ -72,7 +72,7 @@ export const ConfigurationProvider = ({ children }) => {
   const isError = isErrorStorages || isErrorResources;
 
   return (
-    <ConfigurationContext.Provider value={{ storages, resources, isLoading, isError }}>
+    <ConfigurationContext.Provider value={{ ...storages, resources, isLoading, isError }}>
       {children}
     </ConfigurationContext.Provider>
   );

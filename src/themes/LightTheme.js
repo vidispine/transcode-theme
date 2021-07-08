@@ -1,5 +1,4 @@
 import { createMuiTheme } from '@material-ui/core/styles';
-import indigo from '@material-ui/core/colors/indigo';
 
 import 'typeface-roboto';
 import '@vidispine/vdt-materialui/dist/index.css';
@@ -33,19 +32,20 @@ const theme = createMuiTheme({
   overrides: {
     VdtUserAvatarButton: {
       avatar: {
-        backgroundColor: indigo[500],
         fontSize: '0.875rem',
         height: 32,
         width: 32,
       },
     },
     MuiTabs: {
-      root: {},
+      root: {
+        backgroundColor: '#fff',
+        borderBottom: '2px solid #7B61FF',
+      },
       indicator: {
         backgroundColor: '#7B61FF',
         height: '100%',
-        borderRadius: 4,
-        zIndex: -1,
+        zIndex: 1,
       },
       flexContainer: {
         alignItems: 'center',
@@ -53,11 +53,25 @@ const theme = createMuiTheme({
     },
     MuiTab: {
       root: {
+        zIndex: 2,
         color: 'inherit',
         transition: 'all 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
         '&$selected': {
           color: '#fff',
         },
+      },
+    },
+    MuiPaper: {
+      root: {
+        position: 'relative',
+        overflow: 'hidden',
+        flexShrink: 0,
+      },
+    },
+    MuiAvatar: {
+      colorDefault: {
+        color: 'inherit',
+        backgroundColor: '#f2f2f2',
       },
     },
   },
@@ -70,6 +84,9 @@ const theme = createMuiTheme({
     VdtUserAvatarButton: {
       locale: { options: undefined },
       userName: '',
+    },
+    MuiPaper: {
+      variant: 'outlined',
     },
   },
 });

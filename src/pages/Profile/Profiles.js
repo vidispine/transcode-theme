@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { shapetag as ShapetagApi } from '@vidispine/vdt-api';
-import { Box, List, Button } from '@material-ui/core';
-import { useProfiles } from './ProfileContext';
-import { useDialog, Search } from '../../components';
+import { Box, Button } from '@material-ui/core';
+import { Search } from '../../components';
+import { useDialog, useProfiles } from '../../context';
 import ProfileManager from './ProfileManager';
-import ProfileCard from '../Search/ProfileCard';
+import ProfileCard from './ProfileCard';
 
 export default () => {
   const { showDialog } = useDialog();
@@ -36,11 +36,9 @@ export default () => {
         </Button>
       </Box>
       <Box my={2} flexGrow={1} overflow="auto">
-        <List disablePadding>
-          {profiles.slice(first, first + 20).map((tagName) => (
-            <ProfileCard key={tagName} tagName={tagName} />
-          ))}
-        </List>
+        {profiles.slice(first, first + 20).map((tagName) => (
+          <ProfileCard key={tagName} tagName={tagName} />
+        ))}
       </Box>
       <Box display="flex" justifyContent="flex-end">
         <Button type="button" onClick={prevPage} disabled={first === 0}>

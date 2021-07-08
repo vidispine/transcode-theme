@@ -2,14 +2,14 @@ import React from 'react';
 import { useSnackbar } from 'notistack';
 import { useApi } from '@vidispine/vdt-react';
 import { job as JobApi } from '@vidispine/vdt-api';
-import { Box, Tab, Tabs, List, Button, CircularProgress } from '@material-ui/core';
+import { Box, Tab, Tabs, Paper, Button, CircularProgress } from '@material-ui/core';
 
 import JobCard from './JobCard';
-import { useDialog } from '../../components';
+import { useDialog } from '../../context';
 
 import { RUNNING_STATES, INACTIVE_STATES } from './const';
 
-const NUMBER = 5;
+const NUMBER = 10;
 
 const JobList = () => {
   const { showDialog } = useDialog();
@@ -48,19 +48,19 @@ const JobList = () => {
 
   return (
     <Box display="grid" gridTemplateRows="auto 1fr auto" gridGap={16}>
-      <Tabs value={tab} onChange={onChange}>
-        <Tab disableRipple value="active" label="Active" />
-        <Tab disableRipple value="finished" label="Finished" />
-        {isLoading && (
-          <Tab disabled style={{ minWidth: 'unset' }} icon={<CircularProgress size={20} />} />
-        )}
-      </Tabs>
+      <Paper>
+        <Tabs value={tab} onChange={onChange}>
+          <Tab disableRipple value="active" label="Active" />
+          <Tab disableRipple value="finished" label="Inactive" />
+          {isLoading && (
+            <Tab disabled style={{ minWidth: 'unset' }} icon={<CircularProgress size={20} />} />
+          )}
+        </Tabs>
+      </Paper>
       <Box overflow="auto">
-        <List disablePadding>
-          {job.map((jobType) => (
-            <JobCard key={jobType.jobId} jobType={jobType} onAbort={onAbort} />
-          ))}
-        </List>
+        {job.map((jobType) => (
+          <JobCard key={jobType.jobId} jobType={jobType} onAbort={onAbort} />
+        ))}
         {!isLoading && job.length < 1 && <span>No {tab} jobs found</span>}
       </Box>
       <Box display="flex" justifyContent="flex-end">
