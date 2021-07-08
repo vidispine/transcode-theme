@@ -54,7 +54,7 @@ const styles = ({ spacing }) => ({
   },
   paper: {
     '&:not(:last-child)': {
-      marginBottom: spacing(2),
+      marginBottom: spacing(1),
     },
   },
 });

@@ -5,7 +5,6 @@ import FileCard from './FileCard';
 
 const InputList = ({ itemListType = {}, page, onChangePage, onTranscode }) => {
   const { item: items = [], hits } = itemListType;
-  console.log(itemListType);
   return (
     <Box display="grid" gridTemplateRows="1fr auto" height={1}>
       <Box overflow="auto" height={1}>

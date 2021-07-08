@@ -133,7 +133,7 @@ const styles = ({ spacing, typography }) => ({
   },
   paper: {
     '&:not(:last-child)': {
-      marginBottom: spacing(2),
+      marginBottom: spacing(1),
     },
   },
 });
@@ -148,7 +148,6 @@ const FileCard = ({
   interactive = true,
 }) => {
   const item = React.useMemo(() => parseItem(itemType), [itemType]);
-  // console.log(item);
   return (
     <Paper className={classes.paper}>
       <ListItem button disableRipple className={classes.root}>

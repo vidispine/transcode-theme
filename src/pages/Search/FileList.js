@@ -37,10 +37,25 @@ const defaultOutputState = {
 const FileList = ({ query, setQuery }) => {
   const { state: inputState, ...inputActions } = useSearch(defaultInputState);
   const { state: outputState, ...outputActions } = useSearch(defaultOutputState);
-  const { itemListType: outputItems = {}, isLoading: isLoadingOutput } = useSearchItem(outputState);
-  const { itemListType: inputItems = {}, isLoading: isLoadingInput } = useSearchItem(inputState);
+  const {
+    itemListType: inputItems = {},
+    isLoading: isLoadingInput,
+    isError: isErrorInput,
+    onRefresh: onRefreshInput,
+  } = useSearchItem(inputState);
+  const {
+    itemListType: outputItems = {},
+    isLoading: isLoadingOutput,
+    isError: isErrorOutput,
+    onRefresh: onRefreshOutput,
+  } = useSearchItem(outputState);
   const [{ page: inputPage }, { page: outputPage }] = [inputState, outputState];
   const isLoading = isLoadingInput || isLoadingOutput;
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  React.useEffect(() => isErrorInput && setTimeout(onRefreshInput, 5000), [isErrorInput]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  React.useEffect(() => isErrorOutput && setTimeout(onRefreshOutput, 5000), [isErrorOutput]);
 
   const { showDialog } = useDialog();
   const { enqueueSnackbar } = useSnackbar();
@@ -48,6 +63,8 @@ const FileList = ({ query, setQuery }) => {
   const [tab, setTab] = React.useState('input');
   const onChange = (_, newTab) => {
     if (query) setQuery('');
+    if (inputPage > 0) inputActions.onChangePage({ page: 0 });
+    if (outputPage > 0) outputActions.onChangePage({ page: 0 });
     setTab(newTab);
   };
 
@@ -78,7 +95,7 @@ const FileList = ({ query, setQuery }) => {
           )}
         </Tabs>
       </Paper>
-      <Box overflow="hidden" className="input" hidden={tab !== 'input'}>
+      <Box overflow="hidden" hidden={tab !== 'input'}>
         <InputList
           page={inputPage}
           onTranscode={onTranscode}
@@ -86,7 +103,7 @@ const FileList = ({ query, setQuery }) => {
           {...inputActions}
         />
       </Box>
-      <Box overflow="hidden" className="output" hidden={tab !== 'output'}>
+      <Box overflow="hidden" hidden={tab !== 'output'}>
         <OutputList itemListType={outputItems} page={outputPage} {...outputActions} />
       </Box>
     </Box>

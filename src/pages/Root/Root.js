@@ -17,13 +17,7 @@ const styles = ({ mixins }) => ({
   container: {
     height: '100vh',
     overflow: 'auto',
-    // paddingTop: () => {
-    //   console.log(mixins);
-    //   return mixins.toolbar.minHeight;
-    // },
     paddingTop: mixins.toolbar.minHeight,
-    // marginRight: spacing(4),
-    // marginLeft: spacing(4),
   },
 });
 
