@@ -5,6 +5,7 @@ import { parseMetadataType, parseShapeType } from '@vidispine/vdt-js';
 import { Delete, CloudDownload, SwitchVideo } from '@material-ui/icons';
 import {
   withStyles,
+  Tooltip,
   Box,
   Avatar,
   MenuItem,
@@ -116,15 +117,15 @@ const styles = ({ spacing, typography }) => ({
       flexDirection: 'column',
       fontSize: typography.fontSize,
     },
-    '& > .MuiCheckbox-root': {
-      padding: spacing(1),
+    '& > .MuiListItemIcon-root': {
+      minWidth: 'unset',
       marginLeft: spacing(-1),
       marginTop: spacing(-1),
     },
     '&:not(:last-child)': {
       marginBottom: spacing(2),
     },
-    '& > *:first-child:not(.MuiCheckbox-root)': {
+    '& > *:first-child:not(.MuiListItemIcon-root)': {
       gridColumn: '1 / 2 span',
     },
     '& > *:last-child:nth-child(4)': {
@@ -146,12 +147,17 @@ const FileCard = ({
   onDelete = () => null,
   // onDownload = () => null,
   interactive = true,
+  checkbox = false,
 }) => {
   const item = React.useMemo(() => parseItem(itemType), [itemType]);
   return (
     <Paper className={classes.paper}>
       <ListItem button disableRipple className={classes.root}>
-        {interactive && <Checkbox />}
+        {interactive && checkbox && (
+          <ListItemIcon>
+            <Checkbox />
+          </ListItemIcon>
+        )}
         <Avatar variant="square">
           {itemType.id.split('-').map((value) => (
             <span key={value}>{value}</span>
@@ -161,12 +167,14 @@ const FileCard = ({
           <Column key={fields.reduce((a, { key }) => a + key, '')} data={item} fields={fields} />
         ))}
         {interactive && (
-          <Box display="flex" flexDirection="column">
+          <Box height={1} display="flex" flexDirection="column" justifyContent="space-between">
             {allowTranscode && (
               <>
-                <IconButton onClick={() => onTranscode(itemType)}>
-                  <SwitchVideo />
-                </IconButton>
+                <Tooltip title="Transcode file">
+                  <IconButton onClick={() => onTranscode(itemType)}>
+                    <SwitchVideo />
+                  </IconButton>
+                </Tooltip>
                 <Menu>
                   <MenuItem onClick={() => window.open(item.uri)}>
                     <ListItemIcon>
@@ -189,24 +197,16 @@ const FileCard = ({
             )}
             {!allowTranscode && (
               <>
-                <a target="_blank" rel="noreferrer" href={item.uri} download="test.mp4">
-                  <IconButton>
-                    {/* <IconButton onClick={() => onDownload(item.uri, item.fileName)}> */}
+                <Tooltip title="Download file">
+                  <IconButton onClick={() => window.open(item.uri)}>
                     <CloudDownload />
                   </IconButton>
-                </a>
-                <Menu>
-                  <MenuItem onClick={() => onDelete(item.itemId)}>
-                    <ListItemIcon>
-                      <Delete />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Delete"
-                      primaryTypographyProps={{ color: 'error' }}
-                      secondary="Files on storage will be deleted"
-                    />
-                  </MenuItem>
-                </Menu>
+                </Tooltip>
+                <Tooltip title="Delete file">
+                  <IconButton onClick={() => onDelete(item.itemId)}>
+                    <Delete />
+                  </IconButton>
+                </Tooltip>
               </>
             )}
           </Box>

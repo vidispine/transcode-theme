@@ -80,8 +80,8 @@ const styles = ({ spacing, typography, palette }) => ({
 
 export const SelectField = withStyles(styles)(
   ({ name, label, match, options, required, dependency, classes, ...params }) => {
-    const autoValue = { label: 'Auto', value: 'AUTO', style: { display: 'none' } };
-    const emptyValue = { label: 'No options', disabled: true, value: 0 };
+    const autoValue = { label: 'Auto', value: 0, style: { display: 'none' } };
+    const emptyValue = { label: 'No options', disabled: true, value: 'nooptions' };
     const ref = React.createRef();
     const [opts, setOptions] = React.useState([...options, autoValue]);
     const [checked, setChecked] = React.useState(match);
@@ -129,7 +129,7 @@ export const SelectField = withStyles(styles)(
                   match !== undefined && {
                     checked,
                     onChange: ({ target }) => {
-                      if (target.checked) input.onChange('AUTO');
+                      if (target.checked) input.onChange(0);
                       else if (opts.length > 2) input.onChange(opts[0].value);
                       else input.onChange();
                       setChecked(target.checked);

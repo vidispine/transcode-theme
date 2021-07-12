@@ -1,5 +1,6 @@
 import React from 'react';
 import { useQuery } from 'react-query';
+import { parseTranscodePreset } from '@vidispine/vdt-js';
 import { shapetag as ShapetagApi } from '@vidispine/vdt-api';
 
 const ProfileContext = React.createContext();
@@ -16,7 +17,8 @@ export function useListProfiles() {
     () =>
       ShapetagApi.listShapeTag().then(({ data = {} }) => {
         const { uri: profiles = [] } = data;
-        return profiles;
+        // return profiles.filter((profile) => profile !== 'original');
+        return profiles.filter((profile) => profile !== 'original');
       }),
     {
       refetchOnWindowFocus: false,
@@ -25,7 +27,7 @@ export function useListProfiles() {
   );
 }
 
-const parseProfile = (data) => {
+export const parseProfile = (data) => {
   const profile = {};
   const { name, format, video, audio, metadata } = data;
 
@@ -61,13 +63,17 @@ const parseProfile = (data) => {
     }
   }
 
-  return profile;
+  return { ...profile, espanol: data };
 };
 
 export function useGetProfile({ tagName }) {
   return useQuery(
     ['profile', tagName],
-    () => ShapetagApi.getShapeTag({ tagName }).then(({ data = {} }) => parseProfile(data)),
+    () =>
+      ShapetagApi.getShapeTag({ tagName }).then(({ data = {} }) => ({
+        ...parseTranscodePreset(data),
+        name: data.name,
+      })),
     {
       refetchOnWindowFocus: false,
       staleTime: Infinity,
@@ -78,13 +84,18 @@ export function useGetProfile({ tagName }) {
 export const ProfileProvider = ({ children }) => {
   const { data = [], isLoading, isError } = useListProfiles();
   const [search, setSearch] = React.useState('');
+  const [showDefault, setShowDefault] = React.useState(false);
   const onSearch = (v) => setSearch(v);
-  const profiles = React.useMemo(
-    () => data.filter((s) => s.toLowerCase().includes(search)),
-    [search, data],
-  );
+  const profiles = React.useMemo(() => {
+    let tags = data;
+    if (!showDefault) tags = tags.filter((tag) => !tag.startsWith('__'));
+    if (search) tags = tags.filter((tag) => tag.toLowerCase().includes(search.toLowerCase()));
+    return tags;
+  }, [search, showDefault, data]);
   return (
-    <ProfileContext.Provider value={{ profiles, onSearch, isLoading, isError }}>
+    <ProfileContext.Provider
+      value={{ profiles, onSearch, showDefault, setShowDefault, isLoading, isError }}
+    >
       {children}
     </ProfileContext.Provider>
   );

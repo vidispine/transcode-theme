@@ -2,6 +2,7 @@
 import React from 'react';
 import { item as ItemApi, vsimport as ImportApi, shape as ShapeApi } from '@vidispine/vdt-api';
 import { createMetadataType, parseMetadataType } from '@vidispine/vdt-js';
+import { SwitchField } from '@vidispine/vdt-materialui';
 import { Form, Field } from 'react-final-form';
 import {
   withStyles,
@@ -100,7 +101,16 @@ const CostEstimate = ({ selected, cost: data, title, isLoading }) => {
   );
 };
 
-const Content = ({ onClose, profiles: allProfiles, item, classes, handleSubmit, submitting }) => {
+const Content = ({
+  onClose,
+  profiles: allProfiles,
+  item,
+  classes,
+  handleSubmit,
+  submitting,
+  showDefault,
+  setShowDefault,
+}) => {
   const { metadata = {} } = item;
   const { itemId, title } = parseMetadataType(metadata, { flat: true, arrayOnSingle: false });
   const [step, setStep] = React.useState(1);
@@ -133,8 +143,25 @@ const Content = ({ onClose, profiles: allProfiles, item, classes, handleSubmit, 
         <FileCard itemType={item} interactive={false} />
         <Box overflow="hidden" flexGrow={1} display="flex" flexDirection="column">
           <Collapse in={step === 1} timeout={500}>
-            <Search fixed onChange={setSearch} placeholder="Search profiles..." />
-            <Box mt={2}>
+            <Box
+              display="flex"
+              flexDirection="column"
+              position="sticky"
+              top={0}
+              zIndex={10}
+              bgcolor="background.default"
+            >
+              <Search onChange={setSearch} placeholder="Search profiles..." />
+              <SwitchField
+                SwitchProps={{ color: 'primary' }}
+                label="Show default profiles"
+                input={{
+                  value: showDefault,
+                  onChange: ({ target }) => setShowDefault(target.checked),
+                }}
+              />
+            </Box>
+            <Box mt={1}>
               {profiles.map((tagName) => (
                 <ProfileCard
                   key={tagName}
@@ -180,7 +207,7 @@ const Content = ({ onClose, profiles: allProfiles, item, classes, handleSubmit, 
 const TranscodeDialog = ({ open, onSuccess, onClose, item = {}, classes }) => {
   const { shape: [shapeDocument = {}] = [{}], id: itemId } = item;
   const { outputStorage: storageId } = useConfiguration();
-  const { profiles: allProfiles = [] } = useProfiles();
+  const { profiles: allProfiles = [], showDefault, setShowDefault } = useProfiles();
 
   const handleSubmit = (values) => {
     const queryParams = { container: 1 };
@@ -231,6 +258,8 @@ const TranscodeDialog = ({ open, onSuccess, onClose, item = {}, classes }) => {
     <Dialog fullWidth maxWidth="md" open={open} onClose={onClose}>
       <DialogTitle>Transcode file</DialogTitle>
       <Form
+        showDefault={showDefault}
+        setShowDefault={setShowDefault}
         item={item}
         render={Content}
         onClose={onClose}

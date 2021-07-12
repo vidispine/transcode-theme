@@ -37,13 +37,6 @@ export default [
         ],
       },
       {
-        name: 'createPreview',
-        label: 'Create preview',
-        type: 'checkbox',
-        defaultValue: false,
-        fullWidth: true,
-      },
-      {
         name: 'createThumbnails',
         label: 'Create thumbnails',
         type: 'checkbox',
@@ -265,7 +258,7 @@ export default [
         ],
       },
       {
-        name: 'video.resolution',
+        name: 'video.scaling',
         label: 'Resolution',
         type: 'select',
         match: false,
@@ -349,7 +342,7 @@ export default [
             dependency: ['baseline', 'ipod', 'main', 'high'],
           },
           {
-            value: 0,
+            value: 'custom',
             label: 'Custom resolution',
           },
         ],
@@ -359,8 +352,8 @@ export default [
         label: 'Width',
         type: 'number',
         dependency: {
-          key: 'video.resolution',
-          value: 0,
+          key: 'video.scaling',
+          value: 'custom',
         },
       },
       {
@@ -368,8 +361,8 @@ export default [
         label: 'Height',
         type: 'number',
         dependency: {
-          key: 'video.resolution',
-          value: 0,
+          key: 'video.scaling',
+          value: 'custom',
         },
       },
     ],

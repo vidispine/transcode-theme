@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { shapetag as ShapetagApi } from '@vidispine/vdt-api';
+import { SwitchField } from '@vidispine/vdt-materialui';
 import { Box, Button } from '@material-ui/core';
 import { Search } from '../../components';
 import { useDialog, useProfiles } from '../../context';
@@ -19,7 +20,7 @@ export default () => {
       .then(() => enqueueSnackbar('Success!', { variant: 'success' }))
       .catch(({ message }) => message && enqueueSnackbar(message, { variant: 'error' }));
   const [first, setFirst] = useState(0);
-  const { profiles = [], onSearch } = useProfiles();
+  const { profiles = [], onSearch, showDefault, setShowDefault } = useProfiles();
 
   const nextPage = () => {
     setFirst(first + 20);
@@ -30,10 +31,15 @@ export default () => {
   return (
     <Box px={2} pt={2} height={1} display="flex" flexDirection="column">
       <Box display="grid" gridTemplateColumns="1fr auto" gridGap={8}>
-        <Search onChange={onSearch} />
+        <Search onChange={onSearch} placeholder="Search profiles..." />
         <Button variant="contained" color="primary" style={{ flexShrink: 0 }} onClick={onClick}>
           Add new profile
         </Button>
+        <SwitchField
+          color="primary"
+          label="Show default profiles"
+          input={{ value: showDefault, onChange: ({ target }) => setShowDefault(target.checked) }}
+        />
       </Box>
       <Box my={2} flexGrow={1} overflow="auto">
         {profiles.slice(first, first + 20).map((tagName) => (

@@ -1,5 +1,7 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import get from 'lodash.get';
+import { ShapeTagCard } from '@vidispine/vdt-materialui';
 import {
   withStyles,
   Box,
@@ -12,67 +14,71 @@ import {
 
 import { useGetProfile } from '../../context';
 
-const Column = ({ fields, data }) =>
-  fields.map(({ key, label }) => (
-    <Box key={key} display="contents">
-      <Typography variant="body2" color="textSecondary">
-        {label}:
-      </Typography>
-      <Typography variant="body2" color="textPrimary">
-        {get(data, key, 'Auto')}
-      </Typography>
-    </Box>
-  ));
+const columnStyles = ({ spacing }) => ({
+  root: {
+    display: 'grid',
+    gridTemplateColumns: 'auto 1fr',
+    gap: spacing(1, 2),
+  },
+});
+
+export const Column = withStyles(columnStyles)(({ fields, data, classes }) => (
+  <Box classes={classes}>
+    {fields.map(({ key, label }) => (
+      <Box key={key} display="contents">
+        <Typography variant="body2" color="textSecondary">
+          {label}:
+        </Typography>
+        <Typography noWrap variant="body2" color="textPrimary">
+          {get(data, key, '-')}
+        </Typography>
+      </Box>
+    ))}
+  </Box>
+));
 
 const cols = [
   [
     {
-      key: 'format',
+      key: 'containerFormat',
       label: 'Format',
     },
     {
-      key: 'resolution',
+      key: 'dimension',
       label: 'Resolution',
     },
   ],
   [
     {
-      key: 'videoCodec',
+      key: 'videoFormat',
       label: 'Video codec',
     },
     {
-      key: 'bitrate',
-      label: 'Vide bitrate',
+      key: 'audioFormat',
+      label: 'Audio codec',
     },
   ],
   [
     {
-      key: 'audioCodec',
-      label: 'Audio codec',
+      key: 'videoBitrate',
+      label: 'Video bitrate',
     },
     {
-      key: 'audioBitrate',
-      label: 'Audio bitrate',
+      key: 'frameRate',
+      label: 'Framerate',
     },
   ],
 ];
 
-const styles = ({ spacing }) => ({
+const styles = ({ spacing, typography }) => ({
   root: {
     padding: spacing(2),
     display: 'grid',
     gridTemplateColumns: 'auto 1fr 1fr 1fr 1fr',
     gap: spacing(2),
     alignItems: 'start',
-    '& .MuiCheckbox-root': {
-      padding: spacing(1),
-      marginLeft: spacing(-1),
-      marginTop: spacing(-1),
-    },
-    '& > .MuiBox-root': {
-      display: 'grid',
-      gridTemplateColumns: 'auto 1fr',
-      gap: spacing(1, 2),
+    '&:not(:last-child)': {
+      marginBottom: spacing(2),
     },
   },
   paper: {
@@ -84,6 +90,7 @@ const styles = ({ spacing }) => ({
 
 const FileCard = ({ tagName, selected, onChange = () => null, classes }) => {
   const { data = {} } = useGetProfile({ tagName });
+  console.log(data);
   return (
     <Paper className={classes.paper}>
       <ListItem
@@ -96,11 +103,16 @@ const FileCard = ({ tagName, selected, onChange = () => null, classes }) => {
         <ListItemIcon>
           <Checkbox checked={selected} color="primary" />
         </ListItemIcon>
-        <Typography variant="body1">{tagName}</Typography>
+        <Box>
+          <Typography noWrap variant="body1" color="textPrimary">
+            {get(data, 'name', '-')}
+          </Typography>
+          <Typography noWrap variant="caption" color="textSecondary">
+            {get(data, 'description', '-')}
+          </Typography>
+        </Box>
         {cols.map((fields) => (
-          <Box key={fields.reduce((a, { key }) => a + key, '')}>
-            <Column data={data} fields={fields} />
-          </Box>
+          <Column key={fields.reduce((a, { key }) => a + key, '')} data={data} fields={fields} />
         ))}
       </ListItem>
     </Paper>

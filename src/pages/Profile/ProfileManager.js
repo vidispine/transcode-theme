@@ -25,27 +25,18 @@ const styles = ({ spacing, palette }) => ({
   actions: {},
 });
 
-const extractValues = ({
-  video,
-  audio,
-  format,
-  name,
-  description,
-  createThumbnails,
-  createPreview,
-}) => {
+const extractValues = ({ video, audio, format, name, description, createThumbnails }) => {
   const output = { name, description, format, metadata: {} };
   if (video) {
-    let { resolution, framerate, preset, width, height } = video;
+    // eslint-disable-next-line prefer-const
+    let { scaling, framerate, preset, width, height, ...videoParams } = video;
     if (framerate) framerate = { denominator: framerate, numerator: 1 };
-    if (resolution) {
-      [width, height] = resolution.split('x');
-      resolution = { width: Number(width), height: Number(height) };
-    } else if (width && height) {
-      resolution = { width, height };
+    if (scaling) {
+      if (scaling !== 'custom') [width, height] = scaling.split('x');
+      scaling = { width: Number(width), height: Number(height) };
     }
     if (preset) preset = [preset];
-    output.video = { ...video, framerate, resolution, preset };
+    output.video = { ...videoParams, framerate, scaling, preset };
   }
   if (audio) {
     let { preset, bitrate } = audio;
@@ -57,11 +48,6 @@ const extractValues = ({
   if (createThumbnails) {
     output.metadata.field = (output.metadata.field || []).concat([
       { key: 'createThumbnails', value: createThumbnails || false },
-    ]);
-  }
-  if (createPreview) {
-    output.metadata.field = (output.metadata.field || []).concat([
-      { key: 'createPreview', value: createPreview || false },
     ]);
   }
   return output;
@@ -86,6 +72,10 @@ const Content = ({ form, handleSubmit, onClose, classes }) => (
 
 const ProfileManager = ({ onSuccess, onClose, open, classes }) => {
   const form = React.useState(sections);
+  const validate = ({ name }) => {
+    if (name && name.includes(' ')) return { name: 'Do not use blank spaces' };
+    return {};
+  };
   const handleSubmit = (values) => onSuccess(extractValues(values));
   return (
     <Dialog classes={{ root: classes.root }} open={open} onClose={onClose}>
@@ -95,6 +85,7 @@ const ProfileManager = ({ onSuccess, onClose, open, classes }) => {
         onClose={onClose}
         component={Content}
         classes={classes}
+        validate={validate}
       />
     </Dialog>
   );

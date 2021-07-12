@@ -4,11 +4,6 @@ import { SearchInput } from '@vidispine/vdt-materialui';
 import { withStyles, Paper } from '@material-ui/core';
 
 const styles = ({ spacing, palette, transitions }) => ({
-  root: {
-    position: ({ fixed }) => (fixed ? 'sticky' : 'relative'),
-    zIndex: 10,
-    top: 0,
-  },
   input: {
     overflow: 'hidden',
     borderWidth: 0,
@@ -31,16 +26,14 @@ const styles = ({ spacing, palette, transitions }) => ({
 
 const Search = ({
   value,
-  fixed = false,
   onSubmit,
   onChange,
   classes: { root, ...rest },
   placeholder = 'Search files...',
 }) => (
-  <Paper className={root}>
+  <Paper>
     <SearchInput
       value={value}
-      fixed={fixed}
       classes={rest}
       onChange={onChange}
       onSubmit={onSubmit}

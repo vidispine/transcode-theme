@@ -17,8 +17,10 @@ const defaultInputState = {
   queryParams: {
     content: 'shape,metadata',
     field: ['originalFilename:title', 'itemId', 'title'],
-    'noauth-url': true,
-    methodType: 'AUTO',
+    methodMetadata: [
+      { key: 'format', value: 'SIGNED-AUTO' },
+      { key: 'contentDisposition', value: 'attachment' },
+    ],
   },
   rowsPerPage: 10,
 };
@@ -28,8 +30,10 @@ const defaultOutputState = {
   queryParams: {
     content: 'shape,metadata',
     field: ['originalFilename:title', 'itemId', 'title'],
-    'noauth-url': true,
-    methodType: 'AUTO',
+    methodMetadata: [
+      { key: 'format', value: 'SIGNED-AUTO' },
+      { key: 'contentDisposition', value: 'attachment' },
+    ],
   },
   rowsPerPage: 10,
 };
