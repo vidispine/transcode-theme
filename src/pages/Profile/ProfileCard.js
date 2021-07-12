@@ -90,7 +90,6 @@ const styles = ({ spacing, typography }) => ({
 
 const FileCard = ({ tagName, selected, onChange = () => null, classes }) => {
   const { data = {} } = useGetProfile({ tagName });
-  console.log(data);
   return (
     <Paper className={classes.paper}>
       <ListItem
