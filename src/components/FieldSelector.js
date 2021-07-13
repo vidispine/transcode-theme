@@ -41,6 +41,17 @@ const styles = ({ spacing, typography, palette }) => ({
         backgroundColor: palette.background.paper,
         padding: spacing(2),
       },
+      '& .Mui-disabled': {
+        '& fieldset': {
+          opacity: 0.3,
+        },
+        '& input': {
+          color: palette.text.primary,
+          '&::placeholder': {
+            opacity: 0,
+          },
+        },
+      },
     },
   },
   checkbox: {
@@ -75,11 +86,25 @@ const styles = ({ spacing, typography, palette }) => ({
         fontSize: typography.fontSize,
       },
     },
+    '& .Mui-disabled': {
+      '& .MuiSelect-root': {
+        color: palette.text.primary,
+      },
+      '& fieldset': {
+        opacity: 0.3,
+      },
+      '& svg': {
+        visibility: 'hidden',
+      },
+      '& label': {
+        color: palette.text.disabled,
+      },
+    },
   },
 });
 
 export const SelectField = withStyles(styles)(
-  ({ name, label, match, options, required, dependency, classes, ...params }) => {
+  ({ name, label, match, options, required, dependency, classes, defaultValue, ...params }) => {
     const autoValue = { label: 'Auto', value: 0, style: { display: 'none' } };
     const emptyValue = { label: 'No options', disabled: true, value: 'nooptions' };
     const ref = React.createRef();
@@ -108,6 +133,8 @@ export const SelectField = withStyles(styles)(
           id={name}
           name={name}
           type="select"
+          validate={required ? (v) => !v && 'Required' : ''}
+          defaultValue={defaultValue}
           render={({ input, meta }) => {
             if (!ref.current) ref.current = input;
             return (
@@ -121,10 +148,8 @@ export const SelectField = withStyles(styles)(
                 options={opts}
                 variant="outlined"
                 classes={{ root: classes.select }}
-                required={required}
                 disabled={!!checked}
                 IconComponent={checked ? Lock : ArrowDropDown}
-                InputLabelProps={{ required }}
                 FormHelperTextProps={
                   match !== undefined && {
                     checked,
@@ -137,6 +162,7 @@ export const SelectField = withStyles(styles)(
                     component: MatchSource,
                   }
                 }
+                InputLabelProps={{ disabled: true }}
                 {...params}
               />
             );
@@ -167,13 +193,34 @@ export const TextField = withStyles(styles)(
   ({ name, label, required, placeholder, classes, ...params }) => {
     return (
       <Field
+        validate={required ? (v) => !v && 'Required' : ''}
         id={name}
         name={name}
         type="text"
         label={label}
         variant="outlined"
         classes={{ root: classes.text }}
-        required={required}
+        component={VdtTextField}
+        helperText={null}
+        placeholder={placeholder}
+        InputLabelProps={{ shrink: false, 'data-shrink': true }}
+        {...params}
+      />
+    );
+  },
+);
+
+export const PasswordField = withStyles(styles)(
+  ({ name, label, required, placeholder, classes, ...params }) => {
+    return (
+      <Field
+        validate={required ? (v) => !v && 'Required' : ''}
+        id={name}
+        name={name}
+        type={params.disabled ? 'password' : 'text'}
+        label={label}
+        variant="outlined"
+        classes={{ root: classes.text }}
         component={VdtTextField}
         helperText={null}
         placeholder={placeholder}
@@ -188,13 +235,13 @@ export const NumberField = withStyles(styles)(
   ({ name, label, required, placeholder, classes, ...params }) => {
     return (
       <Field
+        validate={required ? (v) => !v && 'Required' : ''}
         id={name}
         name={name}
         type="number"
         label={label}
         variant="outlined"
         classes={{ root: classes.text }}
-        required={required}
         component={VdtTextField}
         helperText={null}
         placeholder={placeholder}
@@ -210,6 +257,7 @@ export const FieldSelector = ({ type, dependency, ...params }) => {
   if (type === 'number') FieldType = NumberField;
   if (type === 'select') FieldType = SelectField;
   if (type === 'checkbox') FieldType = CheckboxField;
+  if (type === 'password') FieldType = PasswordField;
   if (!dependency) return <FieldType {...params} />;
   const { key, value } = dependency;
   return (
