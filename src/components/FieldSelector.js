@@ -1,22 +1,14 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import { withStyles } from '@material-ui/core';
-import { ArrowDropDown, Lock } from '@material-ui/icons';
+import isMatch from 'lodash.ismatch';
+import { withStyles, FormHelperText } from '@material-ui/core';
 import {
   TextField as VdtTextField,
-  SelectField as VdtSelectField,
   CheckboxField as VdtCheckboxField,
 } from '@vidispine/vdt-materialui';
 import { Field } from 'react-final-form';
 
-export const MatchSource = ({ onChange, match: checked }) => (
-  <VdtCheckboxField
-    input={{ onChange, checked }}
-    color="primary"
-    size="small"
-    label="Match source"
-  />
-);
+import CustomSelectField from './SelectField';
 
 const styles = ({ spacing, typography, palette }) => ({
   text: {
@@ -103,72 +95,50 @@ const styles = ({ spacing, typography, palette }) => ({
   },
 });
 
+const HelperText = ({ children }) => (
+  <>{children && <FormHelperText error>{children}</FormHelperText>}</>
+);
+
+const autoValue = { label: 'Auto', value: 0, style: { display: 'none' } };
+const emptyValue = { label: 'No options', disabled: true, value: 'nooptions' };
+
 export const SelectField = withStyles(styles)(
-  ({ name, label, match, options, required, dependency, classes, defaultValue, ...params }) => {
-    const autoValue = { label: 'Auto', value: 0, style: { display: 'none' } };
-    const emptyValue = { label: 'No options', disabled: true, value: 'nooptions' };
-    const ref = React.createRef();
-    const [opts, setOptions] = React.useState([...options, autoValue]);
-    const [checked, setChecked] = React.useState(match);
+  ({ name, label, match, options, required, dependency, classes, defaultValue = 0, ...params }) => {
+    const [opts, setOpts] = React.useState([...options, autoValue]);
     React.useEffect(() => {
-      if (dependency === undefined) return;
-      const { value, onChange } = ref.current;
+      if (!dependency) return;
       const filter = options.filter(({ dependency: key }) => {
-        if (!dependency || !key) return true;
-        return key.includes(dependency);
+        if (!key) return true;
+        return key.some((d) => isMatch(d, dependency));
       });
-      if (filter.length) {
-        const active = filter.find(({ value: val }) => val === value);
-        if (!active && !checked && dependency) onChange(filter[0].value);
-      } else {
-        if (!checked && dependency) onChange();
-        filter.push(emptyValue);
-      }
-      setOptions(filter.concat([autoValue]));
+      setOpts([...(filter.length ? filter : [emptyValue]), autoValue]);
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [dependency, options]);
+    }, [dependency]);
     return (
-      <>
-        <Field
-          id={name}
-          name={name}
-          type="select"
-          validate={required ? (v) => !v && 'Required' : ''}
-          defaultValue={defaultValue}
-          render={({ input, meta }) => {
-            if (!ref.current) ref.current = input;
-            return (
-              <VdtSelectField
-                meta={meta}
-                type="select"
-                input={input}
-                label={label}
-                onBlur={input.onBlur}
-                onFocus={input.onFocus}
-                options={opts}
-                variant="outlined"
-                classes={{ root: classes.select }}
-                disabled={!!checked}
-                IconComponent={checked ? Lock : ArrowDropDown}
-                FormHelperTextProps={
-                  match !== undefined && {
-                    checked,
-                    onChange: ({ target }) => {
-                      if (target.checked) input.onChange(0);
-                      else if (opts.length > 2) input.onChange(opts[0].value);
-                      else input.onChange();
-                      setChecked(target.checked);
-                    },
-                    component: MatchSource,
-                  }
-                }
-                InputLabelProps={{ disabled: true }}
-                {...params}
-              />
-            );
-          }}
-        />
-      </>
+      <Field
+        id={name}
+        name={name}
+        type="select"
+        format={(v) => JSON.stringify(v)}
+        parse={(v) => JSON.parse(v)}
+        validate={required ? (v) => !v && 'Required' : ''}
+        defaultValue={defaultValue}
+        render={({ input, meta }) => (
+          <CustomSelectField
+            meta={meta}
+            type="select"
+            input={input}
+            label={label}
+            options={opts}
+            match={match}
+            variant="outlined"
+            classes={{ root: classes.select }}
+            dependency={dependency}
+            InputLabelProps={{ disabled: true }}
+            {...params}
+          />
+        )}
+      />
     );
   },
 );
@@ -204,6 +174,7 @@ export const TextField = withStyles(styles)(
         helperText={null}
         placeholder={placeholder}
         InputLabelProps={{ shrink: false, 'data-shrink': true }}
+        FormHelperTextProps={{ component: HelperText }}
         {...params}
       />
     );
@@ -225,6 +196,7 @@ export const PasswordField = withStyles(styles)(
         helperText={null}
         placeholder={placeholder}
         InputLabelProps={{ shrink: false, 'data-shrink': true }}
+        FormHelperTextProps={{ component: HelperText }}
         {...params}
       />
     );
@@ -246,26 +218,40 @@ export const NumberField = withStyles(styles)(
         helperText={null}
         placeholder={placeholder}
         InputLabelProps={{ shrink: false, 'data-shrink': true }}
+        FormHelperTextProps={{ component: HelperText }}
         {...params}
       />
     );
   },
 );
 
-export const FieldSelector = ({ type, dependency, ...params }) => {
+export const FieldSelector = ({
+  type,
+  errors,
+  dependency = [],
+  checkedDependencies = {},
+  ...params
+}) => {
   let FieldType = TextField;
   if (type === 'number') FieldType = NumberField;
   if (type === 'select') FieldType = SelectField;
   if (type === 'checkbox') FieldType = CheckboxField;
   if (type === 'password') FieldType = PasswordField;
-  if (!dependency) return <FieldType {...params} />;
-  const { key, value } = dependency;
+  if (!dependency.length)
+    return (
+      <FieldType subscription={{ value: true }} {...params} dependency={checkedDependencies} />
+    );
+  const [key, ...rest] = dependency;
   return (
     <Field name={key} subscription={{ value: true }}>
-      {({ input: { value: val } }) => {
-        if (value !== undefined && val !== value) return null;
-        return <FieldType {...params} dependency={val} />;
-      }}
+      {({ input: { value: val } }) => (
+        <FieldSelector
+          {...params}
+          type={type}
+          checkedDependencies={{ ...checkedDependencies, [key]: val }}
+          dependency={rest}
+        />
+      )}
     </Field>
   );
 };

@@ -22,8 +22,8 @@ const parseStorages = ({ storage: storageList }) => {
     const [defaultMethod] = methodList;
     if (defaultMethod) {
       const { uri: uriString, ...params } = defaultMethod;
-      const asd = new URL(uriString);
-      let { protocol, pathname, search } = asd;
+      const methodUri = new URL(uriString);
+      let { protocol, pathname, search } = methodUri;
       if (pathname.startsWith('//')) pathname = pathname.slice(2);
       if (protocol.endsWith(':')) protocol = protocol.slice(0, -1);
       if (search.startsWith('?')) search = search.slice(1);

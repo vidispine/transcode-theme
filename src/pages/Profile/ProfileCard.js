@@ -1,7 +1,5 @@
-/* eslint-disable no-unused-vars */
 import React from 'react';
 import get from 'lodash.get';
-import { ShapeTagCard } from '@vidispine/vdt-materialui';
 import {
   withStyles,
   Box,
@@ -10,15 +8,22 @@ import {
   ListItem,
   ListItemIcon,
   Typography,
+  MenuItem,
+  ListItemText,
 } from '@material-ui/core';
+import { Delete } from '@material-ui/icons';
 
 import { useGetProfile } from '../../context';
+import { Menu } from '../../components';
 
 const columnStyles = ({ spacing }) => ({
   root: {
     display: 'grid',
     gridTemplateColumns: 'auto 1fr',
     gap: spacing(1, 2),
+    '&:last-child': {
+      gridColumnEnd: 'span 2',
+    },
   },
 });
 
@@ -70,11 +75,11 @@ const cols = [
   ],
 ];
 
-const styles = ({ spacing, typography }) => ({
+const styles = ({ spacing }) => ({
   root: {
     padding: spacing(2),
     display: 'grid',
-    gridTemplateColumns: 'auto 1fr 1fr 1fr 1fr',
+    gridTemplateColumns: 'auto 1fr 1fr 1fr 1fr auto',
     gap: spacing(2),
     alignItems: 'start',
     '&:not(:last-child)': {
@@ -88,8 +93,16 @@ const styles = ({ spacing, typography }) => ({
   },
 });
 
-const FileCard = ({ tagName, selected, onChange = () => null, classes }) => {
+const ProfileCard = ({
+  tagName,
+  selected,
+  interactive = false,
+  onChange = () => null,
+  onDelete = () => null,
+  classes,
+}) => {
   const { data = {} } = useGetProfile({ tagName });
+  const { raw = {} } = data;
   return (
     <Paper className={classes.paper}>
       <ListItem
@@ -97,7 +110,7 @@ const FileCard = ({ tagName, selected, onChange = () => null, classes }) => {
         className={classes.root}
         selected={selected}
         button
-        onClick={() => onChange(data)}
+        onClick={() => onChange(raw)}
       >
         <ListItemIcon>
           <Checkbox checked={selected} color="primary" />
@@ -113,9 +126,23 @@ const FileCard = ({ tagName, selected, onChange = () => null, classes }) => {
         {cols.map((fields) => (
           <Column key={fields.reduce((a, { key }) => a + key, '')} data={data} fields={fields} />
         ))}
+        {interactive && (
+          <Menu>
+            <MenuItem onClick={() => onDelete(tagName)}>
+              <ListItemIcon>
+                <Delete />
+              </ListItemIcon>
+              <ListItemText
+                primary="Delete profile"
+                primaryTypographyProps={{ color: 'error' }}
+                secondary="This action cannot be undone"
+              />
+            </MenuItem>
+          </Menu>
+        )}
       </ListItem>
     </Paper>
   );
 };
 
-export default withStyles(styles)(FileCard);
+export default withStyles(styles)(ProfileCard);

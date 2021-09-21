@@ -40,7 +40,7 @@ const ProfileSection = ({ label, fields, errors, submitFailed, classes }) => {
     () => submitFailed && fields.some(({ name }) => Object.keys(errors).includes(name)),
     [errors, fields, submitFailed],
   );
-  if (!label) return <Content fields={fields} />;
+  if (!label) return <Content fields={fields} errors={errors} />;
   return (
     <Accordion classes={classes} expanded={expanded} onChange={() => setExpanded(!expanded)}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
