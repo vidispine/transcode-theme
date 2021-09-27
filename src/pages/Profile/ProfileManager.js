@@ -114,7 +114,6 @@ const Content = ({ form, handleSubmit, onClose, okText = 'Add new profile', clas
 };
 
 const ProfileManager = ({ onSuccess, onClose, open, classes, profile = {}, okText }) => {
-  console.log(profile);
   const form = React.useState(sections);
   const handleSubmit = (values) =>
     extractValues(values)

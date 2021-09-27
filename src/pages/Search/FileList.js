@@ -74,7 +74,7 @@ const FileList = ({ query, setQuery }) => {
   };
 
   const debouncedInputQuery = React.useRef(debounce(inputActions.setSearchText, 500)).current;
-  const debouncedOutputQuery = React.useRef(debounce(inputActions.setSearchText, 500)).current;
+  const debouncedOutputQuery = React.useRef(debounce(outputActions.setSearchText, 500)).current;
   React.useEffect(() => {
     if (tab === 'input') debouncedInputQuery(`*${query.toLowerCase()}*`);
     if (tab === 'output') debouncedOutputQuery(`*${query.toLowerCase()}*`);
