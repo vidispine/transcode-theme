@@ -11,13 +11,15 @@ import Login from '../Login';
 import NotFound from '../NotFound';
 import Header from './Header';
 import queryClient from '../../queryClient';
-import Test from './Test';
+import Settings from '../Settings';
 
-const styles = ({ mixins }) => ({
+const styles = ({ mixins, spacing }) => ({
   container: {
     height: '100vh',
     overflow: 'auto',
-    paddingTop: mixins.toolbar.minHeight,
+    paddingTop: mixins.toolbar.minHeight + spacing(2),
+    paddingLeft: spacing(2),
+    paddingRight: spacing(2),
   },
 });
 
@@ -53,8 +55,8 @@ function Root({ classes }) {
                   <Route exact path="/profile/">
                     <Profiles />
                   </Route>
-                  <Route path="/:id">
-                    <Test />
+                  <Route exact path="/settings">
+                    <Settings />
                   </Route>
                   <Redirect exact from="/" push to="/search/" />
                   <Route path="*">

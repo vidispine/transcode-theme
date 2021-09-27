@@ -17,6 +17,7 @@
     "filesize": "^6.1.0",
     "lodash.debounce": "^4.0.8",
     "lodash.get": "^4.4.2",
+    "lodash.ismatch": "^4.4.0",
     "moment": "^2.29.1",
     "notistack": "^1.0.9",
     "pretty-ms": "^7.0.1",

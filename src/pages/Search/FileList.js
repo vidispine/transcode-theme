@@ -2,6 +2,7 @@
 import React from 'react';
 import debounce from 'lodash.debounce';
 import { useSnackbar } from 'notistack';
+import { item as ItemApi } from '@vidispine/vdt-api';
 import { useSearchItem } from '@vidispine/vdt-react';
 import { Box, Tab, Tabs, Paper, CircularProgress } from '@material-ui/core';
 
@@ -73,13 +74,26 @@ const FileList = ({ query, setQuery }) => {
   };
 
   const debouncedInputQuery = React.useRef(debounce(inputActions.setSearchText, 500)).current;
-  const debouncedOutputQuery = React.useRef(debounce(inputActions.setSearchText, 500)).current;
+  const debouncedOutputQuery = React.useRef(debounce(outputActions.setSearchText, 500)).current;
   React.useEffect(() => {
     if (tab === 'input') debouncedInputQuery(`*${query.toLowerCase()}*`);
     if (tab === 'output') debouncedOutputQuery(`*${query.toLowerCase()}*`);
     // eslint-disable-next-line
   }, [query])
 
+  const onDelete = (itemId) =>
+    showDialog({
+      title: 'Delete item',
+      message: 'Are you sure you want to delete this item?',
+      okText: 'Yes, delete item',
+      noText: 'No, cancel',
+    })
+      .then(() =>
+        ItemApi.removeItem({ itemId })
+          .then(() => enqueueSnackbar('Item deleted'))
+          .catch(() => enqueueSnackbar('Failed to delete item', { variant: 'error' })),
+      )
+      .catch(() => null);
 
   const onTranscode = (item) =>
     showDialog({ Dialog: TranscodeDialog, item })
@@ -108,7 +122,12 @@ const FileList = ({ query, setQuery }) => {
         />
       </Box>
       <Box overflow="hidden" hidden={tab !== 'output'}>
-        <OutputList itemListType={outputItems} page={outputPage} {...outputActions} />
+        <OutputList
+          itemListType={outputItems}
+          page={outputPage}
+          onDelete={onDelete}
+          {...outputActions}
+        />
       </Box>
     </Box>
   );

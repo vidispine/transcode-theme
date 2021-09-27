@@ -3,10 +3,10 @@ import { Box, List, Button } from '@material-ui/core';
 
 import FileCard from './FileCard';
 
-const InputList = ({ itemListType = {}, page, onChangePage }) => {
+const InputList = ({ itemListType = {}, page, onChangePage, onDelete }) => {
   const { item: items = [], hits } = itemListType;
   const sortedItems = items.map(({ shape: unsorted = [], ...rest }) => {
-    const shape = unsorted.sort(({ tag: aTag }, { b: bTag }) => {
+    const shape = unsorted.sort(({ tag: aTag = [] }, { b: bTag = [] }) => {
       if (aTag.includes('original')) return 1;
       if (bTag.includes('original')) return -1;
       return 0;
@@ -18,7 +18,7 @@ const InputList = ({ itemListType = {}, page, onChangePage }) => {
       <Box overflow="auto" height={1}>
         <List disablePadding>
           {sortedItems.map((itemType) => (
-            <FileCard key={itemType.id} itemType={itemType} />
+            <FileCard key={itemType.id} itemType={itemType} onDelete={onDelete} />
           ))}
         </List>
       </Box>

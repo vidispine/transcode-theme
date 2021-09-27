@@ -5,12 +5,6 @@ import { shapetag as ShapetagApi } from '@vidispine/vdt-api';
 
 const ProfileContext = React.createContext();
 
-const formatBitrate = (bits = 0) => {
-  const units = ['B/s', 'Kb/s', 'Mb/s'];
-  const i = Math.floor(Math.log(bits) / Math.log(1000));
-  return `${(bits / 1000 ** i).toFixed(0)} ${units[i]}`;
-};
-
 export function useListProfiles() {
   return useQuery(
     ['profile'],
@@ -28,42 +22,18 @@ export function useListProfiles() {
 }
 
 export const parseProfile = (data) => {
-  const profile = {};
-  const { name, format, video, audio, metadata } = data;
-
-  if (name) profile.name = name;
-  if (format) profile.format = format;
-
-  if (video) {
-    const { codec, bitrate, scaling, resolution, framerate } = video;
-    if (codec) profile.videoCodec = codec;
-    if (bitrate) profile.bitrate = formatBitrate(bitrate);
-    if (scaling || resolution) {
-      const { width, height } = scaling || resolution;
-      if (width && height) profile.resolution = `${width} x ${height}`;
-      if (width) profile.width = width;
-      if (height) profile.height = height;
-    }
-    if (framerate) {
-      const { denominator = 1, numerator = 1 } = framerate;
-      profile.framerate = denominator / numerator;
-    }
-  }
-
-  if (audio) {
-    const { codec } = audio;
-    if (codec) profile.audioCodec = codec;
-  }
-
+  const extraData = {};
+  const audio = {};
+  const { metadata, ...rest } = data;
   if (metadata) {
     const { field = [] } = metadata;
     for (let i = 0; i < field.length; i += 1) {
       const { key, value } = field[i];
-      profile[key] = value;
+      if (key === 'sampleSize' || key === 'sampleRate') audio[key] = Number(value);
+      else extraData[key] = value;
     }
   }
-
-  return { ...profile, espanol: data };
+  return { ...rest, ...extraData, audio: { ...rest.audio, ...audio } };
 };
 
 export function useGetProfile({ tagName }) {
@@ -72,6 +42,7 @@ export function useGetProfile({ tagName }) {
     () =>
       ShapetagApi.getShapeTag({ tagName }).then(({ data = {} }) => ({
         ...parseTranscodePreset(data),
+        raw: parseProfile(data),
         name: data.name,
       })),
     {
@@ -82,7 +53,7 @@ export function useGetProfile({ tagName }) {
 }
 
 export const ProfileProvider = ({ children }) => {
-  const { data = [], isLoading, isError } = useListProfiles();
+  const { data = [], refetch: onRefresh, isLoading, isError } = useListProfiles();
   const [search, setSearch] = React.useState('');
   const [showDefault, setShowDefault] = React.useState(false);
   const onSearch = (v) => setSearch(v);
@@ -94,7 +65,7 @@ export const ProfileProvider = ({ children }) => {
   }, [search, showDefault, data]);
   return (
     <ProfileContext.Provider
-      value={{ profiles, onSearch, showDefault, setShowDefault, isLoading, isError }}
+      value={{ profiles, onSearch, showDefault, setShowDefault, onRefresh, isLoading, isError }}
     >
       {children}
     </ProfileContext.Provider>

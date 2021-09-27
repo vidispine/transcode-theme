@@ -2,7 +2,7 @@ import React from 'react';
 import get from 'lodash.get';
 import moment from 'moment';
 import { job as JobApi } from '@vidispine/vdt-api';
-import { Pause, Info } from '@material-ui/icons';
+import { Delete, Info } from '@material-ui/icons';
 import {
   withStyles,
   LinearProgress,
@@ -102,7 +102,7 @@ const JobCard = ({ jobType = {}, classes, onAbort }) => {
             <Column data={jobType} fields={cols} />
           </Box>
           <IconButton size="small" onClick={onClick}>
-            {RUNNING_STATES.includes(status) && <Pause />}
+            {RUNNING_STATES.includes(status) && <Delete />}
             {INACTIVE_STATES.includes(status) && <Info />}
           </IconButton>
         </Box>

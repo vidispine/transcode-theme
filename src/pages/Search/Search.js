@@ -12,7 +12,7 @@ function Wrapper() {
   const { splitters, setSplitter } = useSplitters();
 
   return (
-    <Box px={2} pt={2} height={1} display="flex" flexDirection="column">
+    <Box height={1} display="flex" flexDirection="column">
       <Search onChange={setQuery} value={query} />
       <Box mt={2} flexGrow={1} overflow="hidden">
         <Split

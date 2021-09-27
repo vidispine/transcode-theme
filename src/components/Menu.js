@@ -6,10 +6,12 @@ export default ({ icon: IconComponent = MenuIcon, children, size }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleMenuClick = (event) => {
+    event.stopPropagation();
     setAnchorEl(event.currentTarget);
   };
 
-  const handleMenuClose = () => {
+  const handleMenuClose = (event) => {
+    event.stopPropagation();
     setAnchorEl(null);
   };
 
