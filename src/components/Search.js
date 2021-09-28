@@ -18,6 +18,9 @@ const styles = ({ spacing, palette, transitions }) => ({
     color: palette.getContrastText(palette.primary.main),
     borderWidth: 0,
     backgroundColor: palette.primary.main,
+    '&:hover': {
+      backgroundColor: palette.primary.dark,
+    },
   },
   focused: {
     boxShadow: `inset 0 0 0 2px ${palette.primary.main}`,

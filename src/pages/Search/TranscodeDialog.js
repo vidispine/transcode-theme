@@ -45,9 +45,9 @@ const CostEstimate = ({ selected, cost: data, title, isLoading }) => {
   const [[initialValue]] = React.useState(title.split('.'));
   return (
     <Box width={1}>
-      {selected.map(({ name, format, createPreview, createThumbnails }) => (
+      {selected.map(({ tagName, format, createPreview, createThumbnails }) => (
         <Box
-          key={name}
+          key={tagName}
           p={2}
           borderRadius={4}
           bgcolor="background.paper"
@@ -56,33 +56,33 @@ const CostEstimate = ({ selected, cost: data, title, isLoading }) => {
         >
           <Box mb={1} px={2} display="flex" justifyContent="space-between">
             <Typography color="textPrimary" variant="body1">
-              {name}
+              {tagName}
             </Typography>
             {isLoading ? (
               <CircularProgress size={16} />
             ) : (
               <Typography color="textSecondary" variant="body1">
-                ${data[name] && data[name].cost.value}
+                ${data[tagName] && data[tagName].cost.value}
               </Typography>
             )}
           </Box>
           <TextField
             fullWidth
-            name={`${name}.name`}
+            name={`${tagName}.name`}
             placeholder={title}
             initialValue={initialValue}
           />
           <Field
-            name={`${name}.createPreview`}
+            name={`${tagName}.createPreview`}
             initialValue={!!createPreview}
             render={() => null}
           />
           <Field
-            name={`${name}.createThumbnails`}
+            name={`${tagName}.createThumbnails`}
             initialValue={!!createThumbnails}
             render={() => null}
           />
-          <Field name={`${name}.format`} initialValue={format} render={() => null} />
+          <Field name={`${tagName}.format`} initialValue={format} render={() => null} />
         </Box>
       ))}
       <Box mt={2} px={2} display="flex" justifyContent="space-between">
@@ -121,8 +121,8 @@ const Content = ({
   );
   const [selected, setSelected] = React.useState([]);
   const toggleSelected = (payload) => {
-    const { name: tagName } = payload;
-    const filter = selected.filter(({ name }) => name !== tagName);
+    const { tagName } = payload;
+    const filter = selected.filter(({ tagName: tag }) => tag !== tagName);
     if (filter.length === selected.length) return setSelected([...filter, payload]);
     return setSelected(filter);
   };
@@ -166,8 +166,8 @@ const Content = ({
                 <ProfileCard
                   key={tagName}
                   tagName={tagName}
-                  selected={selected.some(({ name }) => name === tagName)}
-                  onChange={toggleSelected}
+                  selected={selected.some(({ tagName: tag }) => tag === tagName)}
+                  onSelect={toggleSelected}
                 />
               ))}
             </Box>

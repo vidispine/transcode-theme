@@ -64,6 +64,7 @@ const SelectField = ({
   label,
   classes,
   className,
+  disabled = false,
   FormControlProps = {},
   InputLabelProps = {},
   MenuItemProps = {},
@@ -91,7 +92,7 @@ const SelectField = ({
   return (
     <FormControl
       error={(error || submitError) && touched}
-      disabled={checked}
+      disabled={disabled || checked}
       className={classes.root}
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...FormControlProps}

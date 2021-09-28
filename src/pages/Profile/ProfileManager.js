@@ -14,6 +14,10 @@ import {
 import sections from './form';
 import Section from './ProfileSection';
 
+const [general, ...av] = sections;
+const { fields: generalFields } = general;
+const [nameField, ...restFields] = generalFields;
+
 const styles = ({ spacing, palette }) => ({
   root: {},
   title: {},
@@ -93,13 +97,20 @@ export const extractValues = ({ video, audio, format, name, description, createT
     else resolve(shapeTag);
   });
 
-const Content = ({ form, handleSubmit, onClose, okText = 'Add new profile', classes }) => {
+const Content = ({
+  form,
+  sections: bajs,
+  handleSubmit,
+  onClose,
+  okText = 'Add new profile',
+  classes,
+}) => {
   const { submitting } = form.getState();
   return (
     <form onSubmit={handleSubmit}>
       <DialogTitle classes={{ root: classes.title }}>Profile manager</DialogTitle>
       <DialogContent classes={{ root: classes.content }}>
-        {sections.map(({ name, ...rest }) => (
+        {bajs.map(({ name, ...rest }) => (
           <Section key={name} {...rest} />
         ))}
       </DialogContent>
@@ -114,7 +125,12 @@ const Content = ({ form, handleSubmit, onClose, okText = 'Add new profile', clas
 };
 
 const ProfileManager = ({ onSuccess, onClose, open, classes, profile = {}, okText }) => {
-  const form = React.useState(sections);
+  const { name } = profile;
+  const [form] = React.useState(
+    !name
+      ? sections
+      : [{ ...general, fields: [{ ...nameField, disabled: true }, ...restFields] }, ...av],
+  );
   const handleSubmit = (values) =>
     extractValues(values)
       .then(onSuccess)

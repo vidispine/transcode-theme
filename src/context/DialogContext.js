@@ -46,6 +46,7 @@ const DialogProvider = ({ children }) => {
 
   const resetDialog = () => {
     setDialogOpen(false);
+    setConfig({});
   };
 
   const onConfirm = (e) => {

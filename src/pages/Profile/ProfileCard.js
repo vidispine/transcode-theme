@@ -9,9 +9,10 @@ import {
   ListItemIcon,
   Typography,
   MenuItem,
+  Divider,
   ListItemText,
 } from '@material-ui/core';
-import { Delete } from '@material-ui/icons';
+import { Delete, Edit } from '@material-ui/icons';
 
 import { useGetProfile } from '../../context';
 import { Menu } from '../../components';
@@ -85,6 +86,9 @@ const styles = ({ spacing }) => ({
     '&:not(:last-child)': {
       marginBottom: spacing(2),
     },
+    '& *:first-child.MuiBox-root': {
+      gridColumn: '1 / 2 span',
+    },
   },
   paper: {
     '&:not(:last-child)': {
@@ -95,26 +99,25 @@ const styles = ({ spacing }) => ({
 
 const ProfileCard = ({
   tagName,
-  selected,
-  interactive = false,
   onChange = () => null,
   onDelete = () => null,
+  onSelect = () => null,
+  selected,
+  checkbox = true,
+  interactive = false,
   classes,
 }) => {
   const { data = {} } = useGetProfile({ tagName });
   const { raw = {} } = data;
+  const onClick = () => onSelect && onSelect({ tagName });
   return (
     <Paper className={classes.paper}>
-      <ListItem
-        disableRipple
-        className={classes.root}
-        selected={selected}
-        button
-        onClick={() => onChange(raw)}
-      >
-        <ListItemIcon>
-          <Checkbox checked={selected} color="primary" />
-        </ListItemIcon>
+      <ListItem disableRipple className={classes.root} selected={selected} button onClick={onClick}>
+        {checkbox && (
+          <ListItemIcon>
+            <Checkbox onChange={() => onSelect({ tagName })} checked={selected} color="primary" />
+          </ListItemIcon>
+        )}
         <Box>
           <Typography noWrap variant="body1" color="textPrimary">
             {get(data, 'name', '-')}
@@ -128,6 +131,16 @@ const ProfileCard = ({
         ))}
         {interactive && (
           <Menu>
+            <MenuItem onClick={() => onChange(raw)}>
+              <ListItemIcon>
+                <Edit />
+              </ListItemIcon>
+              <ListItemText
+                primary="Edit profile"
+                secondary="Edit the properties of the transcode profile"
+              />
+            </MenuItem>
+            <Divider />
             <MenuItem onClick={() => onDelete(tagName)}>
               <ListItemIcon>
                 <Delete />

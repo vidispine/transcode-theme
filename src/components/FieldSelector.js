@@ -103,7 +103,18 @@ const autoValue = { label: 'Auto', value: 0, style: { display: 'none' } };
 const emptyValue = { label: 'No options', disabled: true, value: 'nooptions' };
 
 export const SelectField = withStyles(styles)(
-  ({ name, label, match, options, required, dependency, classes, defaultValue = 0, ...params }) => {
+  ({
+    name,
+    disabled,
+    label,
+    match,
+    options,
+    required,
+    dependency,
+    classes,
+    defaultValue = 0,
+    ...params
+  }) => {
     const [opts, setOpts] = React.useState([...options, autoValue]);
     React.useEffect(() => {
       if (!dependency) return;
@@ -133,6 +144,7 @@ export const SelectField = withStyles(styles)(
             match={match}
             variant="outlined"
             classes={{ root: classes.select }}
+            disabled={disabled}
             dependency={dependency}
             InputLabelProps={{ disabled: true }}
             {...params}
@@ -143,33 +155,37 @@ export const SelectField = withStyles(styles)(
   },
 );
 
-export const CheckboxField = withStyles(styles)(({ name, label, required, classes, ...params }) => {
-  return (
-    <Field
-      id={name}
-      name={name}
-      label={label}
-      type="checkbox"
-      color="primary"
-      classes={{ root: classes.checkbox }}
-      required={required}
-      component={VdtCheckboxField}
-      {...params}
-    />
-  );
-});
-
-export const TextField = withStyles(styles)(
-  ({ name, label, required, placeholder, classes, ...params }) => {
+export const CheckboxField = withStyles(styles)(
+  ({ name, disabled, label, required, classes, ...params }) => {
     return (
       <Field
-        validate={required ? (v) => !v && 'Required' : ''}
+        id={name}
+        name={name}
+        label={label}
+        type="checkbox"
+        color="primary"
+        classes={{ root: classes.checkbox }}
+        disabled={disabled}
+        required={required}
+        component={VdtCheckboxField}
+        {...params}
+      />
+    );
+  },
+);
+
+export const TextField = withStyles(styles)(
+  ({ name, disabled, label, required, placeholder, classes, ...params }) => {
+    return (
+      <Field
         id={name}
         name={name}
         type="text"
         label={label}
         variant="outlined"
         classes={{ root: classes.text }}
+        disabled={disabled}
+        validate={required ? (v) => !v && 'Required' : ''}
         component={VdtTextField}
         helperText={null}
         placeholder={placeholder}
@@ -182,16 +198,17 @@ export const TextField = withStyles(styles)(
 );
 
 export const PasswordField = withStyles(styles)(
-  ({ name, label, required, placeholder, classes, ...params }) => {
+  ({ name, disabled, label, required, placeholder, classes, ...params }) => {
     return (
       <Field
-        validate={required ? (v) => !v && 'Required' : ''}
         id={name}
         name={name}
         type={params.disabled ? 'password' : 'text'}
         label={label}
         variant="outlined"
         classes={{ root: classes.text }}
+        disabled={disabled}
+        validate={required ? (v) => !v && 'Required' : ''}
         component={VdtTextField}
         helperText={null}
         placeholder={placeholder}
@@ -204,16 +221,17 @@ export const PasswordField = withStyles(styles)(
 );
 
 export const NumberField = withStyles(styles)(
-  ({ name, label, required, placeholder, classes, ...params }) => {
+  ({ name, disabled, label, required, placeholder, classes, ...params }) => {
     return (
       <Field
-        validate={required ? (v) => !v && 'Required' : ''}
         id={name}
         name={name}
         type="number"
         label={label}
         variant="outlined"
         classes={{ root: classes.text }}
+        disabled={disabled}
+        validate={required ? (v) => !v && 'Required' : ''}
         component={VdtTextField}
         helperText={null}
         placeholder={placeholder}

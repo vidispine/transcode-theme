@@ -26,11 +26,13 @@ const styles = ({ spacing }) => ({
 
 const Content = ({ fields }) => (
   <Grid spacing={2} container>
-    {fields.map(({ name, fullWidth, ...props }) => (
-      <Grid key={name} item xs={fullWidth ? 12 : 6}>
-        <FieldSelector name={name} {...props} />
-      </Grid>
-    ))}
+    {fields.map(({ name, fullWidth, ...props }) => {
+      return (
+        <Grid key={name} item xs={fullWidth ? 12 : 6}>
+          <FieldSelector name={name} {...props} />
+        </Grid>
+      );
+    })}
   </Grid>
 );
 

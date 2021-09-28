@@ -17,7 +17,7 @@ const useCostEstimate = (endpoint) => {
       }
       const promise = new Promise((resolve, reject) => {
         const promises = tags.map(
-          ({ name: tag }) =>
+          ({ tagName: tag }) =>
             new Promise((res, rej) => {
               if (cost[tag]) {
                 res({ tag, ...cost[tag] });

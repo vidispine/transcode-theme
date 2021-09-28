@@ -62,9 +62,10 @@ export default () => {
           <ProfileCard
             key={tagName}
             tagName={tagName}
-            interactive
             onDelete={onDelete}
             onChange={onChange}
+            checkbox={false}
+            interactive
           />
         ))}
       </Box>
