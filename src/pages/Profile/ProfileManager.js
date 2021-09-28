@@ -99,7 +99,7 @@ export const extractValues = ({ video, audio, format, name, description, createT
 
 const Content = ({
   form,
-  sections: bajs,
+  sections: fieldSections,
   handleSubmit,
   onClose,
   okText = 'Add new profile',
@@ -110,7 +110,7 @@ const Content = ({
     <form onSubmit={handleSubmit}>
       <DialogTitle classes={{ root: classes.title }}>Profile manager</DialogTitle>
       <DialogContent classes={{ root: classes.content }}>
-        {bajs.map(({ name, ...rest }) => (
+        {fieldSections.map(({ name, ...rest }) => (
           <Section key={name} {...rest} />
         ))}
       </DialogContent>
