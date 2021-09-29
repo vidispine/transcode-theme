@@ -116,7 +116,10 @@ const JobCard = ({ jobType = {}, classes, onAbort }) => {
               {moment(started).fromNow()}
             </Typography>
           </Box>
-          <LinearProgress variant="determinate" value={value} />
+          <LinearProgress
+            variant={RUNNING_STATES.includes(status) && !value ? 'query' : 'determinate'}
+            value={value}
+          />
         </Box>
       </ListItem>
     </Paper>

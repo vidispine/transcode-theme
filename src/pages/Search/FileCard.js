@@ -1,24 +1,21 @@
 import React from 'react';
 import get from 'lodash.get';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
 import { parseMetadataType, parseShapeType } from '@vidispine/vdt-js';
-import { Delete, CloudDownload, SwitchVideo } from '@material-ui/icons';
+import { CloudDownload, SwitchVideo, InsertDriveFile as FileIcon } from '@material-ui/icons';
 import {
   withStyles,
   Tooltip,
   Box,
   Avatar,
-  MenuItem,
   Checkbox,
   ListItem,
   Paper,
   Typography,
   ListItemIcon,
-  ListItemText,
-  IconButton,
+  Button,
 } from '@material-ui/core';
-
-import { Menu } from '../../components';
 
 const getFileData = (shape = {}) => {
   const { containerComponent = {} } = shape;
@@ -61,6 +58,10 @@ const cols = [
     {
       key: 'title',
       label: 'Title',
+    },
+    {
+      key: 'itemId',
+      label: 'ID',
     },
     {
       key: 'fileSize',
@@ -149,6 +150,8 @@ const FileCard = ({
   interactive = true,
   checkbox = false,
 }) => {
+  const { thumbnails: { uri = [] } = {} } = itemType;
+  const [thumbnail] = uri;
   const item = React.useMemo(() => parseItem(itemType), [itemType]);
   return (
     <Paper className={classes.paper}>
@@ -158,54 +161,77 @@ const FileCard = ({
             <Checkbox />
           </ListItemIcon>
         )}
-        <Avatar variant="square">
-          {itemType.id.split('-').map((value) => (
-            <span key={value}>{value}</span>
-          ))}
+        <Avatar variant="square" src={thumbnail}>
+          {!thumbnail && <FileIcon />}
         </Avatar>
         {cols.map((fields) => (
           <Column key={fields.reduce((a, { key }) => a + key, '')} data={item} fields={fields} />
         ))}
         {interactive && (
-          <Box height={1} display="flex" flexDirection="column" justifyContent="space-between">
+          <Box
+            height={1}
+            display="flex"
+            flexDirection="column"
+            alignItems="flex-end"
+            justifyContent="space-between"
+          >
             {allowTranscode && (
               <>
-                <Tooltip title="Transcode file">
-                  <IconButton onClick={() => onTranscode(itemType)}>
-                    <SwitchVideo />
-                  </IconButton>
+                <Button
+                  disableElevation
+                  size="small"
+                  variant="contained"
+                  color="primary"
+                  startIcon={<SwitchVideo />}
+                  onClick={() => onTranscode(itemType)}
+                >
+                  Transcode file
+                </Button>
+                <Tooltip title="Download the file locally">
+                  <Button
+                    component={Link}
+                    to={item.uri}
+                    size="small"
+                    variant="text"
+                    color="inherit"
+                  >
+                    Download file
+                  </Button>
                 </Tooltip>
-                <Menu>
-                  <MenuItem onClick={() => window.open(item.uri)}>
-                    <ListItemIcon>
-                      <CloudDownload />
-                    </ListItemIcon>
-                    <ListItemText primary="Download" secondary="Download the file locally" />
-                  </MenuItem>
-                  <MenuItem onClick={() => onDelete(item.itemId)}>
-                    <ListItemIcon>
-                      <Delete />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Delete"
-                      primaryTypographyProps={{ color: 'error' }}
-                      secondary="Files on storage will be deleted"
-                    />
-                  </MenuItem>
-                </Menu>
+                <Tooltip title="File on storage will be deleted">
+                  <Button
+                    size="small"
+                    variant="text"
+                    color="inherit"
+                    onClick={() => onDelete(item.itemId)}
+                  >
+                    Delete file
+                  </Button>
+                </Tooltip>
               </>
             )}
             {!allowTranscode && (
               <>
-                <Tooltip title="Download file">
-                  <IconButton onClick={() => window.open(item.uri)}>
-                    <CloudDownload />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Delete file">
-                  <IconButton onClick={() => onDelete(item.itemId)}>
-                    <Delete />
-                  </IconButton>
+                <Button
+                  disableElevation
+                  size="small"
+                  variant="contained"
+                  color="primary"
+                  startIcon={<CloudDownload />}
+                  component={Link}
+                  to={item.uri}
+                >
+                  Download file
+                </Button>
+                <Tooltip title="File on storage will be deleted">
+                  <Button
+                    size="small"
+                    variant="text"
+                    color="inherit"
+                    onClick={() => onDelete(item.itemId)}
+                  >
+                    Delete file
+                  </Button>
                 </Tooltip>
               </>
             )}

@@ -16,12 +16,13 @@ import TranscodeDialog from './TranscodeDialog';
 const defaultInputState = {
   itemSearchDocument: { field: [{ name: '__shape_size', value: [{ value: 1 }] }] },
   queryParams: {
-    content: 'shape,metadata',
+    content: ['shape', 'metadata', 'thumbnail'],
     field: ['originalFilename:title', 'itemId', 'title'],
     methodMetadata: [
       { key: 'format', value: 'SIGNED-AUTO' },
       { key: 'contentDisposition', value: 'attachment' },
     ],
+    'noauth-url': true,
   },
   rowsPerPage: 10,
 };
@@ -35,6 +36,7 @@ const defaultOutputState = {
       { key: 'format', value: 'SIGNED-AUTO' },
       { key: 'contentDisposition', value: 'attachment' },
     ],
+    'noauth-url': true,
   },
   rowsPerPage: 10,
 };

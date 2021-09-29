@@ -101,8 +101,8 @@ const Jobs = () => {
     <Box display="grid" gridTemplateRows="auto 1fr" gridGap={16}>
       <Paper>
         <Tabs value={tab} onChange={onChange}>
-          <Tab disableRipple value="active" label={`Active (${activeJobs.hits || 0})`} />
-          <Tab disableRipple value="finished" label={`Finished (${finishedJobs.hits || 0})`} />
+          <Tab disableRipple value="active" label={`Active jobs (${activeJobs.hits || 0})`} />
+          <Tab disableRipple value="finished" label={`Finished jobs (${finishedJobs.hits || 0})`} />
           {isLoading && (
             <Tab disabled style={{ minWidth: 'unset' }} icon={<CircularProgress size={20} />} />
           )}
