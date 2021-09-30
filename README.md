@@ -1,6 +1,6 @@
 # VidiCore Transcode Theme
 
-See [Knowledge Base](https://vidispine.atlassian.net/wiki/spaces/IES/pages/2186313784/Transcoding+Themes+for+VidiCore+and+VidiCoder+INT+VDT+XY.Z+UG) for more information on the initial setup.
+See [Knowledge Base](https://support.vidispine.com/space/CKB/2207805219/Transcoding+Themes+for+VidiCore+and+VidiCoder) for more information on the initial setup.
 
 ## Quick Start
 
@@ -25,7 +25,7 @@ This must be set on the S3 bucket to allow playback of media using signed URLs.
 ```
 <CORSConfiguration>
  <CORSRule>
-   <AllowedOrigin>*</AllowedOrigin>
+   <AllowedOrigin>http://localhost:3000</AllowedOrigin>
    <AllowedMethod>GET</AllowedMethod>
  </CORSRule>
 </CORSConfiguration>
