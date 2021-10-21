@@ -1,24 +1,38 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 
 import 'typeface-roboto';
+import '@fontsource/open-sans';
+import '@fontsource/open-sans/500.css';
+import '@fontsource/open-sans/600.css';
+import '@fontsource/open-sans/700.css';
+import '@fontsource/open-sans/800.css';
 import '@vidispine/vdt-materialui/dist/index.css';
+
+const vsPurple = '#7c74bd';
+const vsBlue = '#0068a9';
+const vsTeal = '#44a8aa';
+const vsTealLight = '#6DC3C5';
+const red = '#df5f5f';
 
 const theme = createMuiTheme({
   typography: {
     useNextVariants: true,
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Open Sans", "Helvetica", "Arial", sans-serif',
   },
   palette: {
     type: 'light',
     primary: {
-      // light: '#222',
-      main: '#7B61FF',
-      // dark: '#000',
+      main: vsBlue,
     },
     secondary: {
-      // light: '#DDD',
-      main: '#00b16a',
-      // dark: '#BBB',
+      main: vsPurple,
+    },
+    success: {
+      light: vsTealLight,
+      main: vsTeal,
+    },
+    error: {
+      main: red,
     },
     text: {
       primary: 'rgba(0,0,0,0.75)',
@@ -37,15 +51,17 @@ const theme = createMuiTheme({
         width: 32,
       },
     },
+    MuiButton: {
+      root: {
+        fontWeight: 600,
+      },
+    },
     MuiTabs: {
       root: {
         backgroundColor: '#fff',
-        borderBottom: '2px solid #7B61FF',
       },
       indicator: {
-        backgroundColor: '#7B61FF',
-        height: '100%',
-        zIndex: 1,
+        backgroundColor: vsBlue,
       },
       flexContainer: {
         alignItems: 'center',
@@ -53,11 +69,12 @@ const theme = createMuiTheme({
     },
     MuiTab: {
       root: {
+        fontWeight: '600',
         zIndex: 2,
         color: 'inherit',
         transition: 'all 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
         '&$selected': {
-          color: '#fff',
+          color: vsBlue,
         },
       },
     },

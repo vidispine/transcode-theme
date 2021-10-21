@@ -19,14 +19,26 @@ const defaultQueryParams = {
   number: NUMBER,
 };
 
-const JobList = ({ jobListType, page, isLoading, onAbort = () => null, setPage }) => {
+const JobList = ({
+  jobListType,
+  page,
+  isLoading,
+  onAbort = () => null,
+  setPage,
+  hideProgress = false,
+}) => {
   const { job = [], hits = 0 } = jobListType;
   return (
     <Box display="grid" gridTemplateRows="1fr auto" height={1}>
       <Box overflow="auto" height={1}>
         <List disablePadding>
           {job.map((jobType) => (
-            <JobCard key={jobType.jobId} jobType={jobType} onAbort={onAbort} />
+            <JobCard
+              key={jobType.jobId}
+              jobType={jobType}
+              onAbort={onAbort}
+              hideProgress={!!hideProgress}
+            />
           ))}
           {!isLoading && job.length < 1 && <span>No jobs found</span>}
         </List>
@@ -96,7 +108,6 @@ const Jobs = () => {
       .then(() => JobApi.abortJob({ jobId }))
       .then(() => enqueueSnackbar('Job aborted!', { variant: 'success' }))
       .catch(({ message }) => message && enqueueSnackbar(message, { variant: 'error' }));
-
   return (
     <Box display="grid" gridTemplateRows="auto 1fr" gridGap={16}>
       <Paper>
@@ -108,18 +119,27 @@ const Jobs = () => {
           )}
         </Tabs>
       </Paper>
-      <Box overflow="hidden" hidden={tab !== 'active'}>
-        <JobList
-          jobListType={activeJobs}
-          page={page}
-          setPage={setPage}
-          isLoading={isLoading}
-          onAbort={onAbort}
-        />
-      </Box>
-      <Box overflow="hidden" hidden={tab !== 'finished'}>
-        <JobList jobListType={finishedJobs} page={page} setPage={setPage} isLoading={isLoading} />
-      </Box>
+      {tab === 'active' ? (
+        <Box overflow="hidden">
+          <JobList
+            jobListType={activeJobs}
+            page={page}
+            setPage={setPage}
+            isLoading={isLoading}
+            onAbort={onAbort}
+          />
+        </Box>
+      ) : (
+        <Box overflow="hidden">
+          <JobList
+            hideProgress
+            jobListType={finishedJobs}
+            page={page}
+            setPage={setPage}
+            isLoading={isLoading}
+          />
+        </Box>
+      )}
     </Box>
   );
 };

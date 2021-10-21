@@ -9,13 +9,19 @@ import {
   Box,
   IconButton,
   ListItem,
-  Avatar,
+  // Avatar,
   Paper,
   Typography,
   Divider,
 } from '@material-ui/core';
 
-import { RUNNING_STATES, INACTIVE_STATES } from './const';
+import {
+  RUNNING_STATES,
+  INACTIVE_STATES,
+  WARNING_STATES,
+  ERROR_STATES,
+  SUCCESSFUL_STATES,
+} from './const';
 
 const Column = ({ fields, data }) =>
   fields.map(({ key, label }) => (
@@ -29,7 +35,7 @@ const Column = ({ fields, data }) =>
     </Box>
   ));
 
-const styles = ({ spacing }) => ({
+const styles = ({ spacing, palette }) => ({
   root: {
     borderRadius: spacing(0.5),
     padding: spacing(1, 0),
@@ -44,7 +50,7 @@ const styles = ({ spacing }) => ({
     padding: spacing(1, 2),
     display: 'grid',
     alignItems: 'start',
-    gridTemplateColumns: 'auto 1fr auto',
+    gridTemplateColumns: '1fr auto',
     gap: spacing(2),
     '& > .MuiBox-root': {
       display: 'grid',
@@ -56,6 +62,18 @@ const styles = ({ spacing }) => ({
     '&:not(:last-child)': {
       marginBottom: spacing(1),
     },
+  },
+  successState: {
+    color: palette.success.main,
+  },
+  errorState: {
+    color: palette.error.main,
+  },
+  warningState: {
+    color: palette.warning.main,
+  },
+  defaultState: {
+    color: palette.primary.main,
   },
 });
 
@@ -88,16 +106,22 @@ const usePoll = ({ jobId, type, status: initialStatus }) => {
   return { request, value };
 };
 
-const JobCard = ({ jobType = {}, classes, onAbort }) => {
+const JobCard = ({ jobType = {}, classes, onAbort, hideProgress }) => {
   const [{ status, started, jobId }] = React.useState(jobType);
   const onClick = () => RUNNING_STATES.includes(status) && onAbort(jobId);
   const { request, value = 100 } = usePoll(jobType);
   React.useEffect(request, [request]);
+  const getClassName = () => {
+    if (SUCCESSFUL_STATES.includes(status)) return classes.successState;
+    if (ERROR_STATES.includes(status)) return classes.errorState;
+    if (WARNING_STATES.includes(status)) return classes.warningState;
+    return classes.defaultState;
+  };
   return (
     <Paper className={classes.paper}>
       <ListItem className={classes.root}>
         <Box className={classes.top}>
-          <Avatar variant="square">J</Avatar>
+          {/* <Avatar variant="square">J</Avatar> */}
           <Box>
             <Column data={jobType} fields={cols} />
           </Box>
@@ -108,18 +132,23 @@ const JobCard = ({ jobType = {}, classes, onAbort }) => {
         </Box>
         <Divider />
         <Box>
-          <Box py={1} px={2} display="flex" justifyContent="space-between">
-            <Typography color="textPrimary" variant="button">
+          <Box pt={1} px={2} display="flex" justifyContent="space-between">
+            <Typography color="textPrimary" variant="button" className={getClassName(status)}>
               {status}
             </Typography>
             <Typography color="textSecondary" variant="caption">
               {moment(started).fromNow()}
             </Typography>
           </Box>
-          <LinearProgress
-            variant={RUNNING_STATES.includes(status) && !value ? 'query' : 'determinate'}
-            value={value}
-          />
+          {!hideProgress && (
+            <Box pt={1}>
+              <LinearProgress
+                color={RUNNING_STATES.includes(status) && !value ? 'secondary' : 'primary'}
+                variant={RUNNING_STATES.includes(status) && !value ? 'query' : 'determinate'}
+                value={value}
+              />
+            </Box>
+          )}
         </Box>
       </ListItem>
     </Paper>

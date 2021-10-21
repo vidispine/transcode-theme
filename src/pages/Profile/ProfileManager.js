@@ -116,7 +116,13 @@ const Content = ({
       </DialogContent>
       <DialogActions classes={{ root: classes.actions }}>
         <Button onClick={onClose}>Cancel</Button>
-        <Button disabled={submitting} type="submit" variant="contained" color="primary">
+        <Button
+          disabled={submitting}
+          type="submit"
+          variant="contained"
+          color="primary"
+          disableElevation
+        >
           {okText}
         </Button>
       </DialogActions>

@@ -194,6 +194,7 @@ const Content = ({
             disabled={isLoading || submitting}
             variant="contained"
             color="primary"
+            disableElevation
             onClick={handleSubmit}
           >
             Start transcode
@@ -207,6 +208,8 @@ const Content = ({
 const TranscodeDialog = ({ open, onSuccess, onClose, item = {}, classes }) => {
   const { shape: [shapeDocument = {}] = [{}], id: itemId } = item;
   const { outputStorage: storageId } = useConfiguration();
+  // TODO: this should be used instead of above
+  // const { storages: { input, output } = {}, isLoading, onUpdateStorage } = useConfiguration();
   const { profiles: allProfiles = [], showDefault, setShowDefault } = useProfiles();
 
   const handleSubmit = (values) => {

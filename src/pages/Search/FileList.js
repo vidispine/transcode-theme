@@ -81,7 +81,7 @@ const FileList = ({ query, setQuery }) => {
     if (tab === 'input') debouncedInputQuery(`*${query.toLowerCase()}*`);
     if (tab === 'output') debouncedOutputQuery(`*${query.toLowerCase()}*`);
     // eslint-disable-next-line
-  }, [query])
+  }, [query]);
 
   const onDelete = (itemId) =>
     showDialog({
@@ -108,8 +108,8 @@ const FileList = ({ query, setQuery }) => {
     <Box display="grid" gridTemplateRows="auto 1fr" gridGap={16}>
       <Paper>
         <Tabs value={tab} onChange={onChange}>
-          <Tab disableRipple value="input" label={`Input (${inputItems.hits || 0})`} />
-          <Tab disableRipple value="output" label={`Output (${outputItems.hits || 0})`} />
+          <Tab disableRipple value="input" label={`Input storage (${inputItems.hits || 0})`} />
+          <Tab disableRipple value="output" label={`Output storage (${outputItems.hits || 0})`} />
           {isLoading && (
             <Tab disabled style={{ minWidth: 'unset' }} icon={<CircularProgress size={20} />} />
           )}

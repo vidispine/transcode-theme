@@ -180,12 +180,12 @@ const FileCard = ({
                 <Button
                   disableElevation
                   size="small"
-                  variant="contained"
+                  variant="text"
                   color="primary"
                   startIcon={<SwitchVideo />}
                   onClick={() => onTranscode(itemType)}
                 >
-                  Transcode file
+                  Transcode
                 </Button>
                 <Tooltip title="Download the file locally">
                   <Button
@@ -195,7 +195,7 @@ const FileCard = ({
                     variant="text"
                     color="inherit"
                   >
-                    Download file
+                    Download
                   </Button>
                 </Tooltip>
                 <Tooltip title="File on storage will be deleted">
@@ -205,7 +205,7 @@ const FileCard = ({
                     color="inherit"
                     onClick={() => onDelete(item.itemId)}
                   >
-                    Delete file
+                    Delete
                   </Button>
                 </Tooltip>
               </>
@@ -215,13 +215,13 @@ const FileCard = ({
                 <Button
                   disableElevation
                   size="small"
-                  variant="contained"
+                  variant="text"
                   color="primary"
                   startIcon={<CloudDownload />}
                   component={Link}
                   to={item.uri}
                 >
-                  Download file
+                  Download
                 </Button>
                 <Tooltip title="File on storage will be deleted">
                   <Button
@@ -230,7 +230,7 @@ const FileCard = ({
                     color="inherit"
                     onClick={() => onDelete(item.itemId)}
                   >
-                    Delete file
+                    Delete
                   </Button>
                 </Tooltip>
               </>

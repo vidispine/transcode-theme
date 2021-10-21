@@ -112,7 +112,7 @@ const ProfileCard = ({
   const onClick = () => onSelect && onSelect({ tagName });
   return (
     <Paper className={classes.paper}>
-      <ListItem disableRipple className={classes.root} selected={selected} button onClick={onClick}>
+      <ListItem className={classes.root} selected={selected} button={!!checkbox} onClick={onClick}>
         {checkbox && (
           <ListItemIcon>
             <Checkbox onChange={() => onSelect({ tagName })} checked={selected} color="primary" />

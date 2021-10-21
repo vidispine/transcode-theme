@@ -35,7 +35,7 @@ const Snackbar = React.forwardRef(({ response, classes }, ref) => {
           subheader={
             <ListSubheader className={classes.header}>
               {title}
-              <IconButton onClick={closeSnackbar} size="small">
+              <IconButton onClick={() => closeSnackbar()} size="small">
                 <CloseIcon fontSize="small" />
               </IconButton>
             </ListSubheader>

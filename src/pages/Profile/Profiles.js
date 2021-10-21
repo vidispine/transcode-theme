@@ -48,7 +48,13 @@ export default () => {
     <Box height={1} display="flex" flexDirection="column">
       <Box display="grid" gridTemplateColumns="1fr auto" gridGap={8}>
         <Search onChange={onSearch} placeholder="Search profiles..." />
-        <Button variant="contained" color="primary" style={{ flexShrink: 0 }} onClick={onCreate}>
+        <Button
+          variant="contained"
+          color="primary"
+          style={{ flexShrink: 0 }}
+          onClick={onCreate}
+          disableElevation
+        >
           Add new profile
         </Button>
         <SwitchField

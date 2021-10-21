@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { UserAvatarButton } from '@vidispine/vdt-materialui';
-import { withStyles, AppBar, Button, Box, Avatar } from '@material-ui/core';
+import { withStyles, AppBar, Button, Box, Avatar, Typography, Hidden } from '@material-ui/core';
 import { useAuthContext } from '@vidispine/vdt-react';
 
 import { APP_TITLE, HEADER_LOGO } from '../../const';
@@ -9,10 +9,24 @@ import { APP_TITLE, HEADER_LOGO } from '../../const';
 const styles = ({ spacing, palette }) => ({
   root: {
     backgroundColor: palette.background.paper,
+    '& .MuiAvatar-root': {
+      color: palette.background.paper,
+    },
   },
   logo: {
     height: spacing(3),
     width: spacing(3),
+  },
+  titleText: {
+    marginLeft: spacing(2),
+    fontWeight: 600,
+    background: `linear-gradient(to right, ${palette.secondary.main} 0%, ${palette.primary.main} 28%, ${palette.success.main} 64%, ${palette.success.light} 97%)`,
+    backgroundClip: 'text',
+    WebkitBackgroundClip: 'text',
+    color: 'transparent',
+  },
+  spacing: {
+    width: '200px',
   },
 });
 
@@ -50,22 +64,32 @@ function Header({ classes }) {
   return (
     <AppBar className={classes.root} elevation={0} color="default">
       <Box display="flex" px={2} height={1} alignItems="center" justifyContent="space-between">
-        <Avatar className={classes.logo} variant="square" src={HEADER_LOGO} alt={APP_TITLE} />
+        <Box display="flex">
+          <Avatar className={classes.logo} variant="square" src={HEADER_LOGO} alt={APP_TITLE} />
+          <Hidden smDown>
+            <Typography className={classes.titleText}>VidiCore Transcode Theme</Typography>
+          </Hidden>
+        </Box>
         <Box>
           <Link variant="text" component={NavLink} to="/search" color="inherit" disableRipple>
-            Home
+            Browse
           </Link>
           <Link variant="text" component={NavLink} to="/profile" color="inherit" disableRipple>
-            Profiles
+            Transcode Profiles
           </Link>
           <Link variant="text" component={NavLink} to="/settings" color="inherit" disableRipple>
-            Settings
+            Storage Setup
           </Link>
           <Link variant="text" component={NavLink} to="/about" color="inherit" disableRipple>
             About
           </Link>
         </Box>
-        <UserAvatarButton userName={userName} onLogout={onLogout} />
+        <Box display="flex">
+          <Hidden mdDown>
+            <div className={classes.spacing} />
+          </Hidden>
+          <UserAvatarButton userName={userName} onLogout={onLogout} />
+        </Box>
       </Box>
     </AppBar>
   );

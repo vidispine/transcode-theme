@@ -24,7 +24,7 @@ const DefaultDialogComponent = ({
     <DialogContent dividers>{message}</DialogContent>
     <DialogActions>
       <Button onClick={onClose}>{noText}</Button>
-      <Button variant="contained" color="primary" onClick={onSuccess}>
+      <Button variant="contained" color="primary" disableElevation onClick={onSuccess}>
         {okText}
       </Button>
     </DialogActions>

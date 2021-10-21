@@ -18,10 +18,13 @@ import { Form } from 'react-final-form';
 import { useConfiguration } from '../../context';
 import { FieldSelector } from '../../components';
 
-const styles = ({ spacing }) => ({
+const styles = ({ spacing, palette }) => ({
   root: {
     '& button:not(:last-child)': {
       marginRight: spacing(2),
+    },
+    '& .MuiSvgIcon-root': {
+      fill: palette.success.main,
     },
   },
 });
@@ -119,7 +122,7 @@ const StorageForm = withStyles(styles)(
               <Error color="error" />
             </Tooltip>
           )}
-          {id && !error && <Check color="secondary" />}
+          {id && !error && <Check />}
         </Box>
         <Box p={2}>
           <Grid spacing={2} container>
@@ -132,7 +135,12 @@ const StorageForm = withStyles(styles)(
         </Box>
         <Box p={2} display="flex" justifyContent="flex-end">
           {id && !isEditing && (
-            <Button variant="contained" color="primary" onClick={() => setIsEditing(true)}>
+            <Button
+              variant="contained"
+              color="primary"
+              disableElevation
+              onClick={() => setIsEditing(true)}
+            >
               Edit
             </Button>
           )}
@@ -142,7 +150,13 @@ const StorageForm = withStyles(styles)(
             </Button>
           )}
           {isEditing && (
-            <Button disabled={pristine} variant="contained" color="primary" type="submit">
+            <Button
+              disabled={pristine}
+              variant="contained"
+              color="primary"
+              type="submit"
+              disableElevation
+            >
               Save
             </Button>
           )}
