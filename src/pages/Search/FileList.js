@@ -92,7 +92,11 @@ const FileList = ({ query, setQuery }) => {
     })
       .then(() =>
         ItemApi.removeItem({ itemId })
-          .then(() => enqueueSnackbar('Item deleted'))
+          .then(() => {
+            enqueueSnackbar('Item deleted');
+            if (tab === 'input') onRefreshInput();
+            if (tab === 'output') onRefreshOutput();
+          })
           .catch(() => enqueueSnackbar('Failed to delete item', { variant: 'error' })),
       )
       .catch(() => null);
@@ -120,6 +124,7 @@ const FileList = ({ query, setQuery }) => {
           page={inputPage}
           onTranscode={onTranscode}
           itemListType={inputItems}
+          onDelete={onDelete}
           {...inputActions}
         />
       </Box>

@@ -3,7 +3,7 @@ import { Box, List, Button } from '@material-ui/core';
 
 import FileCard from './FileCard';
 
-const InputList = ({ itemListType = {}, page, onChangePage, onDelete }) => {
+const OutputList = ({ itemListType = {}, page, onChangePage, onDelete }) => {
   const { item: items = [], hits } = itemListType;
   const sortedItems = items.map(({ shape: unsorted = [], ...rest }) => {
     const shape = unsorted.sort(({ tag: aTag = [] }, { b: bTag = [] }) => {
@@ -34,4 +34,4 @@ const InputList = ({ itemListType = {}, page, onChangePage, onDelete }) => {
   );
 };
 
-export default InputList;
+export default OutputList;
