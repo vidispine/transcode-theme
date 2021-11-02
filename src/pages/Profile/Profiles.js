@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { useSnackbar } from 'notistack';
-import { shapetag as ShapetagApi } from '@vidispine/vdt-api';
 import { SwitchField } from '@vidispine/vdt-materialui';
 import { Box, Button } from '@material-ui/core';
 import { Search } from '../../components';
-import { useDialog, useProfiles } from '../../context';
+import {
+  useDialog,
+  useProfiles,
+  useUpdateProfile,
+  useCreateProfile,
+  useDeleteProfile,
+} from '../../context';
 import ProfileManager from './ProfileManager';
 import ProfileCard from './ProfileCard';
 
@@ -12,7 +17,10 @@ export default () => {
   const { showDialog } = useDialog();
   const { enqueueSnackbar } = useSnackbar();
   const [first, setFirst] = useState(0);
-  const { profiles = [], onSearch, onRefresh, showDefault, setShowDefault } = useProfiles();
+  const { profiles = [], onSearch, showDefault, setShowDefault } = useProfiles();
+  const { mutateAsync: updateProfile } = useUpdateProfile();
+  const { mutateAsync: createProfile } = useCreateProfile();
+  const { mutateAsync: deleteProfile } = useDeleteProfile();
 
   const nextPage = () => {
     setFirst(first + 20);
@@ -22,28 +30,28 @@ export default () => {
   };
 
   const onDelete = (tagName) =>
-    ShapetagApi.removeShapeTag({ tagName })
+    deleteProfile({ tagName })
       .then(() => enqueueSnackbar('Success'))
-      .catch(({ message }) => enqueueSnackbar(message, { variant: 'error' }))
-      .then(onRefresh);
+      .catch(({ message }) => enqueueSnackbar(message, { variant: 'error' }));
   const onCreate = () =>
     showDialog({ Dialog: ProfileManager })
       .then((transcodePresetDocument) => {
         const { name: tagName } = transcodePresetDocument;
-        return ShapetagApi.updateShapeTag({ tagName, transcodePresetDocument });
+        console.log(transcodePresetDocument);
+        return createProfile({ tagName, transcodePresetDocument });
       })
       .then(() => enqueueSnackbar('Success!', { variant: 'success' }))
-      .catch(({ message }) => message && enqueueSnackbar(message, { variant: 'error' }))
-      .then(onRefresh);
+      .catch(({ message }) => message && enqueueSnackbar(message, { variant: 'error' }));
   const onChange = (profile) =>
     showDialog({ Dialog: ProfileManager, profile, okText: 'Save profile' })
       .then((transcodePresetDocument) => {
+        console.log(transcodePresetDocument);
         const { name: tagName } = transcodePresetDocument;
-        return ShapetagApi.updateShapeTag({ tagName, transcodePresetDocument });
+        return updateProfile({ tagName, transcodePresetDocument });
       })
       .then(() => enqueueSnackbar('Success!', { variant: 'success' }))
-      .catch(({ message }) => message && enqueueSnackbar(message, { variant: 'error' }))
-      .then(onRefresh);
+      .catch(({ message }) => message && enqueueSnackbar(message, { variant: 'error' }));
+
   return (
     <Box height={1} display="flex" flexDirection="column">
       <Box display="grid" gridTemplateColumns="1fr auto" gridGap={8}>

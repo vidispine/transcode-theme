@@ -90,7 +90,7 @@ export const extractValues = ({ video, audio, format, name, description, createT
     if (createThumbnails) {
       shapeTag.metadata.field = [
         ...(shapeTag.metadata.field || []),
-        ...(createThumbnails === true && [{ key: 'createThumbnails', value: true }]),
+        { key: 'createThumbnails', value: true },
       ];
     }
     if (Object.keys(errors).length) reject(errors);
@@ -140,7 +140,7 @@ const ProfileManager = ({ onSuccess, onClose, open, classes, profile = {}, okTex
   const handleSubmit = (values) =>
     extractValues(values)
       .then(onSuccess)
-      .catch((err) => err);
+      .catch((err) => console.log(err));
 
   return (
     <Dialog classes={{ root: classes.root }} open={open} onClose={onClose}>

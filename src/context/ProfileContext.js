@@ -1,5 +1,6 @@
 import React from 'react';
-import { useQuery } from 'react-query';
+// eslint-disable-next-line no-unused-vars
+import { useQuery, useQueryClient, useMutation } from 'react-query';
 import { parseTranscodePreset } from '@vidispine/vdt-js';
 import { shapetag as ShapetagApi } from '@vidispine/vdt-api';
 
@@ -7,11 +8,10 @@ const ProfileContext = React.createContext();
 
 export function useListProfiles() {
   return useQuery(
-    ['profile'],
+    ['getProfiles'],
     () =>
       ShapetagApi.listShapeTag().then(({ data = {} }) => {
         const { uri: profiles = [] } = data;
-        // return profiles.filter((profile) => profile !== 'original');
         return profiles.filter((profile) => profile !== 'original');
       }),
     {
@@ -38,7 +38,7 @@ export const parseProfile = (data) => {
 
 export function useGetProfile({ tagName }) {
   return useQuery(
-    ['profile', tagName],
+    ['getProfile', tagName],
     () =>
       ShapetagApi.getShapeTag({ tagName }).then(({ data = {} }) => ({
         ...parseTranscodePreset(data),
@@ -50,6 +50,31 @@ export function useGetProfile({ tagName }) {
       staleTime: Infinity,
     },
   );
+}
+
+export function useCreateProfile() {
+  const queryClient = useQueryClient();
+  return useMutation(ShapetagApi.updateShapeTag, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('getProfiles');
+    },
+  });
+}
+export function useDeleteProfile() {
+  const queryClient = useQueryClient();
+  return useMutation(ShapetagApi.removeShapeTag, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('getProfiles');
+    },
+  });
+}
+export function useUpdateProfile() {
+  const queryClient = useQueryClient();
+  return useMutation(ShapetagApi.updateShapeTag, {
+    onSuccess: (_, { tagName }) => {
+      queryClient.invalidateQueries(['getProfile', tagName]);
+    },
+  });
 }
 
 export const ProfileProvider = ({ children }) => {
