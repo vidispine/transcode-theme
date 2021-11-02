@@ -80,9 +80,6 @@ function Header({ classes }) {
           <Link variant="text" component={NavLink} to="/settings" color="inherit" disableRipple>
             Storage Setup
           </Link>
-          <Link variant="text" component={NavLink} to="/about" color="inherit" disableRipple>
-            About
-          </Link>
         </Box>
         <Box display="flex">
           <Hidden mdDown>
