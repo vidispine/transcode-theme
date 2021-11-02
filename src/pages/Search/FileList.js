@@ -30,7 +30,7 @@ const defaultInputState = {
 const defaultOutputState = {
   itemSearchDocument: { field: [{ name: '__shape_size', value: [{ value: 2 }] }] },
   queryParams: {
-    content: 'shape,metadata',
+    content: ['shape', 'metadata', 'thumbnail'],
     field: ['originalFilename:title', 'itemId', 'title'],
     methodMetadata: [
       { key: 'format', value: 'SIGNED-AUTO' },
@@ -83,6 +83,31 @@ const FileList = ({ query, setQuery }) => {
     // eslint-disable-next-line
   }, [query]);
 
+  const refreshItems = () => {
+    let count = 0;
+    const prevItems = tab === 'input' ? { ...inputItems } : { ...outputItems };
+    const { hits: prevHits } = prevItems;
+
+    const refreshInput = () =>
+      onRefreshOutput().then(({ data: newItems }) => {
+        const { hits: newHits } = newItems;
+        if (newHits === prevHits && count < 5) {
+          count += 1;
+          refreshInput();
+        }
+      });
+    const refreshOutput = () =>
+      onRefreshOutput().then(({ data: newItems }) => {
+        const { hits: newHits } = newItems;
+        if (newHits === prevHits && count < 5) {
+          count += 1;
+          refreshOutput();
+        }
+      });
+    if (tab === 'input') refreshInput();
+    if (tab === 'output') refreshOutput();
+  };
+
   const onDelete = (itemId) =>
     showDialog({
       title: 'Delete item',
@@ -94,8 +119,7 @@ const FileList = ({ query, setQuery }) => {
         ItemApi.removeItem({ itemId })
           .then(() => {
             enqueueSnackbar('Item deleted');
-            if (tab === 'input') onRefreshInput();
-            if (tab === 'output') onRefreshOutput();
+            refreshItems();
           })
           .catch(() => enqueueSnackbar('Failed to delete item', { variant: 'error' })),
       )

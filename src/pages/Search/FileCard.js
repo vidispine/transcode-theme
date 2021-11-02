@@ -138,6 +138,10 @@ const styles = ({ spacing, typography }) => ({
       marginBottom: spacing(1),
     },
   },
+  thumbnail: {
+    height: '7rem',
+    width: '7rem',
+  },
 });
 
 const FileCard = ({
@@ -161,7 +165,7 @@ const FileCard = ({
             <Checkbox />
           </ListItemIcon>
         )}
-        <Avatar variant="square" src={thumbnail}>
+        <Avatar variant="square" className={classes.thumbnail} src={thumbnail}>
           {!thumbnail && <FileIcon />}
         </Avatar>
         {cols.map((fields) => (
