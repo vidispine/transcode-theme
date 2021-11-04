@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import { useQuery } from 'react-query';
 import { storage as StorageApi, resource as ResourceApi } from '@vidispine/vdt-api';
@@ -28,7 +29,7 @@ const parseStorages = ({ storage: storageList }) => {
       if (protocol.endsWith(':')) protocol = protocol.slice(0, -1);
       if (search.startsWith('?')) search = search.slice(1);
       const [access, bucket] = pathname.split('@');
-      const [accessKey, secretKey] = access.split(':_VSENC__');
+      const [accessKey] = access.split(':_VSENC__');
       const [name, ...folderPath] = bucket.split('/');
       const path = folderPath.join('/');
       const queries = search.split('&').reduce((a, c) => {
@@ -37,7 +38,6 @@ const parseStorages = ({ storage: storageList }) => {
       }, {});
       Object.assign(output, {
         accessKey,
-        secretKey,
         name,
         path,
         protocol,
@@ -56,7 +56,11 @@ const parseResources = ({ resource: resourceList }) =>
 export function useGetStorages() {
   return useQuery(
     ['storages'],
-    () => StorageApi.listStorage({}).then(({ data = {} }) => parseStorages(data)),
+    () => {
+      return StorageApi.listStorage({}).then(({ data = {} }) => {
+        return parseStorages(data);
+      });
+    },
     {
       refetchOnWindowFocus: false,
       staleTime: Infinity,
@@ -112,16 +116,25 @@ export const ConfigurationProvider = ({ children }) => {
       ...input,
       ...output,
     };
-    let uri = `${protocol}://${accessKey}:_VSENC__${secretKey}@${name}/${path}`;
+
+    let uri = `${protocol}://${accessKey}:${secretKey}@${name}/${path}`;
     if (uri.charAt(uri.length - 1) !== '/') uri = uri.concat('/');
+    const encodedAccessKey = encodeURIComponent(accessKey);
+    const encodedSecretKey = encodeURIComponent(secretKey);
+    const encodedUri = `${protocol}://${encodedAccessKey}:${encodedSecretKey}@${name}/${path}`;
+    const encodedUrl = encodeURIComponent(uri);
     // if (region && region !== 'auto') uri = uri.concat(`?region=${region}`);
     if (storageId) {
-      return StorageApi.modifyStorageMethod({ storageMethodId, storageId, queryParams: { uri } });
+      return StorageApi.modifyStorageMethod({
+        storageMethodId,
+        storageId,
+        queryParams: { url: encodedUrl },
+      });
     }
     const storageDocument = {
       type: 'LOCAL',
       capacity: 800000000000,
-      method: [{ uri, read: true, write: true, browse: true }],
+      method: [{ uri: encodedUri, read: true, write: true, browse: true }],
       metadata: { field: [] },
     };
     if (input) {

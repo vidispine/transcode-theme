@@ -37,7 +37,6 @@ export default () => {
     showDialog({ Dialog: ProfileManager })
       .then((transcodePresetDocument) => {
         const { name: tagName } = transcodePresetDocument;
-        console.log(transcodePresetDocument);
         return createProfile({ tagName, transcodePresetDocument });
       })
       .then(() => enqueueSnackbar('Success!', { variant: 'success' }))
@@ -45,7 +44,6 @@ export default () => {
   const onChange = (profile) =>
     showDialog({ Dialog: ProfileManager, profile, okText: 'Save profile' })
       .then((transcodePresetDocument) => {
-        console.log(transcodePresetDocument);
         const { name: tagName } = transcodePresetDocument;
         return updateProfile({ tagName, transcodePresetDocument });
       })

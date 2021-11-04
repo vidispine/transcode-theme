@@ -23,7 +23,7 @@ const styles = ({ spacing, palette }) => ({
     '& button:not(:last-child)': {
       marginRight: spacing(2),
     },
-    '& .MuiSvgIcon-root': {
+    '& .MuiSvgIcon-root:not(.MuiSvgIcon-colorError)': {
       fill: palette.success.main,
     },
   },
@@ -68,7 +68,7 @@ const form = [
     name: 'secretKey',
     label: 'Secret key',
     type: 'password',
-    placeholder: 'Access key',
+    placeholder: 'Secret key',
     fullWidth: true,
     required: true,
   },

@@ -203,7 +203,7 @@ export const PasswordField = withStyles(styles)(
       <Field
         id={name}
         name={name}
-        type={params.disabled ? 'password' : 'text'}
+        type="password"
         label={label}
         variant="outlined"
         classes={{ root: classes.text }}
