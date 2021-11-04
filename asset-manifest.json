@@ -1,11 +1,11 @@
 {
   "files": {
-    "main.js": "https://vidispine.github.io/transcode-theme/static/js/main.11833eb8.chunk.js",
+    "main.js": "https://vidispine.github.io/transcode-theme/static/js/main.0e1e5f22.chunk.js",
     "runtime-main.js": "https://vidispine.github.io/transcode-theme/static/js/runtime-main.95683da0.js",
     "static/css/2.dbf477cb.chunk.css": "https://vidispine.github.io/transcode-theme/static/css/2.dbf477cb.chunk.css",
-    "static/js/2.0ab6b39c.chunk.js": "https://vidispine.github.io/transcode-theme/static/js/2.0ab6b39c.chunk.js",
+    "static/js/2.70dac9c7.chunk.js": "https://vidispine.github.io/transcode-theme/static/js/2.70dac9c7.chunk.js",
     "index.html": "https://vidispine.github.io/transcode-theme/index.html",
-    "static/js/2.0ab6b39c.chunk.js.LICENSE.txt": "https://vidispine.github.io/transcode-theme/static/js/2.0ab6b39c.chunk.js.LICENSE.txt",
+    "static/js/2.70dac9c7.chunk.js.LICENSE.txt": "https://vidispine.github.io/transcode-theme/static/js/2.70dac9c7.chunk.js.LICENSE.txt",
     "static/media/header-logo.f0892ea4.svg": "https://vidispine.github.io/transcode-theme/static/media/header-logo.f0892ea4.svg",
     "static/media/logo.db253c2c.svg": "https://vidispine.github.io/transcode-theme/static/media/logo.db253c2c.svg",
     "static/media/index.css": "https://vidispine.github.io/transcode-theme/static/media/roboto-latin-900italic.cb5ad999.woff2",
@@ -17,7 +17,7 @@
   "entrypoints": [
     "static/js/runtime-main.95683da0.js",
     "static/css/2.dbf477cb.chunk.css",
-    "static/js/2.0ab6b39c.chunk.js",
-    "static/js/main.11833eb8.chunk.js"
+    "static/js/2.70dac9c7.chunk.js",
+    "static/js/main.0e1e5f22.chunk.js"
   ]
 }
