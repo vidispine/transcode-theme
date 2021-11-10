@@ -109,13 +109,13 @@ const ProfileCard = ({
 }) => {
   const { data = {} } = useGetProfile({ tagName });
   const { raw = {} } = data;
-  const onClick = () => onSelect && onSelect({ tagName });
+  const onClick = () => onSelect && onSelect(raw);
   return (
     <Paper className={classes.paper}>
       <ListItem className={classes.root} selected={selected} button={!!checkbox} onClick={onClick}>
         {checkbox && (
           <ListItemIcon>
-            <Checkbox onChange={() => onSelect({ tagName })} checked={selected} color="primary" />
+            <Checkbox onChange={() => onSelect(raw)} checked={selected} color="primary" />
           </ListItemIcon>
         )}
         <Box>

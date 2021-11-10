@@ -3,7 +3,7 @@ import { Route, Redirect, Switch } from 'react-router-dom';
 import { withStyles } from '@material-ui/core';
 import { AuthProvider } from '@vidispine/vdt-react';
 import { QueryClientProvider } from 'react-query';
-import { ConfigurationProvider, DialogProvider, ProfileProvider } from '../../context';
+import { DialogProvider } from '../../context';
 import { LOGIN_EXPIRES_SECONDS, APP_BASENAME } from '../../const';
 import Search from '../Search';
 import { Profiles } from '../Profile';
@@ -40,33 +40,29 @@ function Root({ classes }) {
       LoginProps={{ error: loginError }}
     >
       <QueryClientProvider client={queryClient}>
-        <ProfileProvider>
-          <ConfigurationProvider>
-            <DialogProvider>
-              <Header />
-              <div className={classes.container}>
-                <Switch>
-                  <Route exact path="/search/">
-                    <Search />
-                  </Route>
-                  <Route exact path="/search/*">
-                    <Search />
-                  </Route>
-                  <Route exact path="/profile/">
-                    <Profiles />
-                  </Route>
-                  <Route exact path="/settings">
-                    <Settings />
-                  </Route>
-                  <Redirect exact from="/" push to="/search/" />
-                  <Route path="*">
-                    <NotFound />
-                  </Route>
-                </Switch>
-              </div>
-            </DialogProvider>
-          </ConfigurationProvider>
-        </ProfileProvider>
+        <DialogProvider>
+          <Header />
+          <div className={classes.container}>
+            <Switch>
+              <Route exact path="/search/">
+                <Search />
+              </Route>
+              <Route exact path="/search/*">
+                <Search />
+              </Route>
+              <Route exact path="/profile/">
+                <Profiles />
+              </Route>
+              <Route exact path="/settings">
+                <Settings />
+              </Route>
+              <Redirect exact from="/" push to="/search/" />
+              <Route path="*">
+                <NotFound />
+              </Route>
+            </Switch>
+          </div>
+        </DialogProvider>
       </QueryClientProvider>
     </AuthProvider>
   );

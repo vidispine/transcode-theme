@@ -15,7 +15,8 @@ import {
 import { CheckCircle as Check, Error } from '@material-ui/icons';
 import { Form } from 'react-final-form';
 
-import { useConfiguration } from '../../context';
+import { useGetStorages, useCreateStorage, useEditStorage } from '../../hooks/storages';
+import filenameScript from './filenameScript';
 import { FieldSelector } from '../../components';
 
 const styles = ({ spacing, palette }) => ({
@@ -168,7 +169,56 @@ const StorageForm = withStyles(styles)(
 
 const Settings = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const { storages: { input, output } = {}, isLoading, onUpdateStorage } = useConfiguration();
+  const { data: { input, output } = {}, isLoading } = useGetStorages();
+  const { mutateAsync: editStorage } = useEditStorage();
+  const { mutateAsync: createStorage } = useCreateStorage();
+
+  const onUpdateStorage = ({ input: inputStorage, output: outputStorage }) => {
+    const {
+      protocol,
+      accessKey,
+      secretKey,
+      name,
+      path,
+      // region,
+      id: storageMethodId,
+      storageId,
+    } = {
+      ...inputStorage,
+      ...outputStorage,
+    };
+
+    let uri = `${protocol}://${accessKey}:${secretKey}@${name}/${path}`;
+    if (uri.charAt(uri.length - 1) !== '/') uri = uri.concat('/');
+    const encodedAccessKey = encodeURIComponent(accessKey);
+    const encodedSecretKey = encodeURIComponent(secretKey);
+    const encodedUri = `${protocol}://${encodedAccessKey}:${encodedSecretKey}@${name}/${path}`;
+    const encodedUrl = encodeURIComponent(uri);
+    // if (region && region !== 'auto') uri = uri.concat(`?region=${region}`);
+    if (storageId) {
+      return editStorage({
+        storageMethodId,
+        storageId,
+        queryParams: { url: encodedUrl },
+      });
+    }
+    const storageDocument = {
+      type: 'LOCAL',
+      capacity: 800000000000,
+      method: [{ uri: encodedUri, read: true, write: true, browse: true }],
+      metadata: { field: [] },
+    };
+    if (inputStorage) {
+      storageDocument.metadata.field = [{ key: 'transcodeThemeSourceStorage', value: true }];
+    } else if (outputStorage) {
+      storageDocument.metadata.field = [
+        { key: 'transcodeThemeOutputStorage', value: true },
+        { key: 'filenameScript', value: filenameScript },
+      ];
+    }
+    return createStorage({ storageDocument });
+  };
+
   const handleSubmit = (values) =>
     onUpdateStorage(values)
       .then(() => enqueueSnackbar('Success!', { variant: 'success' }))

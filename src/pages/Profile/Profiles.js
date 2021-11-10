@@ -3,13 +3,13 @@ import { useSnackbar } from 'notistack';
 import { SwitchField } from '@vidispine/vdt-materialui';
 import { Box, Button } from '@material-ui/core';
 import { Search } from '../../components';
+import { useDialog } from '../../context';
 import {
-  useDialog,
-  useProfiles,
+  useListProfiles,
   useUpdateProfile,
   useCreateProfile,
   useDeleteProfile,
-} from '../../context';
+} from '../../hooks/profiles';
 import ProfileManager from './ProfileManager';
 import ProfileCard from './ProfileCard';
 
@@ -17,10 +17,20 @@ export default () => {
   const { showDialog } = useDialog();
   const { enqueueSnackbar } = useSnackbar();
   const [first, setFirst] = useState(0);
-  const { profiles = [], onSearch, showDefault, setShowDefault } = useProfiles();
+  const { data: allProfiles = [] } = useListProfiles();
   const { mutateAsync: updateProfile } = useUpdateProfile();
   const { mutateAsync: createProfile } = useCreateProfile();
   const { mutateAsync: deleteProfile } = useDeleteProfile();
+
+  const [search, setSearch] = React.useState('');
+  const [showDefault, setShowDefault] = React.useState(false);
+  const onSearch = (v) => setSearch(v);
+  const profiles = React.useMemo(() => {
+    let tags = allProfiles;
+    if (!showDefault) tags = tags.filter((tag) => !tag.startsWith('__'));
+    if (search) tags = tags.filter((tag) => tag.toLowerCase().includes(search.toLowerCase()));
+    return tags;
+  }, [allProfiles, showDefault, search]);
 
   const nextPage = () => {
     setFirst(first + 20);

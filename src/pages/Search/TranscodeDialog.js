@@ -21,7 +21,8 @@ import ProfileCard from '../Profile/ProfileCard';
 import FileCard from './FileCard';
 import { Search, TextField } from '../../components';
 import { useCostEstimate } from '../../hooks';
-import { useProfiles, useConfiguration } from '../../context';
+import { useListProfiles } from '../../hooks/profiles';
+import { useGetStorages } from '../../hooks/storages';
 
 const styles = ({ palette, spacing }) => ({
   root: {
@@ -45,7 +46,7 @@ const CostEstimate = ({ selected, cost: data, title, isLoading }) => {
   const [[initialValue]] = React.useState(title.split('.'));
   return (
     <Box width={1}>
-      {selected.map(({ tagName, format, createPreview, createThumbnails }) => (
+      {selected.map(({ name: tagName, format, createPreview, createThumbnails }) => (
         <Box
           key={tagName}
           p={2}
@@ -108,24 +109,20 @@ const Content = ({
   classes,
   handleSubmit,
   submitting,
-  showDefault,
-  setShowDefault,
+  selected,
+  toggleSelected,
 }) => {
   const { metadata = {} } = item;
   const { itemId, title } = parseMetadataType(metadata, { flat: true, arrayOnSingle: false });
   const [step, setStep] = React.useState(1);
   const [search, setSearch] = React.useState('');
-  const profiles = React.useMemo(
-    () => allProfiles.filter((name) => name.toLowerCase().includes(search) && name !== 'original'),
-    [search, allProfiles],
-  );
-  const [selected, setSelected] = React.useState([]);
-  const toggleSelected = (payload) => {
-    const { tagName } = payload;
-    const filter = selected.filter(({ tagName: tag }) => tag !== tagName);
-    if (filter.length === selected.length) return setSelected([...filter, payload]);
-    return setSelected(filter);
-  };
+  const [showDefault, setShowDefault] = React.useState(false);
+  const profiles = React.useMemo(() => {
+    let tags = allProfiles;
+    if (!showDefault) tags = tags.filter((tag) => !tag.startsWith('__'));
+    if (search) tags = tags.filter((tag) => tag.toLowerCase().includes(search.toLowerCase()));
+    return tags;
+  }, [allProfiles, showDefault, search]);
 
   const toggleStep = () =>
     setStep((oldStep) => {
@@ -166,7 +163,7 @@ const Content = ({
                 <ProfileCard
                   key={tagName}
                   tagName={tagName}
-                  selected={selected.some(({ tagName: tag }) => tag === tagName)}
+                  selected={selected.some(({ name }) => name === tagName)}
                   onSelect={toggleSelected}
                 />
               ))}
@@ -207,14 +204,24 @@ const Content = ({
 
 const TranscodeDialog = ({ open, onSuccess, onClose, item = {}, classes }) => {
   const { shape: [shapeDocument = {}] = [{}], id: itemId } = item;
-  const { outputStorage: storageId } = useConfiguration();
-  // TODO: this should be used instead of above
-  // const { storages: { input, output } = {}, isLoading, onUpdateStorage } = useConfiguration();
-  const { profiles: allProfiles = [], showDefault, setShowDefault } = useProfiles();
+  const { data: { output = {} } = {}, isLoading } = useGetStorages();
+  const { storageId } = output;
+  const { data: allProfiles = [] } = useListProfiles();
+
+  const [selected, setSelected] = React.useState([]);
+  const toggleSelected = (payload) => {
+    const { name: tagName } = payload;
+    const filter = selected.filter(({ name }) => name !== tagName);
+    if (filter.length === selected.length) return setSelected([...filter, payload]);
+    return setSelected(filter);
+  };
 
   const handleSubmit = (values) => {
     const queryParams = { container: 1 };
-    const tags = Object.entries(values);
+    // Temp fix for not starting transcodes on non selected tags
+    const tags = Object.entries(values).filter(([tagName]) =>
+      selected.some((tag) => tagName === tag.name),
+    );
     const promises = tags.map(
       ([tag, params]) =>
         new Promise((res) => {
@@ -261,15 +268,14 @@ const TranscodeDialog = ({ open, onSuccess, onClose, item = {}, classes }) => {
     <Dialog fullWidth maxWidth="md" open={open} onClose={onClose}>
       <DialogTitle>Transcode file</DialogTitle>
       <Form
-        showDefault={showDefault}
-        setShowDefault={setShowDefault}
         item={item}
         render={Content}
         onClose={onClose}
         classes={classes}
         profiles={allProfiles}
         onSubmit={handleSubmit}
-        subscription={{ submitting: true, pristine: true }}
+        selected={selected}
+        toggleSelected={toggleSelected}
       />
     </Dialog>
   );
