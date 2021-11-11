@@ -144,7 +144,9 @@ const JobCard = ({ jobType = {}, classes, onAbort, hideProgress }) => {
             <Box pt={1}>
               <LinearProgress
                 color={RUNNING_STATES.includes(status) && !value ? 'secondary' : 'primary'}
-                variant={RUNNING_STATES.includes(status) && !value ? 'query' : 'determinate'}
+                variant={
+                  RUNNING_STATES.includes(status) && !value ? 'indeterminate' : 'determinate'
+                }
                 value={value}
               />
             </Box>

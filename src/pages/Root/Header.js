@@ -18,7 +18,6 @@ const styles = ({ spacing, palette }) => ({
     width: spacing(3),
   },
   titleText: {
-    marginLeft: spacing(2),
     fontWeight: 600,
     background: `linear-gradient(to right, ${palette.secondary.main} 0%, ${palette.primary.main} 28%, ${palette.success.main} 64%, ${palette.success.light} 97%)`,
     backgroundClip: 'text',
@@ -60,14 +59,17 @@ const Link = withStyles(({ typography, palette, spacing, mixins }) => ({
 }))(Button);
 
 function Header({ classes }) {
-  const { userName, onLogout } = useAuthContext();
+  const { userName, onLogout, serverUrl } = useAuthContext();
   return (
     <AppBar className={classes.root} elevation={0} color="default">
       <Box display="flex" px={2} height={1} alignItems="center" justifyContent="space-between">
-        <Box display="flex">
+        <Box display="grid" gridGap={16} gridAutoFlow="column" alignItems="center">
           <Avatar className={classes.logo} variant="square" src={HEADER_LOGO} alt={APP_TITLE} />
           <Hidden smDown>
-            <Typography className={classes.titleText}>VidiCore Transcode Theme</Typography>
+            <Box display="flex" flexDirection="column">
+              <Typography className={classes.titleText}>{APP_TITLE}</Typography>
+              <Typography variant="caption">{serverUrl}</Typography>
+            </Box>
           </Hidden>
         </Box>
         <Box>
