@@ -17,12 +17,13 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 
+import { useQueryClient } from 'react-query';
 import ProfileCard from '../Profile/ProfileCard';
 import FileCard from './FileCard';
 import { Search, TextField } from '../../components';
 import { useCostEstimate } from '../../hooks';
-import { useListProfiles } from '../../hooks/profiles';
-import { useGetStorages } from '../../hooks/storages';
+import { useListProfiles } from '../../hooks/profile';
+import { useGetStorages } from '../../hooks/storage';
 
 const styles = ({ palette, spacing }) => ({
   root: {
@@ -215,6 +216,7 @@ const TranscodeDialog = ({ open, onSuccess, onClose, item = {}, classes }) => {
     if (filter.length === selected.length) return setSelected([...filter, payload]);
     return setSelected(filter);
   };
+  const queryClient = useQueryClient();
 
   const handleSubmit = (values) => {
     const queryParams = { container: 1 };
@@ -258,6 +260,7 @@ const TranscodeDialog = ({ open, onSuccess, onClose, item = {}, classes }) => {
                   ItemApi.removeItem({ itemId: destinationItem }).then(() => reject(err)),
                 ),
             )
+            .then(setTimeout(() => queryClient.invalidateQueries('getJobs'), 2000))
             .catch(reject);
         }),
     );

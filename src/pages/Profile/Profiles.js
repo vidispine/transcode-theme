@@ -9,7 +9,7 @@ import {
   useUpdateProfile,
   useCreateProfile,
   useDeleteProfile,
-} from '../../hooks/profiles';
+} from '../../hooks/profile';
 import ProfileManager from './ProfileManager';
 import ProfileCard from './ProfileCard';
 

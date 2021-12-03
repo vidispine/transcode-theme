@@ -2,13 +2,24 @@
 import React from 'react';
 import { useSnackbar } from 'notistack';
 import { useApi } from '@vidispine/vdt-react';
-import { job as JobApi } from '@vidispine/vdt-api';
-import { Box, Tab, Tabs, List, Paper, Button, CircularProgress } from '@material-ui/core';
+import { useQueryClient } from 'react-query';
 
+import { job as JobApi } from '@vidispine/vdt-api';
+import {
+  Box,
+  Tab,
+  Tabs,
+  List,
+  Paper,
+  Button,
+  CircularProgress,
+  Typography,
+} from '@material-ui/core';
 import JobCard from './JobCard';
 import { useDialog } from '../../context';
 
 import { RUNNING_STATES, INACTIVE_STATES } from './const';
+import { useGetJobs } from '../../hooks/job';
 
 const NUMBER = 10;
 
@@ -40,8 +51,12 @@ const JobList = ({
               hideProgress={!!hideProgress}
             />
           ))}
-          {!isLoading && job.length < 1 && <span>No jobs found</span>}
         </List>
+        {!isLoading && job.length < 1 && (
+          <Box display="flex" alignItems="center" justifyContent="center">
+            <Typography variant="overline">No active jobs</Typography>
+          </Box>
+        )}
       </Box>
       <Box display="flex" justifyContent="flex-end">
         <Button disabled={!page} onClick={() => setPage(page - 1)}>
@@ -59,45 +74,28 @@ const Jobs = () => {
   const { showDialog } = useDialog();
   const { enqueueSnackbar } = useSnackbar();
   const [tab, setTab] = React.useState('active');
-  const [page, setPage] = React.useState(0);
+  const [activePage, setActivePage] = React.useState(0);
+  const [inactivePage, setInactivePage] = React.useState(0);
   const onChange = (_, newTab) => {
-    setPage(0);
     setTab(newTab);
   };
-  const {
-    request: requestActive,
-    data: activeJobs = {},
-    isLoading: isLoadingActive,
-  } = useApi(JobApi.listJob);
-  const getActiveJobs = React.useCallback(() => {
-    const queryParams = { ...defaultQueryParams, state: RUNNING_STATES, first: page * NUMBER + 1 };
-    requestActive({ queryParams });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
 
-  const {
-    request: requestFinished,
-    data: finishedJobs = {},
-    isLoading: isLoadingFinished,
-  } = useApi(JobApi.listJob);
-  const getFinishedJobs = React.useCallback(() => {
-    const queryParams = { ...defaultQueryParams, state: INACTIVE_STATES, first: page * NUMBER + 1 };
-    requestFinished({ queryParams });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  const { data: { data: activeJobs = {}, isFetching: isFetchingActive } = {} } = useGetJobs(
+    'active',
+    {
+      state: RUNNING_STATES,
+      first: activePage * NUMBER + 1,
+    },
+  );
+  const { data: { data: finishedJobs = {} } = {}, isFetching: isFetchingInactive } = useGetJobs(
+    'inactive',
+    {
+      state: INACTIVE_STATES,
+      first: inactivePage * NUMBER + 1,
+    },
+  );
 
-  React.useEffect(() => {
-    getActiveJobs();
-    getFinishedJobs();
-    const interval = setInterval(() => {
-      getActiveJobs();
-      getFinishedJobs();
-    }, 15000);
-    return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, tab]);
-
-  const isLoading = isLoadingActive || isLoadingFinished;
+  const isLoading = isFetchingActive || isFetchingInactive;
 
   const onAbort = (jobId) =>
     showDialog({
@@ -123,8 +121,8 @@ const Jobs = () => {
         <Box overflow="hidden">
           <JobList
             jobListType={activeJobs}
-            page={page}
-            setPage={setPage}
+            page={activePage}
+            setPage={setActivePage}
             isLoading={isLoading}
             onAbort={onAbort}
           />
@@ -134,8 +132,8 @@ const Jobs = () => {
           <JobList
             hideProgress
             jobListType={finishedJobs}
-            page={page}
-            setPage={setPage}
+            page={inactivePage}
+            setPage={setInactivePage}
             isLoading={isLoading}
           />
         </Box>

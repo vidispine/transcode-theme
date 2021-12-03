@@ -15,7 +15,7 @@ import {
 import { CheckCircle as Check, Error } from '@material-ui/icons';
 import { Form } from 'react-final-form';
 
-import { useGetStorages, useCreateStorage, useEditStorage } from '../../hooks/storages';
+import { useGetStorages, useCreateStorage, useEditStorage } from '../../hooks/storage';
 import filenameScript from './filenameScript';
 import { FieldSelector } from '../../components';
 

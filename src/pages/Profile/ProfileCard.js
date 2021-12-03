@@ -14,7 +14,7 @@ import {
 } from '@material-ui/core';
 import { Delete, Edit } from '@material-ui/icons';
 
-import { useGetProfile } from '../../context';
+import { useGetProfile } from '../../hooks/profile';
 import { Menu } from '../../components';
 
 const columnStyles = ({ spacing }) => ({
