@@ -1,11 +1,12 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import isMatch from 'lodash.ismatch';
-import { withStyles, FormHelperText } from '@material-ui/core';
+import { withStyles, FormHelperText, InputAdornment, IconButton } from '@material-ui/core';
 import {
   TextField as VdtTextField,
   CheckboxField as VdtCheckboxField,
 } from '@vidispine/vdt-materialui';
+import { Visibility, VisibilityOff } from '@material-ui/icons';
 import { Field } from 'react-final-form';
 
 import CustomSelectField from './SelectField';
@@ -184,6 +185,7 @@ export const TextField = withStyles(styles)(
         label={label}
         variant="outlined"
         classes={{ root: classes.text }}
+        required={required}
         disabled={disabled}
         validate={required ? (v) => !v && 'Required' : ''}
         component={VdtTextField}
@@ -197,13 +199,35 @@ export const TextField = withStyles(styles)(
   },
 );
 
+// function PasswordField(props) {
+//   const [showPassword, setShowPassword] = React.useState(false);
+//   return (
+//     <TextField
+//       type={showPassword ? 'text' : 'password'}
+//       autoComplete="new-password"
+//       InputProps={{
+//         endAdornment: (
+//           <InputAdornment position="end">
+//             <IconButton onClick={() => setShowPassword((prev) => !prev)}>
+//               {showPassword ? <Visibility /> : <VisibilityOff />}
+//             </IconButton>
+//           </InputAdornment>
+//         ),
+//       }}
+//       // eslint-disable-next-line react/jsx-props-no-spreading
+//       {...props}
+//     />
+//   );
+// }
+
 export const PasswordField = withStyles(styles)(
   ({ name, disabled, label, required, placeholder, classes, ...params }) => {
+    const [showPassword, setShowPassword] = React.useState(false);
     return (
       <Field
         id={name}
         name={name}
-        type="password"
+        type={showPassword ? 'text' : 'password'}
         label={label}
         variant="outlined"
         classes={{ root: classes.text }}
@@ -213,6 +237,19 @@ export const PasswordField = withStyles(styles)(
         helperText={null}
         placeholder={placeholder}
         InputLabelProps={{ shrink: false, 'data-shrink': true }}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                disabled={disabled}
+                size="small"
+                onClick={() => setShowPassword((prev) => !prev)}
+              >
+                {showPassword ? <Visibility /> : <VisibilityOff />}
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
         FormHelperTextProps={{ component: HelperText }}
         {...params}
       />

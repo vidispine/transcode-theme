@@ -12,10 +12,11 @@ import {
   Typography,
   CircularProgress,
 } from '@material-ui/core';
+
 import { CheckCircle as Check, Error } from '@material-ui/icons';
 import { Form } from 'react-final-form';
 
-import { useGetStorages, useCreateStorage, useEditStorage } from '../../hooks/storage';
+import { useGetStorages, useCreateStorage, useModifyStorage } from '../../hooks/storage';
 import filenameScript from './filenameScript';
 import { FieldSelector } from '../../components';
 
@@ -24,7 +25,7 @@ const styles = ({ spacing, palette }) => ({
     '& button:not(:last-child)': {
       marginRight: spacing(2),
     },
-    '& .MuiSvgIcon-root:not(.MuiSvgIcon-colorError)': {
+    '& .MuiSvgIcon-root.success': {
       fill: palette.success.main,
     },
   },
@@ -60,7 +61,7 @@ const form = [
   {
     name: 'accessKey',
     label: 'Access key',
-    type: 'string',
+    type: 'password',
     placeholder: 'Access key',
     fullWidth: true,
     required: true,
@@ -123,7 +124,7 @@ const StorageForm = withStyles(styles)(
               <Error color="error" />
             </Tooltip>
           )}
-          {id && !error && <Check />}
+          {id && !error && <Check className="success" />}
         </Box>
         <Box p={2}>
           <Grid spacing={2} container>
@@ -170,7 +171,8 @@ const StorageForm = withStyles(styles)(
 const Settings = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { data: { input, output } = {}, isLoading } = useGetStorages();
-  const { mutateAsync: editStorage } = useEditStorage();
+  // eslint-disable-next-line no-unused-vars
+  const { mutateAsync: modifyStorage } = useModifyStorage();
   const { mutateAsync: createStorage } = useCreateStorage();
 
   const onUpdateStorage = ({ input: inputStorage, output: outputStorage }) => {
@@ -193,14 +195,13 @@ const Settings = () => {
     const encodedAccessKey = encodeURIComponent(accessKey);
     const encodedSecretKey = encodeURIComponent(secretKey);
     const encodedUri = `${protocol}://${encodedAccessKey}:${encodedSecretKey}@${name}/${path}`;
-    const encodedUrl = encodeURIComponent(uri);
-    // if (region && region !== 'auto') uri = uri.concat(`?region=${region}`);
     if (storageId) {
-      return editStorage({
-        storageMethodId,
-        storageId,
-        queryParams: { url: encodedUrl },
-      });
+      const storageDocument = {
+        type: 'LOCAL',
+        capacity: 800000000000,
+        method: [{ id: storageMethodId, uri: encodedUri, read: true, write: true, browse: true }],
+      };
+      return modifyStorage({ storageId, storageDocument });
     }
     const storageDocument = {
       type: 'LOCAL',

@@ -26,9 +26,9 @@ export function useCreateStorage() {
   });
 }
 
-export function useEditStorage() {
+export function useModifyStorage() {
   const queryClient = useQueryClient();
-  return useMutation(StorageApi.modifyStorageMethod, {
+  return useMutation(StorageApi.modifyStorage, {
     onSuccess: () => {
       queryClient.invalidateQueries(['getStorages']);
     },
