@@ -114,6 +114,7 @@ export const SelectField = withStyles(styles)(
     dependency,
     classes,
     defaultValue = 0,
+    validate,
     ...params
   }) => {
     const [opts, setOpts] = React.useState([...options, autoValue]);
@@ -133,7 +134,7 @@ export const SelectField = withStyles(styles)(
         type="select"
         format={(v) => JSON.stringify(v)}
         parse={(v) => JSON.parse(v)}
-        validate={required ? (v) => !v && 'Required' : ''}
+        validate={validate}
         defaultValue={defaultValue}
         render={({ input, meta }) => (
           <CustomSelectField
@@ -176,7 +177,7 @@ export const CheckboxField = withStyles(styles)(
 );
 
 export const TextField = withStyles(styles)(
-  ({ name, disabled, label, required, placeholder, classes, ...params }) => {
+  ({ name, disabled, label, required, placeholder, classes, validate, ...params }) => {
     return (
       <Field
         id={name}
@@ -187,7 +188,7 @@ export const TextField = withStyles(styles)(
         classes={{ root: classes.text }}
         required={required}
         disabled={disabled}
-        validate={required ? (v) => !v && 'Required' : ''}
+        validate={validate}
         component={VdtTextField}
         helperText={null}
         placeholder={placeholder}
@@ -221,7 +222,7 @@ export const TextField = withStyles(styles)(
 // }
 
 export const PasswordField = withStyles(styles)(
-  ({ name, disabled, label, required, placeholder, classes, ...params }) => {
+  ({ name, disabled, label, required, placeholder, validate, classes, ...params }) => {
     const [showPassword, setShowPassword] = React.useState(false);
     return (
       <Field
@@ -232,7 +233,7 @@ export const PasswordField = withStyles(styles)(
         variant="outlined"
         classes={{ root: classes.text }}
         disabled={disabled}
-        validate={required ? (v) => !v && 'Required' : ''}
+        validate={validate}
         component={VdtTextField}
         helperText={null}
         placeholder={placeholder}
@@ -258,7 +259,7 @@ export const PasswordField = withStyles(styles)(
 );
 
 export const NumberField = withStyles(styles)(
-  ({ name, disabled, label, required, placeholder, classes, ...params }) => {
+  ({ name, disabled, label, required, placeholder, validate, classes, ...params }) => {
     return (
       <Field
         id={name}
@@ -268,7 +269,7 @@ export const NumberField = withStyles(styles)(
         variant="outlined"
         classes={{ root: classes.text }}
         disabled={disabled}
-        validate={required ? (v) => !v && 'Required' : ''}
+        validate={validate}
         component={VdtTextField}
         helperText={null}
         placeholder={placeholder}
@@ -292,13 +293,10 @@ export const FieldSelector = ({
   if (type === 'select') FieldType = SelectField;
   if (type === 'checkbox') FieldType = CheckboxField;
   if (type === 'password') FieldType = PasswordField;
-  if (!dependency.length)
-    return (
-      <FieldType subscription={{ value: true }} {...params} dependency={checkedDependencies} />
-    );
+  if (!dependency.length) return <FieldType {...params} dependency={checkedDependencies} />;
   const [key, ...rest] = dependency;
   return (
-    <Field name={key} subscription={{ value: true }}>
+    <Field name={key}>
       {({ input: { value: val } }) => (
         <FieldSelector
           {...params}

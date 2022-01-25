@@ -29,13 +29,13 @@ const styles = ({ spacing, palette }) => ({
   actions: {},
 });
 
+// eslint-disable-next-line no-unused-vars
 export const extractValues = ({ video, audio, format, name, description, createThumbnails }) =>
   new Promise((resolve, reject) => {
     const shapeTag = { metadata: {} };
     const errors = {};
     if (name) {
-      if (name.includes(' ')) errors.name = 'Do not use blank spaces';
-      else shapeTag.name = name;
+      shapeTag.name = name;
     } else errors.name = 'Name is required';
     if (format) {
       shapeTag.format = format;
@@ -137,10 +137,13 @@ const ProfileManager = ({ onSuccess, onClose, open, classes, profile = {}, okTex
       ? sections
       : [{ ...general, fields: [{ ...nameField, disabled: true }, ...restFields] }, ...av],
   );
+
   const handleSubmit = (values) =>
     extractValues(values)
       .then(onSuccess)
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        return err;
+      });
 
   return (
     <Dialog classes={{ root: classes.root }} open={open} onClose={onClose}>
@@ -152,7 +155,7 @@ const ProfileManager = ({ onSuccess, onClose, open, classes, profile = {}, okTex
         component={Content}
         classes={classes}
         okText={okText}
-        subscription={{ submitting: true }}
+        subscription={{ submitting: true, pristine: true, submitErrors: true }}
       />
     </Dialog>
   );

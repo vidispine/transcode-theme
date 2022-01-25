@@ -1,3 +1,5 @@
+import { required, noBlankSpace, composeValidators } from '../../utils/formValidation';
+
 export default [
   {
     name: 'general',
@@ -5,9 +7,10 @@ export default [
     fields: [
       {
         name: 'name',
-        label: 'Name',
+        label: 'Name *',
         type: 'string',
         placeholder: 'Name',
+        validate: composeValidators(required, noBlankSpace),
         fullWidth: true,
         autoFocus: true,
       },
@@ -20,7 +23,7 @@ export default [
       },
       {
         name: 'format',
-        label: 'Format',
+        label: 'Format *',
         type: 'select',
         fullWidth: true,
         defaultValue: 'mp4',

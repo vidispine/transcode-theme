@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { storage as StorageApi } from '@vidispine/vdt-api';
 import { parseStorages } from '../utils/utils';
 
-export function useGetStorages() {
+export function useGetStorages(opts) {
   return useQuery(
     ['getStorages'],
     () => {
@@ -12,7 +12,8 @@ export function useGetStorages() {
     },
     {
       refetchOnWindowFocus: false,
-      staleTime: Infinity,
+      keepPreviousData: true,
+      ...opts,
     },
   );
 }

@@ -24,19 +24,19 @@ const styles = ({ spacing }) => ({
   },
 });
 
-const Content = ({ fields }) => (
+const Content = ({ fields, ...params }) => (
   <Grid spacing={2} container>
     {fields.map(({ name, fullWidth, ...props }) => {
       return (
         <Grid key={name} item xs={fullWidth ? 12 : 6}>
-          <FieldSelector name={name} {...props} />
+          <FieldSelector name={name} {...props} {...params} />
         </Grid>
       );
     })}
   </Grid>
 );
 
-const ProfileSection = ({ label, fields, errors, submitFailed, classes }) => {
+const ProfileSection = ({ label, fields, errors, submitFailed, classes, ...props }) => {
   const [expanded, setExpanded] = React.useState(false);
   const error = React.useMemo(
     () => submitFailed && fields.some(({ name }) => Object.keys(errors).includes(name)),
@@ -49,7 +49,7 @@ const ProfileSection = ({ label, fields, errors, submitFailed, classes }) => {
         <Typography color={error ? 'error' : 'initial'}>{label}</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Content fields={fields} />
+        <Content fields={fields} {...props} />
       </AccordionDetails>
     </Accordion>
   );
