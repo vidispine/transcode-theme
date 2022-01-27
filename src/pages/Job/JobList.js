@@ -20,6 +20,7 @@ import { useDialog } from '../../context';
 
 import { RUNNING_STATES, INACTIVE_STATES } from './const';
 import { useGetJobs } from '../../hooks/job';
+import JobDialog from './JobDialog';
 
 const NUMBER = 10;
 
@@ -35,6 +36,7 @@ const JobList = ({
   page,
   isLoading,
   onAbort = () => null,
+  onInfo = () => null,
   setPage,
   hideProgress = false,
 }) => {
@@ -48,6 +50,7 @@ const JobList = ({
               key={jobType.jobId}
               jobType={jobType}
               onAbort={onAbort}
+              onInfo={onInfo}
               hideProgress={!!hideProgress}
             />
           ))}
@@ -106,6 +109,8 @@ const Jobs = () => {
       .then(() => JobApi.abortJob({ jobId }))
       .then(() => enqueueSnackbar('Job aborted!', { variant: 'success' }))
       .catch(({ message }) => message && enqueueSnackbar(message, { variant: 'error' }));
+
+  const onInfo = (jobType) => showDialog({ Dialog: JobDialog, jobType }).catch(() => null);
   return (
     <Box display="grid" gridTemplateRows="auto 1fr" gridGap={16}>
       <Paper>
@@ -135,6 +140,7 @@ const Jobs = () => {
             page={inactivePage}
             setPage={setInactivePage}
             isLoading={isLoading}
+            onInfo={onInfo}
           />
         </Box>
       )}

@@ -40,9 +40,18 @@ export default () => {
   };
 
   const onDelete = (tagName) =>
-    deleteProfile({ tagName })
-      .then(() => enqueueSnackbar('Success'))
-      .catch(({ message }) => enqueueSnackbar(message, { variant: 'error' }));
+    showDialog({
+      title: 'Delete profile',
+      message: 'Are you sure you want to delete this transcode profile?',
+      okText: 'Yes, delete profile',
+      noText: 'No, cancel',
+    })
+      .then(() =>
+        deleteProfile({ tagName })
+          .then(() => enqueueSnackbar('Profile deleted'))
+          .catch(({ message }) => enqueueSnackbar(message, { variant: 'error' })),
+      )
+      .catch(() => null);
   const onCreate = () =>
     showDialog({ Dialog: ProfileManager })
       .then((transcodePresetDocument) => {

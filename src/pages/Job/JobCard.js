@@ -106,9 +106,12 @@ const usePoll = ({ jobId, type, status: initialStatus }) => {
   return { request, value };
 };
 
-const JobCard = ({ jobType = {}, classes, onAbort, hideProgress }) => {
+const JobCard = ({ jobType = {}, classes, onAbort, onInfo, hideProgress }) => {
   const [{ status, started, jobId }] = React.useState(jobType);
-  const onClick = () => RUNNING_STATES.includes(status) && onAbort(jobId);
+  const onClick = () => {
+    if (RUNNING_STATES.includes(status)) onAbort(jobId);
+    else if (INACTIVE_STATES.includes(status)) onInfo(jobType);
+  };
   const { request, value = 100 } = usePoll(jobType);
   React.useEffect(request, [request]);
   const getClassName = () => {
