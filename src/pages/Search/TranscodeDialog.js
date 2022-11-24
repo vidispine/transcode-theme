@@ -117,7 +117,7 @@ function Content({
   toggleSelected,
 }) {
   const { metadata = {} } = item;
-  const { itemId, title } = parseMetadataType(metadata, { flat: true, arrayOnSingle: false });
+  const { itemId, title } = parseMetadataType(metadata, { flat: true, arrayOnSingleValue: false });
   const [step, setStep] = React.useState(1);
   const [search, setSearch] = React.useState('');
   const [showDefault, setShowDefault] = React.useState(false);

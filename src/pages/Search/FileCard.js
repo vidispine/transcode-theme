@@ -27,7 +27,7 @@ const getFileData = (shape = {}) => {
 };
 
 const parseItem = ({ metadata = {}, shape: [shape] = [{}] }) => ({
-  ...parseMetadataType(metadata, { flat: true, arrayOnSingle: false }),
+  ...parseMetadataType(metadata, { flat: true, arrayOnSingleValue: false }),
   ...parseShapeType(shape),
   ...getFileData(shape),
 });
