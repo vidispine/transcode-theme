@@ -1,5 +1,3 @@
-import React from 'react';
-import get from 'lodash.get';
 import {
   withStyles,
   Box,
@@ -13,9 +11,10 @@ import {
   ListItemText,
 } from '@material-ui/core';
 import { Delete, Edit } from '@material-ui/icons';
+import get from 'lodash.get';
 
-import { useGetProfile } from '../../hooks/profile';
 import { Menu } from '../../components';
+import { useGetProfile } from '../../hooks/profile';
 
 const columnStyles = ({ spacing }) => ({
   root: {
@@ -97,7 +96,7 @@ const styles = ({ spacing }) => ({
   },
 });
 
-const ProfileCard = ({
+function ProfileCard({
   tagName,
   onChange = () => null,
   onDelete = () => null,
@@ -106,7 +105,7 @@ const ProfileCard = ({
   checkbox = true,
   interactive = false,
   classes,
-}) => {
+}) {
   const { data = {} } = useGetProfile({ tagName });
   const { raw = {} } = data;
   const onClick = () => onSelect && onSelect(raw);
@@ -156,6 +155,6 @@ const ProfileCard = ({
       </ListItem>
     </Paper>
   );
-};
+}
 
 export default withStyles(styles)(ProfileCard);

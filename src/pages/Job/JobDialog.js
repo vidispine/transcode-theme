@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {
   withStyles,
   Dialog,
@@ -8,13 +6,14 @@ import {
   DialogActions,
   Button,
 } from '@material-ui/core';
+
 import JsonTreeView from '../../components/JsonTreeView';
 
 const styles = () => ({
   root: {},
 });
 
-const JobDialog = ({ onClose, open, classes, jobType }) => {
+function JobDialog({ onClose, open, classes, jobType }) {
   const { jobId } = jobType;
   return (
     <Dialog classes={{ root: classes.root }} fullWidth maxWidth="md" open={open} onClose={onClose}>
@@ -27,6 +26,6 @@ const JobDialog = ({ onClose, open, classes, jobType }) => {
       </DialogActions>
     </Dialog>
   );
-};
+}
 
 export default withStyles(styles)(JobDialog);

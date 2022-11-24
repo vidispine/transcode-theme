@@ -1,7 +1,10 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
+
 import { useQuery } from 'react-query';
+
 import { storage as StorageApi, resource as ResourceApi } from '@vidispine/vdt-api';
+
 import filenameScript from '../pages/Settings/filenameScript';
 
 const ConfigurationContext = React.createContext();
@@ -87,7 +90,7 @@ export function useConfiguration() {
   return context;
 }
 
-export const ConfigurationProvider = ({ children }) => {
+export function ConfigurationProvider({ children }) {
   const {
     data: storages,
     isLoading: isLoadingStorages,
@@ -148,13 +151,14 @@ export const ConfigurationProvider = ({ children }) => {
     return StorageApi.createStorage({ storageDocument });
   };
 
-  return (
-    <ConfigurationContext.Provider
-      value={{ onUpdateStorage, storages, resources, isLoading, isError }}
-    >
-      {children}
-    </ConfigurationContext.Provider>
+  const contextValue = React.useMemo(
+    () => ({ onUpdateStorage, storages, resources, isLoading, isError }),
+    [isError, isLoading, resources, storages],
   );
-};
+
+  return (
+    <ConfigurationContext.Provider value={contextValue}>{children}</ConfigurationContext.Provider>
+  );
+}
 
 export default ConfigurationContext;

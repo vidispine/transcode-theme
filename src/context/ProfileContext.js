@@ -1,8 +1,10 @@
 import React from 'react';
+
 // eslint-disable-next-line no-unused-vars
 import { useQuery, useQueryClient, useMutation } from 'react-query';
-import { parseTranscodePreset } from '@vidispine/vdt-js';
+
 import { shapetag as ShapetagApi } from '@vidispine/vdt-api';
+import { parseTranscodePreset } from '@vidispine/vdt-js';
 
 const ProfileContext = React.createContext();
 
@@ -77,7 +79,7 @@ export function useUpdateProfile() {
   });
 }
 
-export const ProfileProvider = ({ children }) => {
+export function ProfileProvider({ children }) {
   const { data = [], refetch: onRefresh, isLoading, isError } = useListProfiles();
   const [search, setSearch] = React.useState('');
   const [showDefault, setShowDefault] = React.useState(false);
@@ -88,14 +90,13 @@ export const ProfileProvider = ({ children }) => {
     if (search) tags = tags.filter((tag) => tag.toLowerCase().includes(search.toLowerCase()));
     return tags;
   }, [search, showDefault, data]);
-  return (
-    <ProfileContext.Provider
-      value={{ profiles, onSearch, showDefault, setShowDefault, onRefresh, isLoading, isError }}
-    >
-      {children}
-    </ProfileContext.Provider>
+
+  const contextValue = React.useMemo(
+    () => ({ profiles, onSearch, showDefault, setShowDefault, onRefresh, isLoading, isError }),
+    [isError, isLoading, onRefresh, profiles, showDefault],
   );
-};
+  return <ProfileContext.Provider value={contextValue}>{children}</ProfileContext.Provider>;
+}
 
 export function useProfiles() {
   const context = React.useContext(ProfileContext);

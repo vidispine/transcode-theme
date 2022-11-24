@@ -1,4 +1,4 @@
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createTheme } from '@material-ui/core/styles';
 
 import 'typeface-roboto';
 import '@fontsource/open-sans';
@@ -6,7 +6,6 @@ import '@fontsource/open-sans/500.css';
 import '@fontsource/open-sans/600.css';
 import '@fontsource/open-sans/700.css';
 import '@fontsource/open-sans/800.css';
-import '@vidispine/vdt-materialui/dist/index.css';
 
 const vsPurple = '#7c74bd';
 const vsBlue = '#0068a9';
@@ -14,7 +13,7 @@ const vsTeal = '#44a8aa';
 const vsTealLight = '#6DC3C5';
 const red = '#df5f5f';
 
-const theme = createMuiTheme({
+const theme = createTheme({
   typography: {
     useNextVariants: true,
     fontFamily: '"Open Sans", "Helvetica", "Arial", sans-serif',

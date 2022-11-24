@@ -1,17 +1,21 @@
 import React from 'react';
-import { Route, Redirect, Switch } from 'react-router-dom';
+
 import { withStyles } from '@material-ui/core';
-import { AuthProvider } from '@vidispine/vdt-react';
 import { QueryClientProvider } from 'react-query';
-import { DialogProvider } from '../../context';
+import { Route, Redirect, Switch } from 'react-router-dom';
+
+import { AuthProvider } from '@vidispine/vdt-react';
+
 import { LOGIN_EXPIRES_SECONDS, APP_BASENAME } from '../../const';
-import Search from '../Search';
-import { Profiles } from '../Profile';
+import { DialogProvider } from '../../context';
+import queryClient from '../../queryClient';
 import Login from '../Login';
 import NotFound from '../NotFound';
-import Header from './Header';
-import queryClient from '../../queryClient';
+import { Profiles } from '../Profile';
+import Search from '../Search';
 import Settings from '../Settings';
+
+import Header from './Header';
 
 const styles = ({ mixins, spacing }) => ({
   container: {

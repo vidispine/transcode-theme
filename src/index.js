@@ -1,14 +1,13 @@
-import React from 'react';
+import { MuiThemeProvider, CssBaseline } from '@material-ui/core';
+import { SnackbarProvider } from 'notistack';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { MuiThemeProvider, CssBaseline } from '@material-ui/core';
 
-import { SnackbarProvider } from 'notistack';
-import LightTheme from './themes/LightTheme';
-import Root from './pages/Root';
 import { ErrorBoundary } from './components';
-import { SplitterProvider } from './context';
 import { APP_BASENAME } from './const';
+import { SplitterProvider } from './context';
+import Root from './pages/Root';
+import LightTheme from './themes/LightTheme';
 
 ReactDOM.render(
   <ErrorBoundary>

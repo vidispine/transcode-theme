@@ -1,14 +1,17 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
+
+import { Box, Tab, Tabs, Paper, CircularProgress } from '@material-ui/core';
 import debounce from 'lodash.debounce';
 import { useSnackbar } from 'notistack';
+
 import { item as ItemApi } from '@vidispine/vdt-api';
 import { useSearchItem } from '@vidispine/vdt-react';
-import { Box, Tab, Tabs, Paper, CircularProgress } from '@material-ui/core';
 
-import { useSearch } from '../../hooks';
-import { useDialog } from '../../context';
 import { Snackbar } from '../../components';
+import { useDialog } from '../../context';
+import { useSearch } from '../../hooks';
+
 import InputList from './InputList';
 import OutputList from './OutputList';
 import TranscodeDialog from './TranscodeDialog';
@@ -41,7 +44,7 @@ const defaultOutputState = {
   rowsPerPage: 10,
 };
 
-const FileList = ({ query, setQuery }) => {
+function FileList({ query, setQuery }) {
   const { state: inputState, ...inputActions } = useSearch(defaultInputState);
   const { state: outputState, ...outputActions } = useSearch(defaultOutputState);
   const {
@@ -162,6 +165,6 @@ const FileList = ({ query, setQuery }) => {
       </Box>
     </Box>
   );
-};
+}
 
 export default FileList;

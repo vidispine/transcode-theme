@@ -1,9 +1,8 @@
-import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import TreeView from '@material-ui/lab/TreeView';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import TreeItem from '@material-ui/lab/TreeItem';
+import TreeView from '@material-ui/lab/TreeView';
 
 const styles = (theme) => ({
   root: {},
@@ -26,7 +25,7 @@ const LabelComponent = withStyles(styles)(({ classes, nodeKey, nodeValue }) => {
   );
 });
 
-const JsonTreeView = ({ classes, data }) => {
+function JsonTreeView({ classes, data }) {
   const renderNodes = (nodes, prevKey = 'root') =>
     Array.isArray(nodes)
       ? nodes.map((node, index) => {
@@ -58,6 +57,6 @@ const JsonTreeView = ({ classes, data }) => {
       {renderNodes(data)}
     </TreeView>
   );
-};
+}
 
 export default withStyles(styles)(JsonTreeView);

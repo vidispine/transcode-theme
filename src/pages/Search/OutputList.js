@@ -1,9 +1,8 @@
-import React from 'react';
 import { Box, List, Button } from '@material-ui/core';
 
 import FileCard from './FileCard';
 
-const OutputList = ({ itemListType = {}, page, onChangePage, onDelete }) => {
+function OutputList({ itemListType = {}, page, onChangePage, onDelete }) {
   const { item: items = [], hits } = itemListType;
   const sortedItems = items.map(({ shape: unsorted = [], ...rest }) => {
     const shape = unsorted.sort(({ tag: aTag = [] }, { b: bTag = [] }) => {
@@ -32,6 +31,6 @@ const OutputList = ({ itemListType = {}, page, onChangePage, onDelete }) => {
       </Box>
     </Box>
   );
-};
+}
 
 export default OutputList;

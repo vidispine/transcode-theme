@@ -1,7 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 
-import { Form } from 'react-final-form';
 import {
   withStyles,
   Dialog,
@@ -10,6 +9,7 @@ import {
   DialogActions,
   Button,
 } from '@material-ui/core';
+import { Form } from 'react-final-form';
 
 import sections from './form';
 import Section from './ProfileSection';
@@ -97,14 +97,14 @@ export const extractValues = ({ video, audio, format, name, description, createT
     else resolve(shapeTag);
   });
 
-const Content = ({
+function Content({
   form,
   sections: fieldSections,
   handleSubmit,
   onClose,
   okText = 'Add new profile',
   classes,
-}) => {
+}) {
   const { submitting } = form.getState();
   return (
     <form onSubmit={handleSubmit}>
@@ -128,9 +128,9 @@ const Content = ({
       </DialogActions>
     </form>
   );
-};
+}
 
-const ProfileManager = ({ onSuccess, onClose, open, classes, profile = {}, okText }) => {
+function ProfileManager({ onSuccess, onClose, open, classes, profile = {}, okText }) {
   const { name } = profile;
   const [form] = React.useState(
     !name
@@ -159,6 +159,6 @@ const ProfileManager = ({ onSuccess, onClose, open, classes, profile = {}, okTex
       />
     </Dialog>
   );
-};
+}
 
 export default withStyles(styles)(ProfileManager);

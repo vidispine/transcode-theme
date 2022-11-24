@@ -1,7 +1,7 @@
-import React from 'react';
-import { LoginForm } from '@vidispine/vdt-materialui';
 import { withStyles, Grid, Hidden } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
+
+import { LoginForm } from '@vidispine/vdt-materialui';
 
 import { APP_TITLE, APP_LOGO } from '../../const';
 

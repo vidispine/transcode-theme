@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Container, Paper } from '@material-ui/core';
 
 export default class ErrorBoundary extends React.Component {

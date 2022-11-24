@@ -1,9 +1,5 @@
 import React from 'react';
-import get from 'lodash.get';
-import moment from 'moment';
-import { Link } from 'react-router-dom';
-import { parseMetadataType, parseShapeType } from '@vidispine/vdt-js';
-import { CloudDownload, SwitchVideo, InsertDriveFile as FileIcon } from '@material-ui/icons';
+
 import {
   withStyles,
   Tooltip,
@@ -16,6 +12,12 @@ import {
   ListItemIcon,
   Button,
 } from '@material-ui/core';
+import { CloudDownload, SwitchVideo, InsertDriveFile as FileIcon } from '@material-ui/icons';
+import get from 'lodash.get';
+import moment from 'moment';
+import { Link } from 'react-router-dom';
+
+import { parseMetadataType, parseShapeType } from '@vidispine/vdt-js';
 
 const getFileData = (shape = {}) => {
   const { containerComponent = {} } = shape;
@@ -144,7 +146,7 @@ const styles = ({ spacing, typography }) => ({
   },
 });
 
-const FileCard = ({
+function FileCard({
   itemType = {},
   classes,
   allowTranscode = false,
@@ -153,7 +155,7 @@ const FileCard = ({
   // onDownload = () => null,
   interactive = true,
   checkbox = false,
-}) => {
+}) {
   const { thumbnails: { uri = [] } = {} } = itemType;
   const [thumbnail] = uri;
   const item = React.useMemo(() => parseItem(itemType), [itemType]);
@@ -244,6 +246,6 @@ const FileCard = ({
       </ListItem>
     </Paper>
   );
-};
+}
 
 export default withStyles(styles)(FileCard);
