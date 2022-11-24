@@ -55,7 +55,7 @@ export const parseStorages = ({ storage: storageList }) => {
       if (search.startsWith('?')) search = search.slice(1);
       const [access, bucket] = pathname.split('@');
       const [accessKey] = access.split(':_VSENC__');
-      const [name, ...folderPath] = bucket.split('/');
+      const [name, ...folderPath] = bucket?.split('/') || [];
       const path = folderPath.join('/');
       const queries = search.split('&').reduce((a, c) => {
         const [key, value] = c.split('=');
@@ -73,4 +73,8 @@ export const parseStorages = ({ storage: storageList }) => {
     }
     return { ...acc, [storageType]: output };
   }, {});
+};
+
+export const openInNewTab = (url) => {
+  window.open(url, '_blank', 'noopener,noreferrer');
 };

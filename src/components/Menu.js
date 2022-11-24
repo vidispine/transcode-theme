@@ -1,6 +1,7 @@
 import React from 'react';
-import { MoreVert as MenuIcon } from '@material-ui/icons';
+
 import { Menu, IconButton } from '@material-ui/core';
+import { MoreVert as MenuIcon } from '@material-ui/icons';
 
 export default ({ icon: IconComponent = MenuIcon, children, size }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);

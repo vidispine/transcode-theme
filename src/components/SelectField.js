@@ -1,19 +1,21 @@
 /* eslint-disable no-unused-vars */
 import * as React from 'react';
-import isMatch from 'lodash.ismatch';
-import MUISelect from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import { withStyles } from '@material-ui/core/styles';
-import { CheckboxField } from '@vidispine/vdt-materialui';
-import { ArrowDropDown, Lock } from '@material-ui/icons';
 
-const HelperText = ({ children }) => (
-  <>{children && <FormHelperText error>{children}</FormHelperText>}</>
-);
-export const MatchSource = ({ onChange, checked, children }) => {
+import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import MUISelect from '@material-ui/core/Select';
+import { withStyles } from '@material-ui/core/styles';
+import { ArrowDropDown, Lock } from '@material-ui/icons';
+import isMatch from 'lodash.ismatch';
+
+import { CheckboxField } from '@vidispine/vdt-materialui';
+
+function HelperText({ children }) {
+  return children && <FormHelperText error>{children}</FormHelperText>;
+}
+export function MatchSource({ onChange, checked, children }) {
   return (
     <>
       {children && <FormHelperText error>{children}</FormHelperText>}
@@ -25,7 +27,7 @@ export const MatchSource = ({ onChange, checked, children }) => {
       />
     </>
   );
-};
+}
 
 const styles = (theme) => ({
   root: {
@@ -55,7 +57,7 @@ const defaultParseOptions = (opts) =>
       }),
   }));
 
-const SelectField = ({
+function SelectField({
   input: { value, name, onChange, multiple, ...inputProps } = {},
   meta: { touched, error, submitError } = {},
   options = [],
@@ -71,7 +73,7 @@ const SelectField = ({
   FormHelperTextProps = {},
   parseOptions = defaultParseOptions,
   ...props
-}) => {
+}) {
   const [opts, setOpts] = React.useState(parseOptions(options));
   const [checked, setChecked] = React.useState(false);
   React.useEffect(() => {
@@ -143,6 +145,6 @@ const SelectField = ({
       )}
     </FormControl>
   );
-};
+}
 
 export default withStyles(styles)(SelectField);

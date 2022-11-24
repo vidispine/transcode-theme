@@ -1,9 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
-import { item as ItemApi, vsimport as ImportApi, shape as ShapeApi } from '@vidispine/vdt-api';
-import { createMetadataType, parseMetadataType } from '@vidispine/vdt-js';
-import { SwitchField } from '@vidispine/vdt-materialui';
-import { Form, Field } from 'react-final-form';
+
 import {
   withStyles,
   Box,
@@ -16,14 +13,20 @@ import {
   Typography,
   CircularProgress,
 } from '@material-ui/core';
-
+import { Form, Field } from 'react-final-form';
 import { useQueryClient } from 'react-query';
-import ProfileCard from '../Profile/ProfileCard';
-import FileCard from './FileCard';
+
+import { item as ItemApi, vsimport as ImportApi, shape as ShapeApi } from '@vidispine/vdt-api';
+import { createMetadataType, parseMetadataType } from '@vidispine/vdt-js';
+import { SwitchField } from '@vidispine/vdt-materialui';
+
 import { Search, TextField } from '../../components';
 import { useCostEstimate } from '../../hooks';
 import { useListProfiles } from '../../hooks/profile';
 import { useGetStorages } from '../../hooks/storage';
+import ProfileCard from '../Profile/ProfileCard';
+
+import FileCard from './FileCard';
 
 const styles = ({ palette, spacing }) => ({
   root: {
@@ -43,7 +46,7 @@ const styles = ({ palette, spacing }) => ({
   },
 });
 
-const CostEstimate = ({ selected, cost: data, title, isLoading }) => {
+function CostEstimate({ selected, cost: data, title, isLoading }) {
   const [[initialValue]] = React.useState(title.split('.'));
   return (
     <Box width={1}>
@@ -101,9 +104,9 @@ const CostEstimate = ({ selected, cost: data, title, isLoading }) => {
       </Box>
     </Box>
   );
-};
+}
 
-const Content = ({
+function Content({
   onClose,
   profiles: allProfiles,
   item,
@@ -112,9 +115,9 @@ const Content = ({
   submitting,
   selected,
   toggleSelected,
-}) => {
+}) {
   const { metadata = {} } = item;
-  const { itemId, title } = parseMetadataType(metadata, { flat: true, arrayOnSingle: false });
+  const { itemId, title } = parseMetadataType(metadata, { flat: true, arrayOnSingleValue: false });
   const [step, setStep] = React.useState(1);
   const [search, setSearch] = React.useState('');
   const [showDefault, setShowDefault] = React.useState(false);
@@ -201,9 +204,9 @@ const Content = ({
       </DialogActions>
     </>
   );
-};
+}
 
-const TranscodeDialog = ({ open, onSuccess, onClose, item = {}, classes }) => {
+function TranscodeDialog({ open, onSuccess, onClose, item = {}, classes }) {
   const { shape: [shapeDocument = {}] = [{}], id: itemId } = item;
   const { data: { output = {} } = {}, isLoading } = useGetStorages();
   const { storageId } = output;
@@ -282,6 +285,6 @@ const TranscodeDialog = ({ open, onSuccess, onClose, item = {}, classes }) => {
       />
     </Dialog>
   );
-};
+}
 
 export default withStyles(styles)(TranscodeDialog);

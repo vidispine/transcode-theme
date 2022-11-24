@@ -1,9 +1,8 @@
-import React from 'react';
 import { Box, List, Button } from '@material-ui/core';
 
 import FileCard from './FileCard';
 
-const InputList = ({ itemListType = {}, page, onChangePage, onTranscode, onDelete }) => {
+function InputList({ itemListType = {}, page, onChangePage, onTranscode, onDelete }) {
   const { item: items = [], hits } = itemListType;
   return (
     <Box display="grid" gridTemplateRows="1fr auto" height={1}>
@@ -30,6 +29,6 @@ const InputList = ({ itemListType = {}, page, onChangePage, onTranscode, onDelet
       </Box>
     </Box>
   );
-};
+}
 
 export default InputList;

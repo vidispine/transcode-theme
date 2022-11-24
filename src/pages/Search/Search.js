@@ -1,11 +1,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
+
 import { Box } from '@material-ui/core';
 
-import JobList from '../Job/JobList';
-import FileList from './FileList';
-import { useSplitters } from '../../context';
 import { Split, Search } from '../../components';
+import { useSplitters } from '../../context';
+import JobList from '../Job/JobList';
+
+import FileList from './FileList';
 
 function Wrapper() {
   const [query, setQuery] = React.useState('');

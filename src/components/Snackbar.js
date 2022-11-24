@@ -1,6 +1,5 @@
 import React from 'react';
-import { SnackbarContent, useSnackbar } from 'notistack';
-import { Check as CheckIcon, Error as ErrorIcon, Close as CloseIcon } from '@material-ui/icons';
+
 import {
   withStyles,
   List,
@@ -12,6 +11,8 @@ import {
   ListSubheader,
   ListItemAvatar,
 } from '@material-ui/core';
+import { Check as CheckIcon, Error as ErrorIcon, Close as CloseIcon } from '@material-ui/icons';
+import { SnackbarContent, useSnackbar } from 'notistack';
 
 const styles = () => ({
   header: {

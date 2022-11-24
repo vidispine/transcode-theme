@@ -6,7 +6,7 @@ const SplitterContext = React.createContext({
 
 const LOCALSTORAGE_KEY = 'LAYOUT_SPLITTERS';
 
-const SplitterProvider = ({ splitters: initialSplitters, children }) => {
+function SplitterProvider({ splitters: initialSplitters, children }) {
   const getCurrentSplitters = () => {
     try {
       return JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || initialSplitters;
@@ -23,26 +23,25 @@ const SplitterProvider = ({ splitters: initialSplitters, children }) => {
     localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(splitters));
   }, [splitters]);
 
-  const resetSplitters = () => {
+  const resetSplitters = React.useCallback(() => {
     setSplitters(initialSplitters);
-  };
+  }, [initialSplitters]);
 
   const setSplitter = (name, size) => {
     setSplitters((prev) => ({ ...prev, [name]: size }));
   };
 
-  return (
-    <SplitterContext.Provider
-      value={{
-        splitters,
-        resetSplitters,
-        setSplitter,
-      }}
-    >
-      {children}
-    </SplitterContext.Provider>
+  const contextValue = React.useMemo(
+    () => ({
+      splitters,
+      resetSplitters,
+      setSplitter,
+    }),
+    [resetSplitters, splitters],
   );
-};
+
+  return <SplitterContext.Provider value={contextValue}>{children}</SplitterContext.Provider>;
+}
 
 function useSplitters() {
   const context = React.useContext(SplitterContext);

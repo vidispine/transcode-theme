@@ -1,10 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
-import { useSnackbar } from 'notistack';
-import { useApi } from '@vidispine/vdt-react';
-import { useQueryClient } from 'react-query';
 
-import { job as JobApi } from '@vidispine/vdt-api';
 import {
   Box,
   Tab,
@@ -15,11 +11,17 @@ import {
   CircularProgress,
   Typography,
 } from '@material-ui/core';
-import JobCard from './JobCard';
+import { useSnackbar } from 'notistack';
+import { useQueryClient } from 'react-query';
+
+import { job as JobApi } from '@vidispine/vdt-api';
+import { useApi } from '@vidispine/vdt-react';
+
 import { useDialog } from '../../context';
+import { useGetJobs } from '../../hooks/job';
 
 import { RUNNING_STATES, INACTIVE_STATES } from './const';
-import { useGetJobs } from '../../hooks/job';
+import JobCard from './JobCard';
 import JobDialog from './JobDialog';
 
 const NUMBER = 10;
@@ -31,7 +33,7 @@ const defaultQueryParams = {
   number: NUMBER,
 };
 
-const JobList = ({
+function JobList({
   jobListType,
   page,
   isLoading,
@@ -39,7 +41,7 @@ const JobList = ({
   onInfo = () => null,
   setPage,
   hideProgress = false,
-}) => {
+}) {
   const { job = [], hits = 0 } = jobListType;
   return (
     <Box display="grid" gridTemplateRows="1fr auto" height={1}>
@@ -71,9 +73,9 @@ const JobList = ({
       </Box>
     </Box>
   );
-};
+}
 
-const Jobs = () => {
+function Jobs() {
   const { showDialog } = useDialog();
   const { enqueueSnackbar } = useSnackbar();
   const [tab, setTab] = React.useState('active');
@@ -146,6 +148,6 @@ const Jobs = () => {
       )}
     </Box>
   );
-};
+}
 
 export default Jobs;

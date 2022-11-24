@@ -1,6 +1,8 @@
 import { useQuery, useQueryClient, useMutation } from 'react-query';
-import { parseTranscodePreset } from '@vidispine/vdt-js';
+
 import { shapetag as ShapetagApi } from '@vidispine/vdt-api';
+import { parseTranscodePreset } from '@vidispine/vdt-js';
+
 import { parseProfile } from '../utils/utils';
 
 export function useListProfiles() {

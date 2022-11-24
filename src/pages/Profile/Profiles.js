@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { useSnackbar } from 'notistack';
-import { SwitchField } from '@vidispine/vdt-materialui';
+
 import { Box, Button } from '@material-ui/core';
+import { useSnackbar } from 'notistack';
+
+import { SwitchField } from '@vidispine/vdt-materialui';
+
 import { Search } from '../../components';
 import { useDialog } from '../../context';
 import {
@@ -10,8 +13,9 @@ import {
   useCreateProfile,
   useDeleteProfile,
 } from '../../hooks/profile';
-import ProfileManager from './ProfileManager';
+
 import ProfileCard from './ProfileCard';
+import ProfileManager from './ProfileManager';
 
 export default () => {
   const { showDialog } = useDialog();

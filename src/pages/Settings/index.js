@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import { useSnackbar } from 'notistack';
+
 import {
   withStyles,
   Avatar,
@@ -15,13 +15,14 @@ import {
   ListItem,
   ListItemText,
 } from '@material-ui/core';
-
 import { CheckCircle as Check, Error, Autorenew as Loading } from '@material-ui/icons';
+import { useSnackbar } from 'notistack';
 import { Form } from 'react-final-form';
 
-import { useGetStorages, useCreateStorage, useModifyStorage } from '../../hooks/storage';
-import filenameScript from './filenameScript';
 import { FieldSelector } from '../../components';
+import { useGetStorages, useCreateStorage, useModifyStorage } from '../../hooks/storage';
+
+import filenameScript from './filenameScript';
 import form from './form';
 
 const defaultValues = form
@@ -226,7 +227,7 @@ const StorageSection = withStyles(styles)(
   },
 );
 
-const Settings = () => {
+function Settings() {
   const [refetchInterval, setRefetchInterval] = React.useState(false);
   const { data: { input = {}, output = {} } = {}, isLoading } = useGetStorages({
     refetchInterval,
@@ -369,6 +370,6 @@ const Settings = () => {
       </Grid>
     </Box>
   );
-};
+}
 
 export default withStyles(styles)(Settings);

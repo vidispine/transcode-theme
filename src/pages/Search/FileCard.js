@@ -1,9 +1,5 @@
 import React from 'react';
-import get from 'lodash.get';
-import moment from 'moment';
-import { Link } from 'react-router-dom';
-import { parseMetadataType, parseShapeType } from '@vidispine/vdt-js';
-import { CloudDownload, SwitchVideo, InsertDriveFile as FileIcon } from '@material-ui/icons';
+
 import {
   withStyles,
   Tooltip,
@@ -16,6 +12,13 @@ import {
   ListItemIcon,
   Button,
 } from '@material-ui/core';
+import { CloudDownload, SwitchVideo, InsertDriveFile as FileIcon } from '@material-ui/icons';
+import get from 'lodash.get';
+import moment from 'moment';
+
+import { parseMetadataType, parseShapeType } from '@vidispine/vdt-js';
+
+import { openInNewTab } from '../../utils/utils';
 
 const getFileData = (shape = {}) => {
   const { containerComponent = {} } = shape;
@@ -25,7 +28,7 @@ const getFileData = (shape = {}) => {
 };
 
 const parseItem = ({ metadata = {}, shape: [shape] = [{}] }) => ({
-  ...parseMetadataType(metadata, { flat: true, arrayOnSingle: false }),
+  ...parseMetadataType(metadata, { flat: true, arrayOnSingleValue: false }),
   ...parseShapeType(shape),
   ...getFileData(shape),
 });
@@ -144,7 +147,7 @@ const styles = ({ spacing, typography }) => ({
   },
 });
 
-const FileCard = ({
+function FileCard({
   itemType = {},
   classes,
   allowTranscode = false,
@@ -153,7 +156,7 @@ const FileCard = ({
   // onDownload = () => null,
   interactive = true,
   checkbox = false,
-}) => {
+}) {
   const { thumbnails: { uri = [] } = {} } = itemType;
   const [thumbnail] = uri;
   const item = React.useMemo(() => parseItem(itemType), [itemType]);
@@ -193,8 +196,7 @@ const FileCard = ({
                 </Button>
                 <Tooltip title="Download the file locally">
                   <Button
-                    component={Link}
-                    to={item.uri}
+                    onClick={() => openInNewTab(item.uri)}
                     size="small"
                     variant="text"
                     color="inherit"
@@ -222,8 +224,7 @@ const FileCard = ({
                   variant="text"
                   color="primary"
                   startIcon={<CloudDownload />}
-                  component={Link}
-                  to={item.uri}
+                  onClick={() => openInNewTab(item.uri)}
                 >
                   Download
                 </Button>
@@ -244,6 +245,6 @@ const FileCard = ({
       </ListItem>
     </Paper>
   );
-};
+}
 
 export default withStyles(styles)(FileCard);

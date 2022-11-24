@@ -1,13 +1,15 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import isMatch from 'lodash.ismatch';
+
 import { withStyles, FormHelperText, InputAdornment, IconButton } from '@material-ui/core';
+import { Visibility, VisibilityOff } from '@material-ui/icons';
+import isMatch from 'lodash.ismatch';
+import { Field } from 'react-final-form';
+
 import {
   TextField as VdtTextField,
   CheckboxField as VdtCheckboxField,
 } from '@vidispine/vdt-materialui';
-import { Visibility, VisibilityOff } from '@material-ui/icons';
-import { Field } from 'react-final-form';
 
 import CustomSelectField from './SelectField';
 
@@ -96,9 +98,9 @@ const styles = ({ spacing, typography, palette }) => ({
   },
 });
 
-const HelperText = ({ children }) => (
-  <>{children && <FormHelperText error>{children}</FormHelperText>}</>
-);
+function HelperText({ children }) {
+  return children && <FormHelperText error>{children}</FormHelperText>;
+}
 
 const autoValue = { label: 'Auto', value: 0, style: { display: 'none' } };
 const emptyValue = { label: 'No options', disabled: true, value: 'nooptions' };
@@ -281,13 +283,13 @@ export const NumberField = withStyles(styles)(
   },
 );
 
-export const FieldSelector = ({
+export function FieldSelector({
   type,
   errors,
   dependency = [],
   checkedDependencies = {},
   ...params
-}) => {
+}) {
   let FieldType = TextField;
   if (type === 'number') FieldType = NumberField;
   if (type === 'select') FieldType = SelectField;
@@ -307,6 +309,6 @@ export const FieldSelector = ({
       )}
     </Field>
   );
-};
+}
 
 export default FieldSelector;

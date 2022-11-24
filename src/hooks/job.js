@@ -1,4 +1,5 @@
 import { useQuery } from 'react-query';
+
 import { job as JobApi } from '@vidispine/vdt-api';
 
 // eslint-disable-next-line import/prefer-default-export

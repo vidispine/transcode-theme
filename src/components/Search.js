@@ -1,7 +1,6 @@
-import React from 'react';
+import { withStyles, Paper } from '@material-ui/core';
 
 import { SearchInput } from '@vidispine/vdt-materialui';
-import { withStyles, Paper } from '@material-ui/core';
 
 const styles = ({ spacing, palette, transitions }) => ({
   input: {
@@ -27,22 +26,24 @@ const styles = ({ spacing, palette, transitions }) => ({
   },
 });
 
-const Search = ({
+function Search({
   value,
   onSubmit,
   onChange,
   classes: { root, ...rest },
   placeholder = 'Search files...',
-}) => (
-  <Paper>
-    <SearchInput
-      value={value}
-      classes={rest}
-      onChange={onChange}
-      onSubmit={onSubmit}
-      searchPlaceholder={placeholder}
-    />
-  </Paper>
-);
+}) {
+  return (
+    <Paper>
+      <SearchInput
+        value={value}
+        classes={rest}
+        onChange={onChange}
+        onSubmit={onSubmit}
+        searchPlaceholder={placeholder}
+      />
+    </Paper>
+  );
+}
 
 export default withStyles(styles)(Search);

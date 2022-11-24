@@ -1,7 +1,7 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { UserAvatarButton } from '@vidispine/vdt-materialui';
 import { withStyles, AppBar, Button, Box, Avatar, Typography, Hidden } from '@material-ui/core';
+import { NavLink } from 'react-router-dom';
+
+import { UserAvatarButton } from '@vidispine/vdt-materialui';
 import { useAuthContext } from '@vidispine/vdt-react';
 
 import { APP_TITLE, HEADER_LOGO } from '../../const';

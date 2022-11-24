@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from 'react-query';
+
 import { storage as StorageApi } from '@vidispine/vdt-api';
+
 import { parseStorages } from '../utils/utils';
 
 export function useGetStorages(opts) {

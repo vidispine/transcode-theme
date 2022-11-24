@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { vidinet as VidinetApi } from '@vidispine/vdt-api';
 
 const useCostEstimate = (endpoint) => {
