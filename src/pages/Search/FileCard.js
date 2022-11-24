@@ -15,9 +15,10 @@ import {
 import { CloudDownload, SwitchVideo, InsertDriveFile as FileIcon } from '@material-ui/icons';
 import get from 'lodash.get';
 import moment from 'moment';
-import { Link } from 'react-router-dom';
 
 import { parseMetadataType, parseShapeType } from '@vidispine/vdt-js';
+
+import { openInNewTab } from '../../utils/utils';
 
 const getFileData = (shape = {}) => {
   const { containerComponent = {} } = shape;
@@ -195,8 +196,7 @@ function FileCard({
                 </Button>
                 <Tooltip title="Download the file locally">
                   <Button
-                    component={Link}
-                    to={item.uri}
+                    onClick={() => openInNewTab(item.uri)}
                     size="small"
                     variant="text"
                     color="inherit"
@@ -224,8 +224,7 @@ function FileCard({
                   variant="text"
                   color="primary"
                   startIcon={<CloudDownload />}
-                  component={Link}
-                  to={item.uri}
+                  onClick={() => openInNewTab(item.uri)}
                 >
                   Download
                 </Button>
